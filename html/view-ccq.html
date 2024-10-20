@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>View Detail CCQ</title>
+        <!-- Library -->
+        <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
+        <!-- Custom JS-->
+        <script src="../js/call-api-fmarket.js"></script>
+        <script src="../js/load-chart.js"></script>
+        <!-- Custom CSS-->
+        <link rel="stylesheet" href="../css/view-ccq-style.css" />
+    </head>
+    <body onload="callApiGetListInvestementCertificateSTOCK()">
+        <h1 class="main-title"><span>Tên: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span></h1>
+        <h2 class="sub-title"><span>Chiến lược: </span><span id="ccqStrategy">Quỹ cổ phiếu VLGF có chiến lược đầu tư chủ động, tập trung nhiều hơn vào các cổ phiếu large-cap đầu ngành, có thanh khoản cao. Quỹ sẽ lựa chọn những cổ phiếu được đánh giá tốt nhất thị trường, đồng thời linh hoạt phân bổ tài sản nhằm đạt mục tiêu tăng trưởng tài sản ròng dài hạn và gia tăng giá trị bền vững cho nhà đầu tư.</span></h2>
+        <h2 class="sub-title"><span>Giá gần nhất: </span><span id="ccqNearestPrice">12,180.63 VND (Cập nhật ngày 18/10/2024)</span></h2>
+        <div>==========================================================================================================================================================</div>
+        <h2 class="sub-title">BIỂU ĐỒ TĂNG TRƯỞNG NAV</h2>
+        <div>
+            <span>From Date: </span><span id="chartFromDate">01/10/2024</span>
+            
+            <span>To Date: </span><span id="chartToDate">31/10/2024</span>
+        </div>
+        <div class="chart-area" id="chart-data">
+            
+        </div>
+        <h2 class="sub-title">Thông tin chi tiết</h2>
+        
+    </body>
+</html>
