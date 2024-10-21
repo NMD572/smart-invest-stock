@@ -18,9 +18,9 @@
         <div>==========================================================================================================================================================</div>
         <h2 class="sub-title">BIỂU ĐỒ TĂNG TRƯỞNG NAV</h2>
         <div>
-            <span>From Date: </span><span id="chartFromDate">01/10/2024</span>
+            <span>From Date: </span><span id="chartFromDate">2024-10-01</span>
             
-            <span>To Date: </span><span id="chartToDate">31/10/2024</span>
+            <span>To Date: </span><span id="chartToDate">2024-10-31</span>
             <span>
                 <div class="container-toggle-group">
                     <div class="toggle-group">
@@ -36,11 +36,14 @@
         </div>
         <div>
             <label>Choose CCQ to compare: </label>
-            <select id="ccqForCompareSelectBox">
+            <select id="ccqForCompareSelectBox" multiple>
                 <option value=null selected>None</option>
-                <option value="VNindex">VNindex</option>
+                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
             </select>
         </div>
+        
+        <!-- Button Element -->
+        <button class="reload-chart-button" id="reloadChartButton">Reload Chart</button>
         
         <div class="chart-area" id="chart-data">
         </div>

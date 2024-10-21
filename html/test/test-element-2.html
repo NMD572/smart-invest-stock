@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Styled Multi-select Dropdown Example</title>
+  <style>
+    /* Styling the dropdown */
+    select {
+      width: 200px;
+      height: 120px; /* Increased height to show more options */
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      outline: none;
+    }
+
+    /* Add scroll bar for overflow */
+    select option {
+      padding: 5px;
+    }
+
+    select:focus {
+      border-color: #6c63ff; /* Border color when focused */
+      background-color: #f0f0ff; /* Slight background change on focus */
+    }
+
+    /* Styling the result paragraph */
+    #result {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Styling the heading */
+    h1 {
+      font-family: 'Arial', sans-serif;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Select your favorite fruits:</h1>
+  
+  <select id="fruitDropdown" multiple>
+    <option value="apple">Apple</option>
+    <option value="banana">Banana</option>
+    <option value="orange">Orange</option>
+    <option value="mango">Mango</option>
+    <option value="grape">Grape</option>
+  </select>
+
+  <p id="result"></p>
+
+  <script>
+    // Get the multi-select dropdown and result paragraph
+    const dropdown = document.getElementById('fruitDropdown');
+    const result = document.getElementById('result');
+
+    // Function to get selected options
+    function getSelectedOptions() {
+      const selected = [];
+      // Loop through options to find the selected ones
+      for (let option of dropdown.options) {
+        if (option.selected) {
+          selected.push(option.value);
+        }
+      }
+      return selected;
+    }
+
+    // Add event listener for when the selection changes
+    dropdown.addEventListener('change', function() {
+      const selectedFruits = getSelectedOptions(); // Get selected options
+      result.textContent = `You selected: ${selectedFruits.join(', ')}`; // Display selected fruits
+    });
+  </script>
+    
+</body>
+</html>

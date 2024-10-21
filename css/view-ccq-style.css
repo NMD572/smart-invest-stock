@@ -84,3 +84,31 @@
 /* End format text */
 
 /* End Toggle Switch */
+
+/* Button Reload Chart*/
+/* Button Styling */
+.reload-chart-button {
+  background-color: #6373ff; /* Primary button color */
+  color: white; /* Text color */
+  padding: 12px 24px; /* Button size */
+  font-size: 16px;
+  border: none; /* Remove default border */
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: all 0.3s ease; /* Smooth hover effect */
+}
+
+/* Button Hover and Active State */
+.reload-chart-button:hover {
+  background-color: #5a55d3; /* Darken the button on hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+  transform: translateY(-2px); /* Slightly lift the button */
+}
+
+.reload-chart-button:active {
+  background-color: #534aba; /* Darker color when clicked */
+  transform: translateY(0); /* Return to normal position */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduce shadow on click */
+}
+/* End Button Reload Chart*/

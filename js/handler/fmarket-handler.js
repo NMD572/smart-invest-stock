@@ -14,14 +14,14 @@ const SORT_FIELD_FROM_BEGIN = "navToBeginning";
 
 async function getListCcqInfor(){
     let jsonDatas = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD);
-    var listCcqInfor = [];
+    let listCcqInfor = [];
     for(let i=0,end=jsonDatas.data.total;i<end;++i){
         // console.log("No: "+ (i+1));
         // console.log("Name: " + jsonDatas.data.rows[i].shortName+ " - "+ jsonDatas.data.rows[i].name);
         // console.log("Nav: " + jsonDatas.data.rows[i].nav + " VND");
         // console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
         // console.log("===========================================");
-        var ccq = new CCQInfor(jsonDatas.data.rows[i].id, jsonDatas.data.rows[i].shortName, jsonDatas.data.rows[i].name,jsonDatas.data.rows[i].owner.shortName);
+        let ccq = new CCQInfor(jsonDatas.data.rows[i].id, jsonDatas.data.rows[i].shortName, jsonDatas.data.rows[i].name,jsonDatas.data.rows[i].owner.shortName);
         listCcqInfor[i]=ccq;
     }
     return listCcqInfor;

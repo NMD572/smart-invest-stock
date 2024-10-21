@@ -7,7 +7,7 @@ class CCQInfor{
         this.ownerShortName = ownerShortName;
     }
     // Getter
-    get getFullName() {
-        return this.shortName + " - " + this.name +" ("+this.ownerShortName+")";
+    get getExternalInfor() {
+        return this.name +" ("+this.ownerShortName+")";
     }
 }
