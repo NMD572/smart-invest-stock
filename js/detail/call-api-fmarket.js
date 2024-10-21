@@ -1,5 +1,7 @@
 
-async function callApiGetListInvestementCertificateSTOCK(){
+
+
+async function callApiGetListInvestementCertificateSTOCK(sortField){
     // Define the API URL
     const apiUrl = 'https://api.fmarket.vn/res/products/filter';
     let allComboboxData;
@@ -13,7 +15,7 @@ async function callApiGetListInvestementCertificateSTOCK(){
             "page": 1,
             "pageSize": 1000,
             "sortOrder": "DESC",
-            "sortField": "navTo1Months",
+            "sortField": sortField,
             "isIpo": false,
             "fundAssetTypes": [
                 "STOCK"
@@ -24,14 +26,13 @@ async function callApiGetListInvestementCertificateSTOCK(){
         }
     }) 
     .then((response) => response.json());
-    console.log(jsonDatas);
-    for(let i=0,end=jsonDatas.data.total;i<end;++i){
-        console.log("No: "+ (i+1));
-        console.log("Name: " + jsonDatas.data.rows[i].shortName+ " - "+ jsonDatas.data.rows[i].name);
-        console.log("Nav: " + jsonDatas.data.rows[i].nav + " VND");
-        console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
-        console.log("===========================================");
-    }
+    // for(let i=0,end=jsonDatas.data.total;i<end;++i){
+    //     console.log("No: "+ (i+1));
+    //     console.log("Name: " + jsonDatas.data.rows[i].shortName+ " - "+ jsonDatas.data.rows[i].name);
+    //     console.log("Nav: " + jsonDatas.data.rows[i].nav + " VND");
+    //     console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
+    //     console.log("===========================================");
+    // }
     return jsonDatas;
 
 }

@@ -1,4 +1,4 @@
-async function drawLineChart(columnType,columnName, isClearData){
+async function drawLineChart(columnType,columnName){
   anychart.onDocumentReady(function () {
     
     // add data (max: 70 data)
@@ -95,8 +95,8 @@ async function drawLineChart(columnType,columnName, isClearData){
     var thirdSeries = chart.line(thirdSeriesData);
     thirdSeries.name("VMEEF");
   
-    // add a legend and customize it
-    chart.legend().enabled(true).fontSize(14).padding([10, 0, 10, 0]);
+    // add a legend and customize it (a label below title)
+    chart.legend().enabled(true).fontSize(15).padding([10, 10, 10, 10 ]);
     
     // add a title and customize it
     chart
