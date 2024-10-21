@@ -1,8 +1,5 @@
-function initScreen(){
-    
-}
 
-async  function callApiGetListInvestementCertificateSTOCK(){
+async function callApiGetListInvestementCertificateSTOCK(){
     // Define the API URL
     const apiUrl = 'https://api.fmarket.vn/res/products/filter';
     let allComboboxData;
@@ -35,5 +32,6 @@ async  function callApiGetListInvestementCertificateSTOCK(){
         console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
         console.log("===========================================");
     }
+    return jsonDatas;
 
 }

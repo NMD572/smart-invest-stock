@@ -1,0 +1,1 @@
+includeJs("../js/detail/call-api-fmarket.js");
