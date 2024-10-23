@@ -1,5 +1,6 @@
 includeJs("../js/detail/call-api-fmarket.js");
 includeJs("../js/dto/CCQInfor.js");
+includeJs("../js/dto/NavCcqHistory.js");
 
 const SORT_FIELD_IN_1_MONTH = "navTo1Months";
 const SORT_FIELD_IN_3_MONTH = "navTo3Months";
@@ -25,4 +26,25 @@ async function getListCcqInfor(){
         listCcqInfor[i]=ccq;
     }
     return listCcqInfor;
+}
+
+async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
+    let jsonDatas = await callApiGetListNavHistoryOfCcq(ccqId, fromDate, toDate, isGetAll);
+    let listNavHistoryInfor = [];
+    if(chartType == getChartTypeCurrencyVND()){
+        for(let i=0,end=jsonDatas.data.length;i<end;++i){
+            listNavHistoryInfor.push(new NavCcqHistory(jsonDatas.data[i].nav,jsonDatas.data[i].navDate));
+        }
+    }else{
+        let firstDayPrice = jsonDatas.data[0].nav;
+        for(let i=0,end=jsonDatas.data.length;i<end;++i){
+            listNavHistoryInfor.push(new NavCcqHistory(calculateGrowthRatio(firstDayPrice,jsonDatas.data[i].nav),jsonDatas.data[i].navDate));
+        }
+    }
+    return listNavHistoryInfor;
+}
+
+// format: xx.xx%
+function calculateGrowthRatio(initial, current){
+    return Math.round(((current-initial)/initial) * 10000)/100;
 }

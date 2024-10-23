@@ -1,10 +1,6 @@
-
-
-
 async function callApiGetListInvestementCertificateSTOCK(sortField){
     // Define the API URL
     const apiUrl = 'https://api.fmarket.vn/res/products/filter';
-    let allComboboxData;
     let jsonDatas = await fetch(apiUrl, {
         method: "POST",
         body: JSON.stringify({
@@ -26,13 +22,26 @@ async function callApiGetListInvestementCertificateSTOCK(sortField){
         }
     }) 
     .then((response) => response.json());
-    // for(let i=0,end=jsonDatas.data.total;i<end;++i){
-    //     console.log("No: "+ (i+1));
-    //     console.log("Name: " + jsonDatas.data.rows[i].shortName+ " - "+ jsonDatas.data.rows[i].name);
-    //     console.log("Nav: " + jsonDatas.data.rows[i].nav + " VND");
-    //     console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
-    //     console.log("===========================================");
-    // }
+    return jsonDatas;
+
+}
+
+async function callApiGetListNavHistoryOfCcq(ccqId, fromDate, toDate, isGetAll){
+    // Define the API URL
+    const apiUrl = 'https://api.fmarket.vn/res/product/get-nav-history';
+    let jsonDatas = await fetch(apiUrl, {
+        method: "POST",
+        body: JSON.stringify({
+            "isAllData": isGetAll,
+            "productId": ccqId,
+            "fromDate": fromDate,
+            "toDate": toDate
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+    }) 
+    .then((response) => response.json());
     return jsonDatas;
 
 }
