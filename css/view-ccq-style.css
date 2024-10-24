@@ -84,31 +84,73 @@
 /* End format text */
 
 /* End Toggle Switch */
+/* Custom CSS For All Page*/
+.form-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
 
-/* Button Reload Chart*/
-/* Button Styling */
+.form-group label {
+  margin-right: 10px;
+}
+.form-select{
+  width: 400px;
+}
+input[type="date"] {
+  width: 150px;
+}
+
+.container-toggle-group {
+  margin-left: 20px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
 .reload-chart-button {
-  background-color: #6373ff; /* Primary button color */
-  color: white; /* Text color */
-  padding: 12px 24px; /* Button size */
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
   font-size: 16px;
-  border: none; /* Remove default border */
-  border-radius: 8px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  transition: all 0.3s ease; /* Smooth hover effect */
+  font-weight: bold;
 }
 
-/* Button Hover and Active State */
+.reload-chart-button i {
+  margin-right: 10px;
+}
+
 .reload-chart-button:hover {
-  background-color: #5a55d3; /* Darken the button on hover */
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
-  transform: translateY(-2px); /* Slightly lift the button */
+  background-color: #0056b3;
 }
 
-.reload-chart-button:active {
-  background-color: #534aba; /* Darker color when clicked */
-  transform: translateY(0); /* Return to normal position */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduce shadow on click */
+.chart-area {
+  margin-top: 30px;
 }
-/* End Button Reload Chart*/
+
+/* Optional: Style for titles */
+.main-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.sub-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.divider {
+  margin: 20px 0;
+  border-bottom: 1px solid #ddd;
+}
