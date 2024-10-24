@@ -12,13 +12,49 @@ var currentCcqShortName = "VLGF";
 var reloadChartButton = document.getElementById("reloadChartButton");
 
 async function initScreen(){
-    let listCcqData = await getListCcqInfor();
-    fillListCCQToCombobox(listCcqData);
+    
+    await initInfor();
     await getDataAndDrawChart();
+    // BINDING DEFAULT PROPERTIES
+    $( '#ccqForCompareSelectBox' ).select2( {
+        theme: "bootstrap-5",
+        // width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+        placeholder: $( this ).data( 'placeholder' ),
+        closeOnSelect: false,
+    } );
 }
 // checkboxChartTypeElement.addEventListener("change", async function(){
 //     await updateChartWhenChangeCheckBox(this);
 // });
+async function initInfor(){
+    // handle combox ccq
+    let listCcqData = await getListCcqInfor();
+    fillListCCQToCombobox(listCcqData);
+    // handle fromDate, toDate
+    const currentDate = new Date();
+
+    // Get the first day of the current month
+    const startCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    // Get the last day of the current month
+    const endCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+    // Assign formatted dates to the input fields
+    document.getElementById("chartFromDate").value = formatDate(startCurrentMonth);
+    document.getElementById("chartToDate").value = formatDate(endCurrentMonth);
+    console.log("From date init: "+ document.getElementById("chartFromDate").value +" ;To date init: "+document.getElementById("chartToDate").value );
+        
+}
+
+// Format the date as 'yyyy-MM-dd' 
+// without using toISOString (because timezone mismatch --> cause incorrect date)
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero
+    const day = String(date.getDate()).padStart(2, '0'); // Add leading zero
+    return `${year}-${month}-${day}`;
+}
+
 reloadChartButton.addEventListener("click",async function(){
     await getDataAndDrawChart();
 });
@@ -30,8 +66,8 @@ async function getDataAndDrawChart(){
     let listSelectedBasicCcqInfor = getAllSelectedCcqToCompare();
     console.log(listSelectedBasicCcqInfor);
     // get from date, to date
-    let fromDate = document.getElementById("chartFromDate").innerHTML.replaceAll('-','');
-    let toDate = document.getElementById("chartToDate").innerHTML.replaceAll('-','');
+    let fromDate = document.getElementById("chartFromDate").value.replaceAll('-','');
+    let toDate = document.getElementById("chartToDate").value.replaceAll('-','');
     console.log("From date formatted: "+ fromDate +" ;To date formatted: "+toDate );
     // get format
     let checkboxChartTypeElement = document.getElementById("checkboxChartType");
@@ -48,7 +84,7 @@ async function getDataAndDrawChart(){
     // write new chart
     let dataToDrawChart = await handleChartData(listSelectedBasicCcqInfor,fromDate,toDate,getDataIsNotGetAllNavHistory(),columnType);
     console.log("final result "+ dataToDrawChart);
-    await drawLineChart(dataToDrawChart, columnType,columnName);
+    await drawLineChart(dataToDrawChart, columnName);
 }
 
 async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGetAll, chartType){
@@ -84,7 +120,7 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
             if(startIndex == listAllCcq[j].listNavHistory.length-1){
                 continue;
             }
-            while(listAllCcq[j].listNavHistory[startIndex].navDate<currentDay && listAllCcq[j].listNavHistory[startIndex+1].navDate<currentDay){
+            while(startIndex < listAllCcq[j].listNavHistory.length-1 && listAllCcq[j].listNavHistory[startIndex].navDate<currentDay && listAllCcq[j].listNavHistory[startIndex+1].navDate<currentDay){
                 ++startIndex;
             }
             dataCurrentDay.push(listAllCcq[j].listNavHistory[startIndex].navValue);
@@ -121,19 +157,22 @@ function getAllSelectedCcqToCompare(){
 }
 
 function fillListCCQToCombobox(listCcqData){
-    var selectBox = document.getElementById("ccqForCompareSelectBox");
+    var groupComboboxCcq = document.getElementById("groupComboboxCcq");
     // selectBox.select2();
     for(let i=0,end=listCcqData.length;i<end;++i){
-        addCCQToCombox(selectBox,listCcqData[i]);
+        // remove current ccq from combobox
+        if(listCcqData[i].shortName!=currentCcqShortName){
+            addCCQToCombox(groupComboboxCcq,listCcqData[i]);
+        }
     }
 }
 
-function addCCQToCombox(selectBox, ccqInfor) {
+function addCCQToCombox(groupCcq, ccqInfor) {
     var newOpt = document.createElement('option');
     newOpt.value = ccqInfor.id;
     newOpt.innerHTML = ccqInfor.shortName;
     newOpt.title = ccqInfor.getExternalInfor;
-    selectBox.appendChild(newOpt);
+    groupCcq.appendChild(newOpt);
 }
 
 // async function updateChartWhenChangeCheckBox(checkboxChartTypeElement) {

@@ -22,8 +22,10 @@ async function getListCcqInfor(){
         // console.log("Nav: " + jsonDatas.data.rows[i].nav + " VND");
         // console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
         // console.log("===========================================");
-        let ccq = new CCQInfor(jsonDatas.data.rows[i].id, jsonDatas.data.rows[i].shortName, jsonDatas.data.rows[i].name,jsonDatas.data.rows[i].owner.shortName);
-        listCcqInfor[i]=ccq;
+        if(jsonDatas.data.rows[i].isProductIpo==false){
+            let ccq = new CCQInfor(jsonDatas.data.rows[i].id, jsonDatas.data.rows[i].shortName, jsonDatas.data.rows[i].name,jsonDatas.data.rows[i].owner.shortName);
+            listCcqInfor.push(ccq);
+        }
     }
     return listCcqInfor;
 }

@@ -7,9 +7,19 @@
         <title>View Detail CCQ</title>
         <!-- Library -->
         <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <!-- Custom CSS-->
         <link rel="stylesheet" href="../css/view-ccq-style.css" />
+
+        <!-- Styles -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
     </head>
     <body onload="initScreen()">
         <h1 class="main-title"><span>Tên: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span></h1>
@@ -18,9 +28,12 @@
         <div>==========================================================================================================================================================</div>
         <h2 class="sub-title">BIỂU ĐỒ TĂNG TRƯỞNG NAV</h2>
         <div>
-            <span>From Date: </span><span id="chartFromDate">2024-10-01</span>
             
-            <span>To Date: </span><span id="chartToDate">2024-10-31</span>
+            <label for="chartFromDate">From Date:</label>
+            <input type="date" id="chartFromDate">
+            <label for="chartToDate">To Date:</label>
+            <input type="date" id="chartToDate">
+            
             <span>
                 <div class="container-toggle-group">
                     <div class="toggle-group">
@@ -36,9 +49,13 @@
         </div>
         <div>    
             <label>Choose CCQ to compare: </label>
-            <select id="ccqForCompareSelectBox" multiple>
-                <option value=null selected>None</option>
-                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+            <select class="form-select" id="ccqForCompareSelectBox" data-placeholder="Choose CCQ To Compare" multiple>
+                <optgroup label="Genral Index" id="groupComboboxGeneralIndex">
+                    <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                </optgroup>
+                <optgroup label="CCQ" id="groupComboboxCcq"></optgroup>
+
+                </optgroup>
             </select>
         </div>
         

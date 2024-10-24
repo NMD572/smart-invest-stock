@@ -22,6 +22,7 @@ async function callApiGetListInvestementCertificateSTOCK(sortField){
         }
     }) 
     .then((response) => response.json());
+    await sleep(500);   // sleep 0.5s for prevent spam api
     return jsonDatas;
 
 }
@@ -42,6 +43,7 @@ async function callApiGetListNavHistoryOfCcq(ccqId, fromDate, toDate, isGetAll){
         }
     }) 
     .then((response) => response.json());
+    await sleep(500);   // sleep 0.5s for prevent spam api
     return jsonDatas;
 
 }

@@ -7,6 +7,10 @@ function includeJs(jsFilePath) {
     document.body.appendChild(js);
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function getChartTypeCurrencyVND(){
     return 1;
 }

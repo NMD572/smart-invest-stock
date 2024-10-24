@@ -43,18 +43,34 @@
   </style>
 </head>
 <body>
-
-  <h1>Select your favorite fruits:</h1>
-  
-  <select id="fruitDropdown" multiple>
-    <option value="apple">Apple</option>
-    <option value="banana">Banana</option>
-    <option value="orange">Orange</option>
-    <option value="mango">Mango</option>
-    <option value="grape">Grape</option>
-  </select>
-
-  <p id="result"></p>
+  <select class="form-select" id="multiple-select-optgroup-field" data-placeholder="Choose anything" multiple>
+    <optgroup label="Group 1">
+        <option value="123">Christmas Island</option>
+        <option>South Sudan</option>
+        <option>Jamaica</option>
+        <option>Kenya</option>
+        <option>French Guiana</option>
+        <option>Mayotta</option>
+    </optgroup>
+    <optgroup label="Group 2">
+        <option>Liechtenstein</option>
+        <option>Denmark</option>
+        <option>Eritrea</option>
+        <option>Gibraltar</option>
+        <option>Saint Helena, Ascension and Tristan da Cunha</option>
+        <option>Haiti</option>
+        <option>Namibia</option>
+    </optgroup>
+    <optgroup label="Group 3">
+        <option>South Georgia and the South Sandwich Islands</option>
+        <option>Vietnam</option>
+        <option>Yemen</option>
+        <option>Philippines</option>
+        <option>Benin</option>
+        <option>Czech Republic</option>
+        <option>Russia</option>
+    </optgroup>
+</select>
 
   <script>
     // Get the multi-select dropdown and result paragraph

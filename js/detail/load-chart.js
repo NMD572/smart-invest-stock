@@ -1,4 +1,12 @@
-async function drawLineChart(dataToWriteChart, columnType,columnName){
+const lineColors = [
+  "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF",
+  "#00FFFF", "#800000", "#008000", "#000080", "#808000",
+  "#800080", "#008080", "#C0C0C0", "#FFA500", "#A52A2A",
+  "#DEB887", "#5F9EA0", "#7FFF00", "#D2691E", "#FF7F50",
+  "#6495ED", "#DC143C", "#00FA9A", "#FFD700", "#4B0082"
+];
+
+async function drawLineChart(dataToWriteChart, columnName){
   anychart.onDocumentReady(function () {
     
     // add data (max: 70 data)
@@ -88,7 +96,7 @@ async function drawLineChart(dataToWriteChart, columnType,columnName){
       series = chart.line(seriesData);                      // create the lines and name them
       series.name(dataToWriteChart.listBasicCcqInfor[i].shortName);
       series.hovered().markers().type("circle").size(4);    // customize the series markers (the point when hover in the line in chart)
-      series.normal().stroke("#7b60a2", 2.5);   //customize color and size of line (in graph)
+      series.normal().stroke(lineColors[i], 2.5);   //customize color and size of line (in graph)
     }
     // map the data for each line
     // var firstSeriesData = dataSet.mapAs({x: 0, value: 1});
