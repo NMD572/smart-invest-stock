@@ -95,8 +95,9 @@ function getWorkingDays(fromDate, toDate){
 
         let weekDay = currentDate.getDay();
         // console.log("Day: "+ currentDate + " Weekday:" + weekDay);
-        if(weekDay != 0 && weekDay != 6){   // ignore saturday and sunday (because it is not working)
-            // console.log("Pass");
+        if(weekDay != 0 && weekDay != 6){  
+            // ignore saturday (6) and sunday (0) (because it is not working)
+            // format date: yyyy-MM-dd to show in chart
             listAllWorkingDateInRange.push(formatDate(currentDate));
         }
 
