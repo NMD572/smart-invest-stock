@@ -4,96 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Styled Multi-select Dropdown Example</title>
-  <style>
-    /* Styling the dropdown */
-    select {
-      width: 200px;
-      height: 120px; /* Increased height to show more options */
-      padding: 8px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #f9f9f9;
-      outline: none;
-    }
-
-    /* Add scroll bar for overflow */
-    select option {
-      padding: 5px;
-    }
-
-    select:focus {
-      border-color: #6c63ff; /* Border color when focused */
-      background-color: #f0f0ff; /* Slight background change on focus */
-    }
-
-    /* Styling the result paragraph */
-    #result {
-      margin-top: 10px;
-      font-size: 18px;
-      color: #333;
-      font-family: Arial, sans-serif;
-    }
-
-    /* Styling the heading */
-    h1 {
-      font-family: 'Arial', sans-serif;
-      color: #333;
-    }
-  </style>
+  
 </head>
 <body>
-  <select class="form-select" id="multiple-select-optgroup-field" data-placeholder="Choose anything" multiple>
-    <optgroup label="Group 1">
-        <option value="123">Christmas Island</option>
-        <option>South Sudan</option>
-        <option>Jamaica</option>
-        <option>Kenya</option>
-        <option>French Guiana</option>
-        <option>Mayotta</option>
-    </optgroup>
-    <optgroup label="Group 2">
-        <option>Liechtenstein</option>
-        <option>Denmark</option>
-        <option>Eritrea</option>
-        <option>Gibraltar</option>
-        <option>Saint Helena, Ascension and Tristan da Cunha</option>
-        <option>Haiti</option>
-        <option>Namibia</option>
-    </optgroup>
-    <optgroup label="Group 3">
-        <option>South Georgia and the South Sandwich Islands</option>
-        <option>Vietnam</option>
-        <option>Yemen</option>
-        <option>Philippines</option>
-        <option>Benin</option>
-        <option>Czech Republic</option>
-        <option>Russia</option>
-    </optgroup>
-</select>
-
   <script>
-    // Get the multi-select dropdown and result paragraph
-    const dropdown = document.getElementById('fruitDropdown');
-    const result = document.getElementById('result');
+    function getWorkingDays(startDate, endDate){
+      let listAllWorkingDateInRange = [];
 
-    // Function to get selected options
-    function getSelectedOptions() {
-      const selected = [];
-      // Loop through options to find the selected ones
-      for (let option of dropdown.options) {
-        if (option.selected) {
-          selected.push(option.value);
+      let currentDate = startDate;
+      while (currentDate <= endDate)  {  
+
+          let weekDay = currentDate.getDay();
+          // console.log("Day: "+ currentDate + " Weekday:" + weekDay);
+          if(weekDay != 0 && weekDay != 6){
+              // console.log("Pass");
+              listAllWorkingDateInRange.push(currentDate);
+          }
+
+          currentDate.setDate(currentDate.getDate()+1); 
         }
-      }
-      return selected;
-    }
 
-    // Add event listener for when the selection changes
-    dropdown.addEventListener('change', function() {
-      const selectedFruits = getSelectedOptions(); // Get selected options
-      result.textContent = `You selected: ${selectedFruits.join(', ')}`; // Display selected fruits
-    });
+        return listAllWorkingDateInRange;
+    }
+    // handle fromDate, toDate
+    const currentDate = new Date();
+
+    // Get the first day of the current month
+    const startCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    // Get the last day of the current month
+    const endCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+    
+    var begin = startCurrentMonth;
+    var end = endCurrentMonth;
+    alert(getWorkingDays(begin, end)); // result = 12 days
   </script>
     
 </body>

@@ -122,7 +122,7 @@ async function drawLineChart(dataToWriteChart, columnName){
       .useHtml(true)
       .text(
         '<span style="color: #006331; font-size: 20px;">Compare CCQ</span>' +
-          '<br/><span style="font-size: 16px;">(So sánh bởi đoạn t/g cố định, các quỹ sẽ lấy giá trị theo đó. Nếu ko có dữ liệu tại chính thời gian đó thì sẽ lấy dữ liệu tại thời gian trước đó)</span>'
+          '<br/><span style="font-size: 16px;">(So sánh bởi đoạn t/g cố định, các quỹ sẽ lấy giá trị theo đó. Nếu ko có dữ liệu tại chính thời gian đó thì sẽ lấy dữ liệu tại thời gian gần nhất trước đó)</span>'
       );
     
     // name the axes
