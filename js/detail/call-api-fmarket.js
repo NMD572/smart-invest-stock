@@ -1,4 +1,4 @@
-async function callApiGetListInvestementCertificateSTOCK(sortField){
+async function callApiGetListInvestementCertificateSTOCK(sortField, fundType){
     // Define the API URL
     const apiUrl = 'https://api.fmarket.vn/res/products/filter';
     let jsonDatas = await fetch(apiUrl, {
@@ -14,7 +14,7 @@ async function callApiGetListInvestementCertificateSTOCK(sortField){
             "sortField": sortField,
             "isIpo": false,
             "fundAssetTypes": [
-                "STOCK"
+                fundType
             ]
         }),
         headers: {

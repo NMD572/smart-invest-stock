@@ -13,17 +13,27 @@ const SORT_FIELD_ANNUALIZEDRETURN36MONTHS = "annualizedReturn36Months";
 const SORT_FIELD_YTD = "navToLastYear";
 const SORT_FIELD_FROM_BEGIN = "navToBeginning";
 
+
+
 async function getListCcqInfor(){
-    let jsonDatas = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD);
+    let listStockCcq = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD, FUND_TYPE_STOCK);
+    let listBalanceCcq = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD, FUND_TYPE_BALANCED);
     let listCcqInfor = [];
-    for(let i=0,end=jsonDatas.data.total;i<end;++i){
+    for(let i=0,end=listStockCcq.data.total;i<end;++i){
         // console.log("No: "+ (i+1));
-        // console.log("Name: " + jsonDatas.data.rows[i].shortName+ " - "+ jsonDatas.data.rows[i].name);
-        // console.log("Nav: " + jsonDatas.data.rows[i].nav + " VND");
-        // console.log("Day change: "+ jsonDatas.data.rows[i].productNavChange.navTo1Months + " %");
+        // console.log("Name: " + listStockCcq.data.rows[i].shortName+ " - "+ listStockCcq.data.rows[i].name);
+        // console.log("Nav: " + listStockCcq.data.rows[i].nav + " VND");
+        // console.log("Day change: "+ listStockCcq.data.rows[i].productNavChange.navTo1Months + " %");
         // console.log("===========================================");
-        if(jsonDatas.data.rows[i].isProductIpo==false){
-            let ccq = new CCQInfor(jsonDatas.data.rows[i].id, jsonDatas.data.rows[i].shortName, jsonDatas.data.rows[i].name,jsonDatas.data.rows[i].owner.shortName);
+        if(listStockCcq.data.rows[i].isProductIpo==false){
+            let ccq = new CCQInfor(listStockCcq.data.rows[i].id, listStockCcq.data.rows[i].shortName, listStockCcq.data.rows[i].name,listStockCcq.data.rows[i].owner.shortName, listStockCcq.data.rows[i].dataFundAssetType.code);
+            listCcqInfor.push(ccq);
+        }
+    }
+    for(let i=0,end=listBalanceCcq.data.total;i<end;++i){
+
+        if(listBalanceCcq.data.rows[i].isProductIpo==false){
+            let ccq = new CCQInfor(listBalanceCcq.data.rows[i].id, listBalanceCcq.data.rows[i].shortName, listBalanceCcq.data.rows[i].name,listBalanceCcq.data.rows[i].owner.shortName, listBalanceCcq.data.rows[i].dataFundAssetType.code);
             listCcqInfor.push(ccq);
         }
     }

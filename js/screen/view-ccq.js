@@ -175,12 +175,25 @@ function getAllSelectedCcqToCompare(){
 }
 
 function fillListCCQToCombobox(listCcqData){
-    var groupComboboxCcq = document.getElementById("groupComboboxCcq");
+    let groupComboboxStockCcq = document.getElementById("groupComboboxStockCcq");
+    let groupComboboxBalanceCcq = document.getElementById("groupComboboxBalancedCcq");
     // selectBox.select2();
     for(let i=0,end=listCcqData.length;i<end;++i){
         // remove current ccq from combobox
         if(listCcqData[i].shortName!=currentCcqShortName){
-            addCCQToCombox(groupComboboxCcq,listCcqData[i]);
+            switch(listCcqData[i].fundType) {
+                case getFundTypeStock():
+                    // add to stock ccq combobox group
+                    addCCQToCombox(groupComboboxStockCcq,listCcqData[i]);
+                    break;
+                case getFundTypeBalanced():
+                    // add to balanced ccq combobox group
+                    addCCQToCombox(groupComboboxBalanceCcq,listCcqData[i]);
+                    break;
+                default:
+                    // ignore
+                    break;
+            }
         }
     }
 }
