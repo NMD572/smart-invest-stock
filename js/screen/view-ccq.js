@@ -6,6 +6,11 @@ includeJs("../js/dto/BasicCCQInfor.js");
 includeJs("../js/dto/ListNavHistory.js");
 includeJs("../js/dto/DataToWriteChart.js");
 
+includeJs("../js/dto/AssetPercentOfCcq.js");
+includeJs("../js/dto/CcqInforToLoadDetail.js");
+includeJs("../js/dto/InvestGroupPercentOfCcq.js");
+includeJs("../js/dto/StockInCcqData.js");
+
 var currentCcqId = 49;
 var currentCcqShortName = "VLGF";
 // var checkboxChartTypeElement = document.getElementById("checkboxChartType");
@@ -26,7 +31,11 @@ async function initScreen(){
 // checkboxChartTypeElement.addEventListener("change", async function(){
 //     await updateChartWhenChangeCheckBox(this);
 // });
+
 async function initInfor(){
+    // handle all ccq infor in the page
+    let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
+    console.log(ccqDetailData);
     // handle combox ccq
     let listCcqData = await getListCcqInfor();
     fillListCCQToCombobox(listCcqData);
@@ -42,17 +51,8 @@ async function initInfor(){
     // Assign formatted dates to the input fields
     document.getElementById("chartFromDate").value = formatDate(startCurrentMonth);
     document.getElementById("chartToDate").value = formatDate(currentDate);
-    console.log("From date init: "+ document.getElementById("chartFromDate").value +" ;To date init: "+document.getElementById("chartToDate").value );
+    // console.log("From date init: "+ document.getElementById("chartFromDate").value +" ;To date init: "+document.getElementById("chartToDate").value );
         
-}
-
-// Format the date as 'yyyy-MM-dd' 
-// without using toISOString (because timezone mismatch --> cause incorrect date)
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero
-    const day = String(date.getDate()).padStart(2, '0'); // Add leading zero
-    return `${year}-${month}-${day}`;
 }
 
 reloadChartButton.addEventListener("click",async function(){
@@ -64,7 +64,7 @@ async function getDataAndDrawChart(){
     // Collect data to get nav history
     // get list ccq need to handle
     let listSelectedBasicCcqInfor = getAllSelectedCcqToCompare();
-    console.log(listSelectedBasicCcqInfor);
+    // console.log(listSelectedBasicCcqInfor);
     // get from date, to date
     let fromDate = document.getElementById("chartFromDate").value;
     let toDate = document.getElementById("chartToDate").value;
@@ -83,7 +83,7 @@ async function getDataAndDrawChart(){
     document.getElementById("chart-data").textContent = "";
     // write new chart
     let dataToDrawChart = await handleChartData(listSelectedBasicCcqInfor,fromDate,toDate,getDataIsNotGetAllNavHistory(),columnType);
-    console.log("final result "+ dataToDrawChart);
+    // console.log("final result "+ dataToDrawChart);
     await drawLineChart(dataToDrawChart, columnName);
 }
 
@@ -181,12 +181,12 @@ function fillListCCQToCombobox(listCcqData){
     for(let i=0,end=listCcqData.length;i<end;++i){
         // remove current ccq from combobox
         if(listCcqData[i].shortName!=currentCcqShortName){
-            switch(listCcqData[i].fundType) {
-                case getFundTypeStock():
+            switch(listCcqData[i].fundAssetType) {
+                case getFundAssetTypeStock():
                     // add to stock ccq combobox group
                     addCCQToCombox(groupComboboxStockCcq,listCcqData[i]);
                     break;
-                case getFundTypeBalanced():
+                case getFundAssetTypeBalanced():
                     // add to balanced ccq combobox group
                     addCCQToCombox(groupComboboxBalanceCcq,listCcqData[i]);
                     break;

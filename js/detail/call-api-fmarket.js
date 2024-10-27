@@ -1,4 +1,4 @@
-async function callApiGetListInvestementCertificateSTOCK(sortField, fundType){
+async function callApiGetListInvestementCertificateSTOCK(sortField, fundAssetType){
     // Define the API URL
     const apiUrl = 'https://api.fmarket.vn/res/products/filter';
     let jsonDatas = await fetch(apiUrl, {
@@ -14,7 +14,7 @@ async function callApiGetListInvestementCertificateSTOCK(sortField, fundType){
             "sortField": sortField,
             "isIpo": false,
             "fundAssetTypes": [
-                fundType
+                fundAssetType
             ]
         }),
         headers: {
@@ -23,6 +23,22 @@ async function callApiGetListInvestementCertificateSTOCK(sortField, fundType){
     }) 
     .then((response) => response.json());
     await sleep(500);   // sleep 0.5s for prevent spam api
+    return jsonDatas;
+
+}
+
+async function getDetailCcq(ccqShortName){
+    // Define the API URL
+    const apiUrl = 'https://api.fmarket.vn/home/product/'+ccqShortName;
+    let jsonDatas = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+    }) 
+    .then((response) => response.json());
+    await sleep(500);   // sleep 0.5s for prevent spam api
+    // console.log(jsonDatas);
     return jsonDatas;
 
 }

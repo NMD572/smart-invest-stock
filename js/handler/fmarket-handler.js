@@ -13,6 +13,64 @@ const SORT_FIELD_ANNUALIZEDRETURN36MONTHS = "annualizedReturn36Months";
 const SORT_FIELD_YTD = "navToLastYear";
 const SORT_FIELD_FROM_BEGIN = "navToBeginning";
 
+async function handleDataDetailCcq(ccqShortName){
+    let originalCcqData = await getDetailCcq(ccqShortName);
+    console.log(originalCcqData);
+    let currentFundAssetType = originalCcqData.data.dataFundAssetType.code;
+    let listFundAssetTypeNeedToCompare = getListFundAssetTypeNeedToCompare(currentFundAssetType);
+    
+    let listStockOfCcq = getAndConvertDataListStockOfCcq(originalCcqData);
+    let listInvestGroupPercent = getListInvestGroup(originalCcqData);
+    let listAssetPercent = getListAssetPercent(originalCcqData);
+    // assign value to result
+    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,originalCcqData.data.contentHome.shortDesc,originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare);
+    return result;
+}   
+
+function getListAssetPercent(originalCcqData){
+    let listAssetPercent = [];
+    for(let i=0,end=originalCcqData.data.productAssetHoldingList.length;i<end;++i){
+        let singleData = originalCcqData.data.productAssetHoldingList[i];
+        let assetPercentData = new AssetPercentOfCcq(singleData.assetType.name,singleData.assetPercent);
+        listAssetPercent.push(assetPercentData);
+    }
+    return listAssetPercent;
+
+}
+
+function getListInvestGroup(originalCcqData){
+    let listInvestGroupPercent = [];
+    for(let i=0,end=originalCcqData.data.productIndustriesHoldingList.length;i<end;++i){
+        let singleData = originalCcqData.data.productIndustriesHoldingList[i];
+        let investGroupData = new InvestGroupPercentOfCcq(singleData.industry, singleData.assetPercent);
+        listInvestGroupPercent.push(investGroupData);
+    }
+    return listInvestGroupPercent;
+}
+
+function getAndConvertDataListStockOfCcq(originalCcqData){
+    let listStockOfCcq = [];
+    for(let i=0,end=originalCcqData.data.productTopHoldingList.length;i<end;++i){
+        let singleData = originalCcqData.data.productTopHoldingList[i];
+        let stockData = new StockInCcqData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent);
+        listStockOfCcq.push(stockData);
+    }
+    return listStockOfCcq;
+}
+
+
+function getListFundAssetTypeNeedToCompare(fundAssetType){
+    let listFundAssetTypeNeedToCompare = [];
+    if(fundAssetType == getFundAssetTypeBond()){
+        // Is BOND CCQ --> list compare: list all BOND CCQ    
+        listFundAssetTypeNeedToCompare.push(getFundAssetTypeBond());
+    }else{
+        // Is not BOND CCQ --> list compare: list STOCK CCQ and BALANCE CCQ
+        listFundAssetTypeNeedToCompare.push(getFundAssetTypeStock());
+        listFundAssetTypeNeedToCompare.push(getFundAssetTypeBalanced());
+    }
+    return listFundAssetTypeNeedToCompare;
+}
 
 
 async function getListCcqInfor(){
