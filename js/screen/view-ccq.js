@@ -6,18 +6,14 @@ includeJs("../js/dto/BasicCCQInfor.js");
 includeJs("../js/dto/ListNavHistory.js");
 includeJs("../js/dto/DataToWriteChart.js");
 
-includeJs("../js/dto/AssetPercentOfCcq.js");
-includeJs("../js/dto/CcqInforToLoadDetail.js");
-includeJs("../js/dto/InvestGroupPercentOfCcq.js");
-includeJs("../js/dto/StockInCcqData.js");
-
-var currentCcqId = 49;
-var currentCcqShortName = "VLGF";
+var currentCcqId;
+var currentCcqShortName;
+var currentFundType;
+var listFundAssetTypeNeedToCompare;
 // var checkboxChartTypeElement = document.getElementById("checkboxChartType");
 var reloadChartButton = document.getElementById("reloadChartButton");
 
 async function initScreen(){
-    
     await initInfor();
     await getDataAndDrawChart();
     // BINDING DEFAULT PROPERTIES
@@ -33,11 +29,17 @@ async function initScreen(){
 // });
 
 async function initInfor(){
+    let params = new URLSearchParams(location.search);
+    currentCcqShortName = params.get('name');
     // handle all ccq infor in the page
     let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
+    currentCcqId = ccqDetailData.id;
+    currentFundType = ccqDetailData.fundAssetType;
+    listFundAssetTypeNeedToCompare = ccqDetailData.listFundAssetTypeNeedToCompare;
     console.log(ccqDetailData);
+    fillDataToPageCcqDetail(ccqDetailData);
     // handle combox ccq
-    let listCcqData = await getListCcqInfor();
+    let listCcqData = await getListCcqInfor(listFundAssetTypeNeedToCompare);
     fillListCCQToCombobox(listCcqData);
     // handle fromDate, toDate
     const currentDate = new Date();
@@ -53,6 +55,70 @@ async function initInfor(){
     document.getElementById("chartToDate").value = formatDate(currentDate);
     // console.log("From date init: "+ document.getElementById("chartFromDate").value +" ;To date init: "+document.getElementById("chartToDate").value );
         
+}
+
+function fillDataToPageCcqDetail(ccqDetailData){
+    // basic ccq infor
+    document.getElementById("ccqName").innerHTML = ccqDetailData.getExternalInfor;
+    document.getElementById("ccqStrategy").innerHTML = ccqDetailData.strategy;
+    document.getElementById("ccqNearestPrice").innerHTML = ccqDetailData.curNav + " VND. Cập nhật ngày "+ ccqDetailData.curNavDate;
+    
+    // general infor
+    document.getElementById("generalIssueCompany").innerHTML = ccqDetailData.ownerShortName;
+    document.getElementById("generalTotalMoneyOfFund").innerHTML = ccqDetailData.totalMoneyOfCcq; // TODO: handle when receive data from api
+    // TODO: sharpe ratio caculate when receive data for write chart
+    document.getElementById("generalTransactionNote").innerHTML = "Trước "+ ccqDetailData.closedBankInvestTimeString;
+    document.getElementById("generalNextTransactionDate").innerHTML = ccqDetailData.tradingTimeString;
+    // invest component detail
+    if(ccqDetailData.listInvestComponentDetail){
+        let tableBody = document.getElementById('tableInvestComponentDetail').getElementsByTagName('tbody')[0]; 
+        for(let i =0, end =ccqDetailData.listInvestComponentDetail.length; i<end;++i){
+            addRowToTableComponentDetail(tableBody,ccqDetailData.listInvestComponentDetail[i]);
+        }
+    }
+    // invest group
+    if(ccqDetailData.listInvestGroupPercent){
+        let tableBody = document.getElementById('tableInvestGroup').getElementsByTagName('tbody')[0]; 
+        for(let i =0, end =ccqDetailData.listInvestGroupPercent.length; i<end;++i){
+            addRowToBasicTableWithNameAndPercent(tableBody,ccqDetailData.listInvestGroupPercent[i]);
+        }
+    }
+    // asset percent
+    if(ccqDetailData.listAssetPercent){
+        let tableBody = document.getElementById('tableAssetPercent').getElementsByTagName('tbody')[0]; 
+        for(let i =0, end =ccqDetailData.listAssetPercent.length; i<end;++i){
+            addRowToBasicTableWithNameAndPercent(tableBody,ccqDetailData.listAssetPercent[i]);
+        }
+    }    
+}
+function addRowToBasicTableWithNameAndPercent(tableBody, basicInifor){
+    // Create a new row 
+    const newRow = tableBody.insertRow(); 
+
+    // Insert new cells (columns) into the row 
+    const cellName = newRow.insertCell(0); 
+    const cellPercent = newRow.insertCell(1); 
+
+    // Add data to the cells 
+    cellName.textContent = basicInifor.name; 
+    cellPercent.textContent = basicInifor.percent;
+}
+
+function addRowToTableComponentDetail(tableBody, rowInititalData){
+    // Create a new row 
+    const newRow = tableBody.insertRow(); 
+
+    // Insert new cells (columns) into the row 
+    const cellCode = newRow.insertCell(0); 
+    const cellGroup = newRow.insertCell(1); 
+    const cellGav = newRow.insertCell(2); 
+    const cellPrice = newRow.insertCell(3); 
+
+    // Add data to the cells 
+    cellCode.textContent = rowInititalData.code; 
+    cellGroup.textContent = rowInititalData.group;        
+    cellGav.textContent = rowInititalData.gavPercent;  
+    cellPrice.textContent = rowInititalData.currentPrice +" (" + rowInititalData.gapPriceNumber + "/" +rowInititalData.gapPricePercent +"%)";  
 }
 
 reloadChartButton.addEventListener("click",async function(){

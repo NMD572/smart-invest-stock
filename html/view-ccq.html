@@ -76,7 +76,73 @@
         <div class="chart-area" id="chart-data"></div>
 
         <h2 class="sub-title">Thông tin chi tiết</h2>
-
+        <div id="generalInfor">
+            <div>
+                <span>
+                    <span>Tổ chức phát hành: </span>
+                    <span id="generalIssueCompany">SSIAM</span>
+                </span>
+                <span>
+                    <span>Tổng tài sản ròng: </span>
+                    <span id="generalTotalMoneyOfFund">-</span>
+                </span>
+                <span>
+                    <span>Chỉ số Sharpe ratio: </span>
+                    <span id="generalSharpeRatio">1</span>
+                </span>
+            </div>
+            <div>
+                <span>
+                    <span>Đặt lệnh và chuyển tiền mua: </span>
+                    <span id="generalTransactionNote">Trước 14:40 ngày 29/10/2024</span>
+                </span>
+                <span>
+                    <span>Phiên khớp lệnh tiếp theo: </span>
+                    <span id="generalNextTransactionDate">30/10/2024</span>
+                </span>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div id="listInvestComponentDetailInfor">
+            <table id="tableInvestComponentDetail">
+                <thead>
+                    <tr id="headerInvestComponentDetail">
+                        <td>Cổ phiếu</td>
+                        <td>Ngành</td>
+                        <td>% Giá trị tài sản (GAV)</td>
+                        <td>Giá (ngàn đồng)</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+        </div>
+        <div class="divider"></div>
+        <div id="listInvestGroupInfor">
+            <table id="tableInvestGroup">
+                <thead> 
+                    <tr id="headerInvestGroup">
+                        <td>Tên</td>
+                        <td>% GAV</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="divider"></div>
+        <div id="listAssetPercentInfor">
+            <table id="tableAssetPercent">
+                <thead>
+                    <tr id="headerAssetPercent">
+                        <td>Tên</td>
+                        <td>% GAV</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
         <!-- Custom js body -->
         <script src="../js/common.js"></script>
         <script src="../js/handler/fmarket-handler.js"></script>

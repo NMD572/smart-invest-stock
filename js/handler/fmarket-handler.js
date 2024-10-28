@@ -1,6 +1,10 @@
 includeJs("../js/detail/call-api-fmarket.js");
 includeJs("../js/dto/CCQInfor.js");
 includeJs("../js/dto/NavCcqHistory.js");
+includeJs("../js/dto/InvestComponentDetailData.js");
+includeJs("../js/dto/AssetPercentOfCcq.js");
+includeJs("../js/dto/CcqInforToLoadDetail.js");
+includeJs("../js/dto/InvestGroupPercentOfCcq.js");
 
 const SORT_FIELD_IN_1_MONTH = "navTo1Months";
 const SORT_FIELD_IN_3_MONTH = "navTo3Months";
@@ -23,7 +27,7 @@ async function handleDataDetailCcq(ccqShortName){
     let listInvestGroupPercent = getListInvestGroup(originalCcqData);
     let listAssetPercent = getListAssetPercent(originalCcqData);
     // assign value to result
-    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,originalCcqData.data.contentHome.shortDesc,originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare);
+    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,originalCcqData.data.contentHome.shortDesc,originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare, '-');
     return result;
 }   
 
@@ -52,7 +56,7 @@ function getAndConvertDataListStockOfCcq(originalCcqData){
     let listStockOfCcq = [];
     for(let i=0,end=originalCcqData.data.productTopHoldingList.length;i<end;++i){
         let singleData = originalCcqData.data.productTopHoldingList[i];
-        let stockData = new StockInCcqData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent);
+        let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent);
         listStockOfCcq.push(stockData);
     }
     return listStockOfCcq;
@@ -73,29 +77,23 @@ function getListFundAssetTypeNeedToCompare(fundAssetType){
 }
 
 
-async function getListCcqInfor(){
-    let listStockCcq = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD, FUND_TYPE_STOCK);
-    let listBalanceCcq = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD, FUND_TYPE_BALANCED);
-    let listCcqInfor = [];
-    for(let i=0,end=listStockCcq.data.total;i<end;++i){
-        // console.log("No: "+ (i+1));
-        // console.log("Name: " + listStockCcq.data.rows[i].shortName+ " - "+ listStockCcq.data.rows[i].name);
-        // console.log("Nav: " + listStockCcq.data.rows[i].nav + " VND");
-        // console.log("Day change: "+ listStockCcq.data.rows[i].productNavChange.navTo1Months + " %");
-        // console.log("===========================================");
-        if(listStockCcq.data.rows[i].isProductIpo==false){
-            let ccq = new CCQInfor(listStockCcq.data.rows[i].id, listStockCcq.data.rows[i].shortName, listStockCcq.data.rows[i].name,listStockCcq.data.rows[i].owner.shortName, listStockCcq.data.rows[i].dataFundAssetType.code);
-            listCcqInfor.push(ccq);
+async function getListCcqInfor(listFundAssetTypeNeedToCompare){
+    let listCcqInforResult = [];
+    for(let interatorFundType = 0, sizeFundType =listFundAssetTypeNeedToCompare.length;interatorFundType<sizeFundType;++interatorFundType){
+        let listCcq = await callApiGetListInvestementCertificateSTOCK(SORT_FIELD_YTD, listFundAssetTypeNeedToCompare[interatorFundType]);
+        for(let i=0,end=listCcq.data.total;i<end;++i){
+            // console.log("No: "+ (i+1));
+            // console.log("Name: " + listStockCcq.data.rows[i].shortName+ " - "+ listStockCcq.data.rows[i].name);
+            // console.log("Nav: " + listStockCcq.data.rows[i].nav + " VND");
+            // console.log("Day change: "+ listStockCcq.data.rows[i].productNavChange.navTo1Months + " %");
+            // console.log("===========================================");
+            if(listCcq.data.rows[i].isProductIpo==false){
+                let ccq = new CCQInfor(listCcq.data.rows[i].id, listCcq.data.rows[i].shortName, listCcq.data.rows[i].name,listCcq.data.rows[i].owner.shortName, listCcq.data.rows[i].dataFundAssetType.code);
+                listCcqInforResult.push(ccq);
+            }
         }
     }
-    for(let i=0,end=listBalanceCcq.data.total;i<end;++i){
-
-        if(listBalanceCcq.data.rows[i].isProductIpo==false){
-            let ccq = new CCQInfor(listBalanceCcq.data.rows[i].id, listBalanceCcq.data.rows[i].shortName, listBalanceCcq.data.rows[i].name,listBalanceCcq.data.rows[i].owner.shortName, listBalanceCcq.data.rows[i].dataFundAssetType.code);
-            listCcqInfor.push(ccq);
-        }
-    }
-    return listCcqInfor;
+    return listCcqInforResult;
 }
 
 async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){

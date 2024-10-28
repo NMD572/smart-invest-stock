@@ -1,4 +1,4 @@
-class StockInCcqData{
+class InvestComponentDetailData{
 
     constructor(code, group, gavPercent, currentPrice, gapPriceNumber, gapPricePercent) {
         this.code = code;
