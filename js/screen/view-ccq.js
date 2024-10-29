@@ -78,7 +78,7 @@ function fillDataToPageCcqDetail(ccqDetailData){
     // basic ccq infor
     document.getElementById("ccqName").innerHTML = ccqDetailData.getExternalInfor;
     document.getElementById("ccqStrategy").innerHTML = ccqDetailData.strategy;
-    document.getElementById("ccqNearestPrice").innerHTML = ccqDetailData.curNav + " VND. Cập nhật ngày "+ ccqDetailData.curNavDate;
+    document.getElementById("ccqNearestPrice").innerHTML = ccqDetailData.curNav + " VND (Cập nhật ngày "+ ccqDetailData.curNavDate+")";
     
     // general infor
     document.getElementById("generalIssueCompany").innerHTML = ccqDetailData.ownerShortName;
