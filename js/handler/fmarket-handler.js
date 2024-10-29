@@ -19,7 +19,7 @@ const SORT_FIELD_FROM_BEGIN = "navToBeginning";
 
 async function handleDataDetailCcq(ccqShortName){
     let originalCcqData = await getDetailCcq(ccqShortName);
-    console.log(originalCcqData);
+    // console.log(originalCcqData);
     let currentFundAssetType = originalCcqData.data.dataFundAssetType.code;
     let listFundAssetTypeNeedToCompare = getListFundAssetTypeNeedToCompare(currentFundAssetType);
     
@@ -107,12 +107,21 @@ async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
     let listNavHistoryInfor = [];
     if(chartType == getChartTypeCurrencyVND()){
         for(let i=0,end=jsonDatas.data.length;i<end;++i){
-            listNavHistoryInfor.push(new NavCcqHistory(jsonDatas.data[i].nav,jsonDatas.data[i].navDate));
+            let growthFromPreviousDay = 0;
+            if(i>0){
+                growthFromPreviousDay = calculateGrowthRatioFromPreviousDay(jsonDatas.data[i-1].nav, jsonDatas.data[i].nav);
+            }
+            listNavHistoryInfor.push(new NavCcqHistory(jsonDatas.data[i].nav,jsonDatas.data[i].navDate, growthFromPreviousDay));
         }
     }else{
         let firstDayPrice = jsonDatas.data[0].nav;
         for(let i=0,end=jsonDatas.data.length;i<end;++i){
-            listNavHistoryInfor.push(new NavCcqHistory(calculateGrowthRatio(firstDayPrice,jsonDatas.data[i].nav),jsonDatas.data[i].navDate));
+            let growthFromPreviousDay = 0;
+            if(i>0){
+                growthFromPreviousDay = calculateGrowthRatioFromPreviousDay(jsonDatas.data[i-1].nav, jsonDatas.data[i].nav);
+            }
+            listNavHistoryInfor.push(new NavCcqHistory(calculateGrowthRatio(firstDayPrice,jsonDatas.data[i].nav),jsonDatas.data[i].navDate, growthFromPreviousDay));
+            
         }
     }
     // console.log("id: "+ccqId + " list data: ");
@@ -122,5 +131,10 @@ async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
 
 // format: xx.xx%
 function calculateGrowthRatio(initial, current){
-    return Math.round(((current-initial)/initial) * 10000)/100;
+    return Math.round((current/initial-1) * 10000)/100;
+}
+
+// caculate growth ratio from previous day
+function calculateGrowthRatioFromPreviousDay(previousValue, currentValue){
+    return (currentValue/previousValue-1)*100;
 }

@@ -2,6 +2,16 @@
 const FUND_TYPE_STOCK = "STOCK";                // list stock ccq (all in ccq)
 const FUND_TYPE_BALANCED = "BALANCED";          // list balanced ccq (invest in both stock and bonds)
 const FUND_TYPE_BOND = "BOND";                  // list bond ccq (all in bond and money)
+const INTEREST_RATE_NO_RISK = 6;                // Interest rate with no risk
+const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in year
+
+function getNumberOfTransactionDateInYear(){
+    return NUMBER_TRANSACTION_DATE_IN_YEAR;
+}
+
+function getInterestRateWithNoRisk(){
+    return INTEREST_RATE_NO_RISK;
+}
 
 function getFundAssetTypeStock(){
     return FUND_TYPE_STOCK;

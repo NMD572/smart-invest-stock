@@ -15,14 +15,16 @@ var reloadChartButton = document.getElementById("reloadChartButton");
 
 async function initScreen(){
     await initInfor();
-    await getDataAndDrawChart();
-    // BINDING DEFAULT PROPERTIES
-    $( '#ccqForCompareSelectBox' ).select2( {
-        theme: "bootstrap-5",
-        // width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-        placeholder: $( this ).data( 'placeholder' ),
-        closeOnSelect: false,
-    } );
+    if(currentCcqShortName){
+        await getDataAndDrawChart();
+        // BINDING DEFAULT PROPERTIES
+        $( '#ccqForCompareSelectBox' ).select2( {
+            theme: "bootstrap-5",
+            // width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            closeOnSelect: false,
+        } );
+    }
 }
 // checkboxChartTypeElement.addEventListener("change", async function(){
 //     await updateChartWhenChangeCheckBox(this);
@@ -31,16 +33,18 @@ async function initScreen(){
 async function initInfor(){
     let params = new URLSearchParams(location.search);
     currentCcqShortName = params.get('name');
-    // handle all ccq infor in the page
-    let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
-    currentCcqId = ccqDetailData.id;
-    currentFundType = ccqDetailData.fundAssetType;
-    listFundAssetTypeNeedToCompare = ccqDetailData.listFundAssetTypeNeedToCompare;
-    console.log(ccqDetailData);
-    fillDataToPageCcqDetail(ccqDetailData);
-    // handle combox ccq
-    let listCcqData = await getListCcqInfor(listFundAssetTypeNeedToCompare);
-    fillListCCQToCombobox(listCcqData, listFundAssetTypeNeedToCompare);
+    if(currentCcqShortName){
+        // handle all ccq infor in the page
+        let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
+        currentCcqId = ccqDetailData.id;
+        currentFundType = ccqDetailData.fundAssetType;
+        listFundAssetTypeNeedToCompare = ccqDetailData.listFundAssetTypeNeedToCompare;
+        // console.log(ccqDetailData);
+        fillDataToPageCcqDetail(ccqDetailData);
+        // handle combox ccq
+        let listCcqData = await getListCcqInfor(listFundAssetTypeNeedToCompare);
+        fillListCCQToCombobox(listCcqData, listFundAssetTypeNeedToCompare);
+    }
     // handle fromDate, toDate
     const currentDate = new Date();
 
@@ -56,7 +60,7 @@ async function initInfor(){
     // console.log("From date init: "+ document.getElementById("chartFromDate").value +" ;To date init: "+document.getElementById("chartToDate").value );
     
     // handle tab event
-    document.getElementById("generalInfor").click();    
+    document.getElementById("generalInfor").click();   
 }
 
 function showTabData(evt, divId) {
@@ -199,9 +203,11 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
     let listUsedIndexAllCcq = [];
     let listAllDayForShowInChart = getWorkingDays(new Date(fromDate), new Date(toDate));
     // let indexMaxLength = 0;
+    let fromDateStr = fromDate.replaceAll('-','');
+    let toDateStr = toDate.replaceAll('-','');
     for(let i=0,end=listSelectedBasicCcqInfor.length;i<end;++i){
         if(listSelectedBasicCcqInfor[i].id !='VNindex'){
-            listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await getListNavHistory(listSelectedBasicCcqInfor[i].id, fromDate.replaceAll('-',''), toDate.replaceAll('-',''), isGetAll, chartType)));
+            listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await getListNavHistory(listSelectedBasicCcqInfor[i].id, fromDateStr, toDateStr, isGetAll, chartType)));
         }
     }
     // convert to data to draw chart
@@ -226,7 +232,58 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
         }
         dataToDrawChart.push(dataCurrentDay);
     }
+    // caculate sharpe ratio and assign to listSelectedBasicCcqInfor
+    for(let i=0,end=listSelectedBasicCcqInfor.length;i<end;++i){
+        let sharpeRatio = calculateSharpeRatio(listAllCcq[i]);
+        // console.log("sharpeRatio for "+ listSelectedBasicCcqInfor[i].shortName +" is:" + sharpeRatio);
+        listSelectedBasicCcqInfor[i].sharpeRatio = sharpeRatio;
+    }
     return new DataToWriteChart(listSelectedBasicCcqInfor,dataToDrawChart);
+}
+
+function calculateSharpeRatio(ccqData){
+    // console.log(ccqData.listNavHistory);
+    let length = ccqData.listNavHistory.length;
+    if(length == 0){
+        return 0;
+    }
+    // calculate growth ratio from first date to current date
+    let growthRatioFromStartToEnd;
+    let firstDayPrice = ccqData.listNavHistory[0].navValue;
+    if(firstDayPrice !=0){
+        growthRatioFromStartToEnd = (ccqData.listNavHistory[length-1].navValue/ccqData.listNavHistory[0].navValue - 1)*100;
+    }else{
+        // if format is growth ratio --> last value is growth ratio from first date to current date
+        growthRatioFromStartToEnd = ccqData.listNavHistory[length-1].navValue;
+    }
+    // get invest rate (interest rate) with no risk
+    let interestRateWithNoRisk = getInterestRateWithNoRisk();
+    // get list growth from previous day array from data 
+    let growthFromPreviousDayArray = getListGrowthRatioFromPreviousDay(ccqData.listNavHistory);
+    // console.log(growthRatioFromStartToEnd);
+    // console.log(interestRateWithNoRisk);
+    // console.log(growthFromPreviousDayArray);
+    
+    // calculate standard deviation from growthFromPreviousDayArray
+    let standardDeviation = getStandardDeviation(growthFromPreviousDayArray)/Math.sqrt(getNumberOfTransactionDateInYear());
+    // console.log(standardDeviation);
+    return Math.round((growthRatioFromStartToEnd - interestRateWithNoRisk)/standardDeviation)/100;
+}
+
+function getListGrowthRatioFromPreviousDay  (listNavHistory){
+    let growthRatioArray = [];
+    for(let i=1,end = listNavHistory.length;i<end;++i){
+        growthRatioArray.push(listNavHistory[i].growthRatioFromPreviousDay);
+    }
+    return growthRatioArray;
+}
+
+function getStandardDeviation (array) {
+    const n = array.length;
+    // get average value of array
+    const mean = array.reduce((a, b) => a + b) / n;
+    // caculatae
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
 
