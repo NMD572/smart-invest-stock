@@ -33,10 +33,12 @@ async function handleDataDetailCcq(ccqShortName){
 
 function getListAssetPercent(originalCcqData){
     let listAssetPercent = [];
-    for(let i=0,end=originalCcqData.data.productAssetHoldingList.length;i<end;++i){
-        let singleData = originalCcqData.data.productAssetHoldingList[i];
-        let assetPercentData = new AssetPercentOfCcq(singleData.assetType.name,singleData.assetPercent);
-        listAssetPercent.push(assetPercentData);
+    if(originalCcqData.data.productAssetHoldingList){
+        for(let i=0,end=originalCcqData.data.productAssetHoldingList.length;i<end;++i){
+            let singleData = originalCcqData.data.productAssetHoldingList[i];
+            let assetPercentData = new AssetPercentOfCcq(singleData.assetType.name,singleData.assetPercent);
+            listAssetPercent.push(assetPercentData);
+        }
     }
     return listAssetPercent;
 
@@ -44,20 +46,24 @@ function getListAssetPercent(originalCcqData){
 
 function getListInvestGroup(originalCcqData){
     let listInvestGroupPercent = [];
-    for(let i=0,end=originalCcqData.data.productIndustriesHoldingList.length;i<end;++i){
-        let singleData = originalCcqData.data.productIndustriesHoldingList[i];
-        let investGroupData = new InvestGroupPercentOfCcq(singleData.industry, singleData.assetPercent);
-        listInvestGroupPercent.push(investGroupData);
+    if(originalCcqData.data.productIndustriesHoldingList){
+        for(let i=0,end=originalCcqData.data.productIndustriesHoldingList.length;i<end;++i){
+            let singleData = originalCcqData.data.productIndustriesHoldingList[i];
+            let investGroupData = new InvestGroupPercentOfCcq(singleData.industry, singleData.assetPercent);
+            listInvestGroupPercent.push(investGroupData);
+        }
     }
     return listInvestGroupPercent;
 }
 
 function getAndConvertDataListStockOfCcq(originalCcqData){
     let listStockOfCcq = [];
-    for(let i=0,end=originalCcqData.data.productTopHoldingList.length;i<end;++i){
-        let singleData = originalCcqData.data.productTopHoldingList[i];
-        let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent);
-        listStockOfCcq.push(stockData);
+    if(originalCcqData.data.productTopHoldingList){
+        for(let i=0,end=originalCcqData.data.productTopHoldingList.length;i<end;++i){
+            let singleData = originalCcqData.data.productTopHoldingList[i];
+            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent);
+            listStockOfCcq.push(stockData);
+        }
     }
     return listStockOfCcq;
 }
@@ -109,6 +115,8 @@ async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
             listNavHistoryInfor.push(new NavCcqHistory(calculateGrowthRatio(firstDayPrice,jsonDatas.data[i].nav),jsonDatas.data[i].navDate));
         }
     }
+    // console.log("id: "+ccqId + " list data: ");
+    // console.log(listNavHistoryInfor);
     return listNavHistoryInfor;
 }
 

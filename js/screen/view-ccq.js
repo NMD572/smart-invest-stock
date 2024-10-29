@@ -40,7 +40,7 @@ async function initInfor(){
     fillDataToPageCcqDetail(ccqDetailData);
     // handle combox ccq
     let listCcqData = await getListCcqInfor(listFundAssetTypeNeedToCompare);
-    fillListCCQToCombobox(listCcqData);
+    fillListCCQToCombobox(listCcqData, listFundAssetTypeNeedToCompare);
     // handle fromDate, toDate
     const currentDate = new Date();
 
@@ -54,9 +54,26 @@ async function initInfor(){
     document.getElementById("chartFromDate").value = formatDate(startCurrentMonth);
     document.getElementById("chartToDate").value = formatDate(currentDate);
     // console.log("From date init: "+ document.getElementById("chartFromDate").value +" ;To date init: "+document.getElementById("chartToDate").value );
-        
+    
+    // handle tab event
+    document.getElementById("generalInfor").click();    
 }
 
+function showTabData(evt, divId) {
+    // Hide all tabcontent
+    let tabcontent = document.getElementsByClassName("tabcontent");
+    for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    // Remove active class from all buttons
+    let tablinks = document.getElementsByTagName("button");
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+    // Show the selected tab and add the active class
+    document.getElementById(divId).style.display = "block";
+    evt.currentTarget.classList.add("active");
+}
 function fillDataToPageCcqDetail(ccqDetailData){
     // basic ccq infor
     document.getElementById("ccqName").innerHTML = ccqDetailData.getExternalInfor;
@@ -201,10 +218,7 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
 
         for(let j=0,endJ=listAllCcq.length;j<endJ;++j){
             let startIndex = listUsedIndexAllCcq[j];
-            if(startIndex == listAllCcq[j].listNavHistory.length-1){
-                continue;
-            }
-            while(startIndex < listAllCcq[j].listNavHistory.length-1 && listAllCcq[j].listNavHistory[startIndex].navDate<currentDay && listAllCcq[j].listNavHistory[startIndex+1].navDate<currentDay){
+            while(startIndex < listAllCcq[j].listNavHistory.length-1 && listAllCcq[j].listNavHistory[startIndex].navDate<currentDay && listAllCcq[j].listNavHistory[startIndex+1].navDate<=currentDay){
                 ++startIndex;
             }
             dataCurrentDay.push(listAllCcq[j].listNavHistory[startIndex].navValue);
@@ -240,9 +254,11 @@ function getAllSelectedCcqToCompare(){
     return listSelectedCCqInfor;
 }
 
-function fillListCCQToCombobox(listCcqData){
+function fillListCCQToCombobox(listCcqData, listFundAssetTypeNeedToCompare){
     let groupComboboxStockCcq = document.getElementById("groupComboboxStockCcq");
     let groupComboboxBalanceCcq = document.getElementById("groupComboboxBalancedCcq");
+    let groupComboboxBondCcq = document.getElementById("groupComboboxBondCcq");
+    
     // selectBox.select2();
     for(let i=0,end=listCcqData.length;i<end;++i){
         // remove current ccq from combobox
@@ -256,11 +272,32 @@ function fillListCCQToCombobox(listCcqData){
                     // add to balanced ccq combobox group
                     addCCQToCombox(groupComboboxBalanceCcq,listCcqData[i]);
                     break;
+                case getFundAssetTypeBond():
+                    // add to bond ccq combobox group
+                    addCCQToCombox(groupComboboxBondCcq,listCcqData[i]);
+                    break;
                 default:
                     // ignore
                     break;
             }
         }
+    }
+
+    // disable not used option group 
+    if(!listFundAssetTypeNeedToCompare.includes(getFundAssetTypeStock())){
+        // stock option group 
+        // console.log("disable stock");
+        $("#ccqForCompareSelectBox").children().remove("optgroup[id='groupComboboxStockCcq']");
+    }
+    if(!listFundAssetTypeNeedToCompare.includes(getFundAssetTypeBalanced())){
+        // balanced option group 
+        // console.log("disable balanced");
+        $("#ccqForCompareSelectBox").children().remove("optgroup[id='groupComboboxBalancedCcq']");
+    }
+    if(!listFundAssetTypeNeedToCompare.includes(getFundAssetTypeBond())){
+        // bond option group 
+        // console.log("disable bond");
+        $("#ccqForCompareSelectBox").children().remove("optgroup[id='groupComboboxBondCcq']");
     }
 }
 

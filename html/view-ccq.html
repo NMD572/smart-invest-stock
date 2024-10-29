@@ -27,9 +27,27 @@
 
     </head>
     <body onload="initScreen()">
-        <h1 class="main-title"><span>Tên: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span></h1>
-        <h2 class="sub-title"><span>Chiến lược: </span><span id="ccqStrategy">Quỹ cổ phiếu VLGF có chiến lược đầu tư chủ động, tập trung nhiều hơn vào các cổ phiếu large-cap đầu ngành, có thanh khoản cao. Quỹ sẽ lựa chọn những cổ phiếu được đánh giá tốt nhất thị trường, đồng thời linh hoạt phân bổ tài sản nhằm đạt mục tiêu tăng trưởng tài sản ròng dài hạn và gia tăng giá trị bền vững cho nhà đầu tư.</span></h2>
-        <h2 class="sub-title"><span>Giá gần nhất: </span><span id="ccqNearestPrice">12,180.63 VND (Cập nhật ngày 18/10/2024)</span></h2>
+        <header class="ccq-details-header">
+            <h1 class="ccq-name">
+                <span>Tên: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span>
+            </h1>
+        </header>
+        
+        <section class="ccq-summary">
+            <h2 class="sub-title">Chiến lược</h2>
+            <p id="ccqStrategy">Quỹ cổ phiếu VLGF có chiến lược đầu tư chủ động, tập trung nhiều hơn vào các cổ phiếu large-cap đầu ngành, có thanh khoản cao. Quỹ sẽ lựa chọn những cổ phiếu được đánh giá tốt nhất thị trường, đồng thời linh hoạt phân bổ tài sản nhằm đạt mục tiêu tăng trưởng tài sản ròng dài hạn và gia tăng giá trị bền vững cho nhà đầu tư.</p>
+        
+            <div class="ccq-key-data">
+                <div class="key-data-item">
+                    <span>Giá gần nhất:</span>
+                    <span id="ccqNearestPrice">12,180.63 VND (Cập nhật ngày 2024-10-28)</span>
+                </div>
+                <div class="key-data-item">
+                    <span>Giá dự kiến:</span>
+                    <span id="ccqPredictPrice">12,180.63 VND (Cập nhật ngày 2024-10-29)</span>
+                </div>
+            </div>
+        </section>
 
         <div class="divider"></div>
 
@@ -63,6 +81,7 @@
                 </optgroup>
                 <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
                 <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
+                <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>
             </select>
         </div>
 
@@ -74,14 +93,24 @@
         </div>
 
         <div class="chart-area" id="chart-data"></div>
-
+        
+        <div class="divider"></div>
         <h2 class="sub-title">Thông tin chi tiết</h2>
-        <div id="generalInfor">
+        <div class="tab-buttons">
+            <button onclick="showTabData(event, 'generalInfor')">Tổng quan</button>
+            <button onclick="showTabData(event, 'listInvestComponentDetailInfor')">Danh mục đầu tư lớn</button>
+            <button onclick="showTabData(event, 'listInvestGroupInfor')">Phân bổ theo ngành</button>
+            <button onclick="showTabData(event, 'listAssetPercentInfor')">Phân bổ tài sản</button>
+        </div>
+
+        <div id="generalInfor" class="tabcontent">
             <div>
                 <span>
                     <span>Tổ chức phát hành: </span>
                     <span id="generalIssueCompany">SSIAM</span>
-                </span>
+                </span>  
+            </div>
+            <div>
                 <span>
                     <span>Tổng tài sản ròng: </span>
                     <span id="generalTotalMoneyOfFund">-</span>
@@ -102,8 +131,7 @@
                 </span>
             </div>
         </div>
-        <div class="divider"></div>
-        <div id="listInvestComponentDetailInfor">
+        <div id="listInvestComponentDetailInfor" class="tabcontent">
             <table id="tableInvestComponentDetail">
                 <thead>
                     <tr id="headerInvestComponentDetail">
@@ -115,10 +143,9 @@
                 </thead>
                 <tbody>
                 </tbody>
-              </table>
+            </table>
         </div>
-        <div class="divider"></div>
-        <div id="listInvestGroupInfor">
+        <div id="listInvestGroupInfor" class="tabcontent">
             <table id="tableInvestGroup">
                 <thead> 
                     <tr id="headerInvestGroup">
@@ -130,8 +157,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="divider"></div>
-        <div id="listAssetPercentInfor">
+        <div id="listAssetPercentInfor" class="tabcontent">
             <table id="tableAssetPercent">
                 <thead>
                     <tr id="headerAssetPercent">
