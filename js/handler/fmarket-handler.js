@@ -27,7 +27,7 @@ async function handleDataDetailCcq(ccqShortName){
     let listInvestGroupPercent = getListInvestGroup(originalCcqData);
     let listAssetPercent = getListAssetPercent(originalCcqData);
     // assign value to result
-    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,originalCcqData.data.contentHome.shortDesc,originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare, '-');
+    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,(originalCcqData.data.contentHome && originalCcqData.data.contentHome!=null)?originalCcqData.data.contentHome.shortDesc:"",originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare, '-');
     return result;
 }   
 
@@ -61,7 +61,14 @@ function getAndConvertDataListStockOfCcq(originalCcqData){
     if(originalCcqData.data.productTopHoldingList){
         for(let i=0,end=originalCcqData.data.productTopHoldingList.length;i<end;++i){
             let singleData = originalCcqData.data.productTopHoldingList[i];
-            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent);
+            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent, getFundAssetTypeStock());
+            listStockOfCcq.push(stockData);
+        }
+    }
+    if(originalCcqData.data.productTopHoldingBondList){
+        for(let i=0,end=originalCcqData.data.productTopHoldingBondList.length;i<end;++i){
+            let singleData = originalCcqData.data.productTopHoldingBondList[i];
+            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent, getFundAssetTypeBond());
             listStockOfCcq.push(stockData);
         }
     }

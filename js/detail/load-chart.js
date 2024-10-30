@@ -94,7 +94,7 @@ async function drawLineChart(dataToWriteChart, columnName){
     for(let i = 0, end =dataToWriteChart.listBasicCcqInfor.length;i<end;++i){
       let seriesData = dataSet.mapAs({x: 0, value: i+1});   // map the data for each line
       series = chart.line(seriesData);                      // create the lines and name them
-      series.name(dataToWriteChart.listBasicCcqInfor[i].shortName +": " + dataToWriteChart.listBasicCcqInfor[i].sharpeRatio);
+      series.name(dataToWriteChart.listBasicCcqInfor[i].shortName +" (" + dataToWriteChart.listBasicCcqInfor[i].sharpeRatio+")");
       series.hovered().markers().type("circle").size(4);    // customize the series markers (the point when hover in the line in chart)
       series.normal().stroke(lineColors[i], 2.5);   //customize color and size of line (in graph)
     }

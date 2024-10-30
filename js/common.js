@@ -54,6 +54,22 @@ function getDataIsGetAllNavHistory(){
     return 1;
 }
 
+function nullTo0(data){
+    if(data||data == null){
+        return 0;
+    }else{
+        return data;
+    }
+}
+
+function nullToNA(data){
+    if(data||data == null){
+        return "N/A";
+    }else{
+        return data;
+    }
+}
+
 // Format the date as 'yyyy-MM-dd' 
 // without using toISOString (because timezone mismatch --> cause incorrect date)
 function formatDate(date) {

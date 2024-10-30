@@ -24,6 +24,8 @@ async function initScreen(){
             placeholder: $( this ).data( 'placeholder' ),
             closeOnSelect: false,
         } );
+    }else{
+        alert("Please input CCQ's CODE");
     }
 }
 // checkboxChartTypeElement.addEventListener("change", async function(){
@@ -130,13 +132,18 @@ function addRowToTableComponentDetail(tableBody, rowInititalData){
     const newRow = tableBody.insertRow(); 
 
     // Insert new cells (columns) into the row 
-    const cellCode = newRow.insertCell(0); 
-    const cellGroup = newRow.insertCell(1); 
-    const cellGav = newRow.insertCell(2); 
-    const cellPrice = newRow.insertCell(3); 
+    const cellCodeStock = newRow.insertCell(0); 
+    const cellCodeBond = newRow.insertCell(1); 
+    const cellGroup = newRow.insertCell(2); 
+    const cellGav = newRow.insertCell(3); 
+    const cellPrice = newRow.insertCell(4); 
 
     // Add data to the cells 
-    cellCode.textContent = rowInititalData.code; 
+    if(rowInititalData.fundType == getFundAssetTypeStock()){
+        cellCodeStock.textContent = rowInititalData.code; 
+    }else if(rowInititalData.fundType == getFundAssetTypeBond()){
+        cellCodeBond.textContent = rowInititalData.code; 
+    }
     cellGroup.textContent = rowInititalData.group;        
     cellGav.textContent = rowInititalData.gavPercent;  
     cellPrice.textContent = rowInititalData.currentPrice +" (" + rowInititalData.gapPriceNumber + "/" +rowInititalData.gapPricePercent +"%)";  
