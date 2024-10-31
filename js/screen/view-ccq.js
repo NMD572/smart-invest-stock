@@ -17,13 +17,6 @@ async function initScreen(){
     await initInfor();
     if(currentCcqShortName){
         await getDataAndDrawChart();
-        // BINDING DEFAULT PROPERTIES
-        $( '#ccqForCompareSelectBox' ).select2( {
-            theme: "bootstrap-5",
-            // width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-            placeholder: $( this ).data( 'placeholder' ),
-            closeOnSelect: false,
-        } );
     }else{
         alert("Please input CCQ's CODE");
     }
@@ -64,6 +57,14 @@ async function initInfor(){
     
     // handle tab event
     document.getElementById("generalInfor").click();   
+
+    // BINDING DEFAULT PROPERTIES FOR SELECT2 COMBOBOX
+    $( '#ccqForCompareSelectBox' ).select2( {
+        theme: "bootstrap-5",
+        // width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+        placeholder: $( this ).data( 'placeholder' ),
+        closeOnSelect: false,
+    } );
 }
 
 function showTabData(evt, divId) {
