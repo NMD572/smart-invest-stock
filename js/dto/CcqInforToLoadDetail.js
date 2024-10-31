@@ -1,6 +1,6 @@
 class CcqInforToLoadDetail{
 
-    constructor(id, shortName, code, name, ownerShortName, fundAssetType, strategy, curNav, curNavDate, closedBankInvestTimeString, tradingTimeString, listInvestComponentDetail, listInvestGroupPercent, listAssetPercent, listFundAssetTypeNeedToCompare, totalMoneyOfCcq) {
+    constructor(id, shortName, code, name, ownerShortName, fundAssetType, strategy, curNav, curNavDate, closedBankInvestTimeString, tradingTimeString, listInvestComponentDetail, listInvestGroupPercent, listAssetPercent, listFundAssetTypeNeedToCompare, totalMoneyOfCcq, listTransactionDateInWeek) {
         this.id = id;
         this.shortName = shortName;
         this.code = code;
@@ -17,6 +17,7 @@ class CcqInforToLoadDetail{
         this.listAssetPercent = listAssetPercent;
         this.listFundAssetTypeNeedToCompare = listFundAssetTypeNeedToCompare;
         this.totalMoneyOfCcq = totalMoneyOfCcq;
+        this.listTransactionDateInWeek = listTransactionDateInWeek;
     }   
     // Getter
     get getExternalInfor() {

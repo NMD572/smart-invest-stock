@@ -27,7 +27,7 @@ async function handleDataDetailCcq(ccqShortName){
     let listInvestGroupPercent = getListInvestGroup(originalCcqData);
     let listAssetPercent = getListAssetPercent(originalCcqData);
     // assign value to result
-    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,(originalCcqData.data.contentHome && originalCcqData.data.contentHome!=null)?originalCcqData.data.contentHome.shortDesc:"",originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare, '-');
+    let result = new CcqInforToLoadDetail(originalCcqData.data.id,originalCcqData.data.shortName,originalCcqData.data.code,originalCcqData.data.name,originalCcqData.data.owner.shortName,currentFundAssetType,(originalCcqData.data.contentHome && originalCcqData.data.contentHome!=null)?originalCcqData.data.contentHome.shortDesc:"",originalCcqData.data.extra.currentNAV,convertLongToDateFormat(originalCcqData.data.extra.lastNAVDate),originalCcqData.data.productTradingSession.closedBankNoteTimeString, originalCcqData.data.productTradingSession.tradingTimeString, listStockOfCcq, listInvestGroupPercent,listAssetPercent,listFundAssetTypeNeedToCompare, '-', originalCcqData.data.productTransactionDateModelList);
     return result;
 }   
 
@@ -121,6 +121,7 @@ async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
             listNavHistoryInfor.push(new NavCcqHistory(jsonDatas.data[i].nav,jsonDatas.data[i].navDate, growthFromPreviousDay));
         }
     }else{
+        console.log(ccqId);
         let firstDayPrice = jsonDatas.data[0].nav;
         for(let i=0,end=jsonDatas.data.length;i<end;++i){
             let growthFromPreviousDay = 0;

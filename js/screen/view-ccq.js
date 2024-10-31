@@ -35,7 +35,8 @@ async function initScreen(){
 async function initInfor(){
     let params = new URLSearchParams(location.search);
     currentCcqShortName = params.get('name');
-    if(currentCcqShortName){
+    if(currentCcqShortName && currentCcqShortName!= null){
+        currentCcqShortName = currentCcqShortName.toUpperCase();
         // handle all ccq infor in the page
         let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
         currentCcqId = ccqDetailData.id;
@@ -89,7 +90,8 @@ function fillDataToPageCcqDetail(ccqDetailData){
     // general infor
     document.getElementById("generalIssueCompany").innerHTML = ccqDetailData.ownerShortName;
     document.getElementById("generalTotalMoneyOfFund").innerHTML = ccqDetailData.totalMoneyOfCcq; // TODO: handle when receive data from api
-    // TODO: sharpe ratio caculate when receive data for write chart
+    document.getElementById("generalTranasctionDateInWeek").innerHTML = ccqDetailData.listTransactionDateInWeek.join(", ");
+    // Note: sharpe ratio caculate when receive data for write chart
     document.getElementById("generalTransactionNote").innerHTML = "Trước "+ ccqDetailData.closedBankInvestTimeString;
     document.getElementById("generalNextTransactionDate").innerHTML = ccqDetailData.tradingTimeString;
     // invest component detail
@@ -272,7 +274,7 @@ function calculateSharpeRatio(ccqData){
     // console.log(growthFromPreviousDayArray);
     
     // calculate standard deviation from growthFromPreviousDayArray
-    let standardDeviation = getStandardDeviation(growthFromPreviousDayArray)/Math.sqrt(getNumberOfTransactionDateInYear());
+    let standardDeviation = getStandardDeviation(growthFromPreviousDayArray)/Math.sqrt(length);
     // console.log(standardDeviation);
     return Math.round((growthRatioFromStartToEnd - interestRateWithNoRisk)/standardDeviation)/100;
 }
@@ -288,7 +290,7 @@ function getListGrowthRatioFromPreviousDay  (listNavHistory){
 function getStandardDeviation (array) {
     const n = array.length;
     // get average value of array
-    const mean = array.reduce((a, b) => a + b) / n;
+    const mean = array.reduce((a, b) => a + b) / n; 
     // caculatae
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
