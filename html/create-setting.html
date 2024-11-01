@@ -3,31 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Invest</title>
-    <script src="../js/call-api-fmarket.js"></script>
+    <title>Smart Invest Setting</title>
+
+    <!-- Library for using select2 combobox -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    
+    <!-- Styles for using select2 combobox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    
+    <!-- Styles for icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 <body onload="initScreen()">
-    <h1 class="main-title">Create your setting</h1>
+    <div>Create your setting</div>
     <div>
-        <label class="label-data">Enter your name:</label><input>
-        
+        <label>Enter your name:</label><input type ="text" id="inputFullName">
     </div>
+    
+    <div>Notify Setting</div>
+    <button id="addNotifyButton">Add Notify Setting</button>
+    <table id="tableCqqNotification">
+        <thead>
+            <tr id="headerTableCqqNotification">
+                <td>CCQ</td>
+                <td>% Loss</td>
+                <td>% Profit</td>
+                <td>Delete</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="display: none;" data-ignore=true data-rowId=0 id="rowIdNotificationStr0">
+                <td>
+                    <!--add class ccq-for-classification for format combobox-->
+                    <select class="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
+                        <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
+                            <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                        </optgroup>
+                        <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowForNotifyRowData"></optgroup>
+                        <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowForNotifyRowData"></optgroup>
+                        <optgroup label="Bond CCQ" class="groupComboboxBondCcqForNotifyRowData"></optgroup>        
+                    </select>
+                </td>
+                <td>
+                    <input type="number" value="5" class="loss-infor-to-send-notify">
+                    <select>
+                        <option>%</option>
+                        <option>Point</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" value="10" class="profit-infor-to-send-notify">
+                    <select>
+                        <option>%</option>
+                        <option>Point</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="button-delete-notify" data-rowId=0>
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <div>
-        <label class="label-data">Choose your investement-certificate:</label>
-        <select name="ccqs" id="ccqs" multiple>
-            <option value="SSISCA">SSISCA</option>
-            <option value="VLGF">Saab</option>
-            <option value="VMEFF">Opel</option>
-            <option value="DCDS">Audi</option>
-        </select>
-    </div>
-    <div>
-        <label class="label-data">Loss to send notice:</label><input>
-    </div>
-    <div>
-        <label class="label-data">Investement-certificate:</label><input>
-        <label class="label-data">Mức chốt lời:</label><input>0
+        <div>Ccq Classification</div>
+        <button id="addClassificationButton">Add Classification</button>
+        <table id="tableCqqClassification">
+            <thead>
+                <tr id="headerTableCqqClassification">
+                    <td>CCQ Classification</td>
+                    <td>List CCQ</td>
+                    <td>Note</td>
+                    <td>Compare CCQ</td>
+                    <td>Delete</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="display: none;" id="rowIdClassificationStr0" data-ignore=true>
+                    <td>
+                        <input type="Text" class ="classification-name" placeholder="Classification">
+                    </td>
+                    <td class="ccq-for-classification-column">
+                        <!--add class ccq-for-classification for format combobox-->
+                        <select class="form-select-ccq-to-classify" data-placeholder="Choose CCQ To Classify" multiple>
+                            <!-- <optgroup label="Genral Index" class="groupComboboxGeneralIndexqForClassificationRowData">
+                                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                            </optgroup> -->
+                            <optgroup label="Stock CCQ" class="groupComboboxStockCcqForClassificationRowData"></optgroup>
+                            <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqqForClassificationRowData"></optgroup>
+                            <optgroup label="Bond CCQ" class="groupComboboxBondCcqqForClassificationRowData"></optgroup>        
+                        </select>
+                    </td>
+                    <td>
+                        <input type="Text"  class ="classification-note" placeholder="Note">
+                    </td>               
+                    <td>
+                        <button class="button-view-chart" data-rowId=0>
+                            <i class="fa-solid fa-chart-line"></i>
+                        </button>
+                    </td>          
+                    <td>
+                        <button class="button-delete-classification" data-rowId=0>
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <!-- <tr>
+                    <td>
+                        <input type="Text" placeholder="Mid And Low Cap">
+                    </td>
+                    <td>
+                        <select class="form-select ccq-for-classification" data-placeholder="Choose CCQ To Classify" multiple>
+                            <optgroup label="Genral Index" id="groupComboboxGeneralIndex">
+                                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                            </optgroup>
+                            <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
+                            <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
+                            <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>        
+                        </select>
+                    </td>
+                    <td>
+                        <input type="Text" placeholder="Note">
+                    </td>
+                    <td>
+                        <i class="fas fa-trash-alt" data-row-id="1"></i>
+                    </td>
+                </tr> -->
+            </tbody>
+        </table>
     </div>
     <p>Note: You can change it at anytime you want</p>
+    <button id="submitAllButton"><i class="fa-solid fa-cloud"></i> Save To Browser</button>
+    <button id="exportAllSettingButton"><i class="fa-solid fa-file-arrow-down"></i> Export All Setting</button>
+    <script src="../js/common.js"></script>
+    <script src="../js/handler/fmarket-handler.js"></script>
+    <script src="../js/screen/create-setting.js"></script>
 </body>
 </html>

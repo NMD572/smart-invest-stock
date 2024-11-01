@@ -21,67 +21,76 @@
 
 </head>
 <body onload="initScreen()">
-    <div>Ccq Classification</div>
-    <button id="addClassificationButton">Add Classification</button>
-    <table id="tableCqqClassification">
-        <thead>
-            <tr id="headerTableCqqClassification">
-                <td>CCQ Classification</td>
-                <td>List CCQ</td>
-                <td>Note</td>
-                <td>Delete</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="display: none;">
-                <td>
-                    <input type="Text" class ="classification-name" placeholder="Classification">
-                </td>
-                <td class="ccq-for-classification-column">
-                    <!--add class ccq-for-classification for format combobox-->
-                    <select class="form-select" data-placeholder="Choose CCQ To Classify" multiple>
-                        <!-- <optgroup label="Genral Index" class="groupComboboxGeneralIndexRowData">
-                            <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
-                        </optgroup> -->
-                        <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowData"></optgroup>
-                        <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowData"></optgroup>
-                        <optgroup label="Bond CCQ" class="groupComboboxBondCcqRowData"></optgroup>        
-                    </select>
-                </td>
-                <td>
-                    <input type="Text"  class ="classification-note" placeholder="Note">
-                </td>             
-                <td>
-                    <div class="button-delete" data-rowId=0>
-                        <i class="fas fa-trash-alt"></i>
-                    </div>
-                </td>
-            </tr>
-            <!-- <tr>
-                <td>
-                    <input type="Text" placeholder="Mid And Low Cap">
-                </td>
-                <td>
-                    <select class="form-select ccq-for-classification" data-placeholder="Choose CCQ To Classify" multiple>
-                        <optgroup label="Genral Index" id="groupComboboxGeneralIndex">
-                            <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
-                        </optgroup>
-                        <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
-                        <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
-                        <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>        
-                    </select>
-                </td>
-                <td>
-                    <input type="Text" placeholder="Note">
-                </td>
-                <td>
-                    <i class="fas fa-trash-alt" data-row-id="1"></i>
-                </td>
-            </tr> -->
-        </tbody>
-    </table>
+    <div>
+        <div>Ccq Classification</div>
+        <button id="addClassificationButton">Add Classification</button>
+        <table id="tableCqqClassification">
+            <thead>
+                <tr id="headerTableCqqClassification">
+                    <td>CCQ Classification</td>
+                    <td>List CCQ</td>
+                    <td>Note</td>
+                    <td>Compare CCQ</td>
+                    <td>Delete</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="display: none;" id="rowIdStr0" data-ignore=true>
+                    <td>
+                        <input type="Text" class ="classification-name" placeholder="Classification">
+                    </td>
+                    <td class="ccq-for-classification-column">
+                        <!--add class ccq-for-classification for format combobox-->
+                        <select class="form-select-ccq-to-classify" data-placeholder="Choose CCQ To Classify" multiple>
+                            <!-- <optgroup label="Genral Index" class="groupComboboxGeneralIndexRowData">
+                                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                            </optgroup> -->
+                            <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowData"></optgroup>
+                            <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowData"></optgroup>
+                            <optgroup label="Bond CCQ" class="groupComboboxBondCcqRowData"></optgroup>        
+                        </select>
+                    </td>
+                    <td>
+                        <input type="Text"  class ="classification-note" placeholder="Note">
+                    </td>               
+                    <td>
+                        <button class="button-view-chart" data-rowId=0>
+                            <i class="fa-solid fa-chart-line"></i>
+                        </button>
+                    </td>          
+                    <td>
+                        <button class="button-delete-classification" data-rowId=0>
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <!-- <tr>
+                    <td>
+                        <input type="Text" placeholder="Mid And Low Cap">
+                    </td>
+                    <td>
+                        <select class="form-select ccq-for-classification" data-placeholder="Choose CCQ To Classify" multiple>
+                            <optgroup label="Genral Index" id="groupComboboxGeneralIndex">
+                                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                            </optgroup>
+                            <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
+                            <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
+                            <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>        
+                        </select>
+                    </td>
+                    <td>
+                        <input type="Text" placeholder="Note">
+                    </td>
+                    <td>
+                        <i class="fas fa-trash-alt" data-row-id="1"></i>
+                    </td>
+                </tr> -->
+            </tbody>
+        </table>
+    </div>
+    <button id="submitAllButton">Submit All</button>
     <script src="../js/common.js"></script>
     <script src="../js/handler/fmarket-handler.js"></script>
-    <script src="../js/screen/ccq-classification.js"></script>
+    <script src="../js/screen/create-setting.js"></script>
 </body>
 </html>

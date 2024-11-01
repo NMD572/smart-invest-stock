@@ -4,6 +4,25 @@ const FUND_TYPE_BALANCED = "BALANCED";          // list balanced ccq (invest in 
 const FUND_TYPE_BOND = "BOND";                  // list bond ccq (all in bond and money)
 const INTEREST_RATE_NO_RISK = 6;                // Interest rate with no risk
 const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in year
+// Constant data
+const CONSTANT_LIST_CCQ_CLASSIFICATION = "CONSTANT_LIST_CCQ_CLASSIFICATION";    
+
+
+function getConstantListCcqClassification(){
+    return CONSTANT_LIST_CCQ_CLASSIFICATION;
+}
+
+// Store data in local storage
+function storeDataInLocalStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+  
+// Retrieve data from local storage
+function retrieveDataFromLocalStorage(key) {
+    const data = localStorage.getItem(key);
+    console.log(data);
+    return data ? JSON.parse(data) : null;
+}
 
 function getNumberOfTransactionDateInYear(){
     return NUMBER_TRANSACTION_DATE_IN_YEAR;
