@@ -138,8 +138,6 @@ function addRowForNotify(rowData){
             }
         }
     }
-
-    dropdownCcq.classList.add("ccq-for-classification");
     // Reinitialize Select2 on the dropdown
     formatDropDownList(dropdownCcq);
     buttonDelete.dataset.rowId = currentRowNotifyId;
@@ -251,8 +249,6 @@ function addRowForClassification(rowData) {
             }
         }
     }
-
-    dropdownCcq.classList.add("ccq-for-classification");
     // Reinitialize Select2 on the dropdown
     formatDropDownList(dropdownCcq);
     buttonDelete.dataset.rowId = currentRowClassificationId;
