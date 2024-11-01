@@ -113,10 +113,9 @@ function addRowForNotify(rowData){
 
     newRow.style.display = "table-row";
     // Get the dropdown in the new row
-    let dropdownCcq = newRow.getElementsByClassName("form-select-ccq-to-classify")[0];
-    let buttonDelete = newRow.getElementsByClassName("button-delete-classification")[0];
-    let buttonViewChart = newRow.getElementsByClassName("button-view-chart")[0];
-    
+    let dropdownCcq = newRow.getElementsByClassName("form-select-ccq-to-notify")[0];
+    let buttonDelete = newRow.getElementsByClassName("button-delete-notify")[0];
+     
     if(rowData && rowData !=null){
         let listSelectedCcq = [];
         if(rowData.listSelectedCcqStr && rowData.listSelectedCcqStr != null){
@@ -141,11 +140,10 @@ function addRowForNotify(rowData){
     // Reinitialize Select2 on the dropdown
     formatDropDownList(dropdownCcq);
     buttonDelete.dataset.rowId = currentRowNotifyId;
-    buttonViewChart.dataset.rowId = currentRowNotifyId;
     // console.log("New row's id added: " + buttonDelete.dataset.rowId);
     newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
     bindEventDeleteRow(buttonDelete, TABLE_NOTIFICATION);
-    bindEventViewChartByRow(buttonViewChart);
+
 
     // Append the new row to the table
     bodyTableCqqClassificationElement.appendChild(newRow);
