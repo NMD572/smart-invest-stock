@@ -216,7 +216,7 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
     let fromDateStr = fromDate.replaceAll('-','');
     let toDateStr = toDate.replaceAll('-','');
     for(let i=0,end=listSelectedBasicCcqInfor.length;i<end;++i){
-        if(listSelectedBasicCcqInfor[i].id !='VNindex'){
+        if(listSelectedBasicCcqInfor[i].id !='Index-VNindex'){
             listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await getListNavHistory(listSelectedBasicCcqInfor[i].id, fromDateStr, toDateStr, isGetAll, chartType)));
         }
     }
@@ -308,7 +308,7 @@ function getAllSelectedCcqToCompare(){
       if (option.selected) {
         // ignore null (None value)
         if(option.value && option.value!=null && option.value!='null'){
-            if(option.value =='VNindex'){
+            if(option.value =='Index-VNindex'){
                 // if compare vnindex --> 
                 // TODO: handle vnindex
             }else{

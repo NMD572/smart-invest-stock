@@ -4,12 +4,22 @@ const FUND_TYPE_BALANCED = "BALANCED";          // list balanced ccq (invest in 
 const FUND_TYPE_BOND = "BOND";                  // list bond ccq (all in bond and money)
 const INTEREST_RATE_NO_RISK = 6;                // Interest rate with no risk
 const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in year
-// Constant data
+// Constant data for LOCAL STORAGE
 const CONSTANT_LIST_CCQ_CLASSIFICATION = "CONSTANT_LIST_CCQ_CLASSIFICATION";    
-
+const CONSTANT_LIST_CCQ_NOTIFICATION = "CONSTANT_LIST_CCQ_NOTIFICATION";    
+const CONSTANT_MY_CATEGORIES = "CONSTANT_MY_CATEGORIES";    
+// Constant data for screen
 
 function getConstantListCcqClassification(){
     return CONSTANT_LIST_CCQ_CLASSIFICATION;
+}
+
+function getConstantListCcqNotification(){
+    return CONSTANT_LIST_CCQ_NOTIFICATION;
+}
+
+function getConstantMyCategories(){
+    return CONSTANT_MY_CATEGORIES;
 }
 
 // Store data in local storage

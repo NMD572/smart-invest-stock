@@ -1,4 +1,5 @@
 includeJs("../js/dto/CcqClassificationData.js");
+includeJs("../js/dto/CcqNotificationData.js");
 
 const bodyTableCqqClassificationElement = document.getElementById('tableCqqClassification').getElementsByTagName('tbody')[0];
 const bodyTableCqqNotificationElement = document.getElementById('tableCqqNotification').getElementsByTagName('tbody')[0];
@@ -90,20 +91,46 @@ function bindEvent(){
         addRowForNotify(null);
     });
     document.getElementById("submitAllButton").addEventListener("click",function(){
-        submitClassification();
+        submitAllData();
     });
     bindEventViewChartByRow(document.getElementsByClassName("button-view-chart")[0]);
     bindEventDeleteRow(document.getElementsByClassName("button-delete-classification")[0], TABLE_CLASSIFICATION);
+    bindEventDeleteRow(document.getElementsByClassName("button-delete-notify")[0], TABLE_NOTIFICATION);
+    bindEventSetInitValueToLastedValue(document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0]);
+    // no need to click that button in disable row
+    // document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].click();
 }
 
 function loadOldSettingData(){
-
+    loadOldNotificationData();
     loadOldClassificationData();
 }
 
 /*** End Common */
 
 /** Notification */
+function loadOldNotificationData(){
+    // Retrieve old classification data
+  let listOldNotificationData = retrieveDataFromLocalStorage(getConstantListCcqNotification());
+  //   console.log(listOldClassificationData);
+    if(listOldNotificationData && listOldNotificationData != null){
+      for(let oldNotificationData of listOldNotificationData){
+          addRowForNotify(oldNotificationData);
+      }
+    }
+}
+
+function bindEventSetInitValueToLastedValue(element){
+    element.addEventListener("click",function(){
+        // when set using rowId (html parse to data-row-id)
+        let rowId = $(element).data('rowId');
+        let lastedValue = $(element).data('lastedValue');
+        console.log("Row id bind init value: " + rowId +" with value: "+ lastedValue);
+        
+        bodyTableCqqNotificationElement.getElementsByClassName("notify-init-value")[rowId].value = lastedValue;
+    });
+}
+
 function addRowForNotify(rowData){
     // Get HTML of the first row and create a new row from it
     const firstRowHTML = bodyTableCqqNotificationElement.getElementsByTagName("tr")[0].innerHTML;
@@ -115,38 +142,53 @@ function addRowForNotify(rowData){
     // Get the dropdown in the new row
     let dropdownCcq = newRow.getElementsByClassName("form-select-ccq-to-notify")[0];
     let buttonDelete = newRow.getElementsByClassName("button-delete-notify")[0];
+    let linkAutoSetDefaultValue = newRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0];
      
     if(rowData && rowData !=null){
-        let listSelectedCcq = [];
-        if(rowData.listSelectedCcqStr && rowData.listSelectedCcqStr != null){
-            listSelectedCcq = rowData.listSelectedCcqStr.split(",");
-        }
+        let ccqId = rowData.ccqId;
         //  
-        newRow.getElementsByClassName("classification-name")[0].value = rowData.classificationName;
-        newRow.getElementsByClassName("classification-note")[0].value = rowData.classificationNote;
+        newRow.getElementsByClassName("notify-init-value")[0].value = rowData.initValue;
+        newRow.getElementsByClassName("loss-point-to-send-notify")[0].value = rowData.lossPointToSendNotify;
+        newRow.getElementsByClassName("profit-point-to-send-notify")[0].value = rowData.profitPointToSendNotify;
         
-        let indexToRemove = -1;
-        // console.log(listSelectedCcq);
+        // Selected CCQ
         for (let option of dropdownCcq.options) {
             // console.log("Value: " + option.value);
-            indexToRemove = listSelectedCcq.indexOf(option.value);
-            if (indexToRemove != -1) {
+            if (option.value == ccqId) {
                 option.selected = "selected";
-                // console.log("Checked value: "+ option.value + " " + option.checked);
-                listSelectedCcq.splice(indexToRemove, 1);
+                break;
+            }
+        }
+        // Selected Loss Unit
+        let dropdownLossUnit = newRow.getElementsByClassName("form-select-loss-unit-to-send-noitfy")[0];
+        for (let option of dropdownLossUnit.options) {
+            // console.log("Value: " + option.value);
+            if (option.value == rowData.lossUnit) {
+                option.selected = "selected";
+                break;
+            }
+        }
+        // Selected Profit Unit
+        let dropdownProfitUnit = newRow.getElementsByClassName("form-select-profit-unit-to-send-noitfy")[0];
+        for (let option of dropdownProfitUnit.options) {
+            // console.log("Value: " + option.value);
+            if (option.value == rowData.profitUnit) {
+                option.selected = "selected";
+                break;
             }
         }
     }
     // Reinitialize Select2 on the dropdown
     formatDropDownList(dropdownCcq);
     buttonDelete.dataset.rowId = currentRowNotifyId;
+    linkAutoSetDefaultValue.dataset.rowId = currentRowNotifyId;
     // console.log("New row's id added: " + buttonDelete.dataset.rowId);
     newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
     bindEventDeleteRow(buttonDelete, TABLE_NOTIFICATION);
-
+    bindEventSetInitValueToLastedValue(linkAutoSetDefaultValue);
 
     // Append the new row to the table
-    bodyTableCqqClassificationElement.appendChild(newRow);
+    bodyTableCqqNotificationElement.appendChild(newRow);
 }
 
 /** End Notification */
@@ -164,24 +206,66 @@ function loadOldClassificationData(){
   }
 }
   
-function submitClassification(){
+function submitAllData(){
+    // handle category
+    let listCategory = [];
+
+    // handle notification
+    let listNotification = [];
+    let numberOfRowNotificationUserAdded = bodyTableCqqNotificationElement.getElementsByTagName("tr").length;
+    // start 1 to numberOfRowNotificationUserAdded - 1
+    for(let i = 1; i<numberOfRowNotificationUserAdded;++i){
+        let selectedCcqId;
+        let initValue = bodyTableCqqNotificationElement.getElementsByClassName("notify-init-value")[i].value;
+        let dropdownSelectedCcq = bodyTableCqqNotificationElement.getElementsByClassName("form-select-ccq-to-notify")[i];
+        for (let option of dropdownSelectedCcq.options) {
+            if (option.selected) {
+                selectedCcqId = option.value;
+                break; // because 1 row in notification setting can only pick 1 ccq
+            }
+        }
+        let lossPoint = bodyTableCqqNotificationElement.getElementsByClassName("loss-point-to-send-notify")[i].value;
+        // get loss unit in select box
+        let lossUnit;
+        let dropdownSelectedLostUnit = bodyTableCqqNotificationElement.getElementsByClassName("form-select-loss-unit-to-send-noitfy")[i];
+        for (let option of dropdownSelectedLostUnit.options) {
+            if (option.selected) {
+                lossUnit = option.value;
+                break; // because 1 row in notification setting can only pick 1 loss unit
+            }
+        }
+        let profitPoint = bodyTableCqqNotificationElement.getElementsByClassName("profit-point-to-send-notify")[i].value;
+        // get profit unit in select box
+        let profitUnit;
+        let dropdownSelectedProfitUnit = bodyTableCqqNotificationElement.getElementsByClassName("form-select-profit-unit-to-send-noitfy")[i];
+        for (let option of dropdownSelectedProfitUnit.options) {
+            if (option.selected) {
+                profitUnit = option.value;
+                break; // because 1 row in notification setting can only pick 1 profit unit
+            }
+        }
+        listNotification.push(new CcqNotificationData(selectedCcqId,initValue,lossPoint,lossUnit,profitPoint,profitUnit));
+    }
+    // handle classification
     let listClassification = [];
-    let numberOfRowUserAdded = bodyTableCqqClassificationElement.getElementsByTagName("tr").length;
-    // start 1 to numberOfRowUserAdded - 1
-    for(let i = 1; i<numberOfRowUserAdded;++i){
+    let numberOfRowClassificationUserAdded = bodyTableCqqClassificationElement.getElementsByTagName("tr").length;
+    // start 1 to numberOfRowClassificationUserAdded - 1
+    for(let i = 1; i<numberOfRowClassificationUserAdded;++i){
         let listSelectedCcq = [];
-        let classificationName = bodyTableCqqClassificationElement.getElementsByClassName("classification-name")[i].value;
         let dropdownSelectedCcq = bodyTableCqqClassificationElement.getElementsByClassName("form-select-ccq-to-classify")[i];
         for (let option of dropdownSelectedCcq.options) {
             if (option.selected) {
                 listSelectedCcq.push(option.value);
             }
         }
+        let classificationName = bodyTableCqqClassificationElement.getElementsByClassName("classification-name")[i].value;
         let classificationNote = bodyTableCqqClassificationElement.getElementsByClassName("classification-note")[i].value;
         listClassification.push(new CcqClassificationData(classificationName,listSelectedCcq.join(","),classificationNote));
     }
     // console.log(listClassification);
     storeDataInLocalStorage(getConstantListCcqClassification(),listClassification);
+    storeDataInLocalStorage(getConstantListCcqNotification(),listNotification);
+    storeDataInLocalStorage(getConstantMyCategories(),listCategory);
 }
 
 function bindEventViewChartByRow(element){
