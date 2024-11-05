@@ -101,7 +101,7 @@ async function getListCcqInfor(listFundAssetTypeNeedToCompare){
             // console.log("Day change: "+ listStockCcq.data.rows[i].productNavChange.navTo1Months + " %");
             // console.log("===========================================");
             if(listCcq.data.rows[i].isProductIpo==false){
-                let ccq = new CCQInfor(listCcq.data.rows[i].id, listCcq.data.rows[i].shortName, listCcq.data.rows[i].name,listCcq.data.rows[i].owner.shortName, listCcq.data.rows[i].dataFundAssetType.code);
+                let ccq = new CCQInfor(listCcq.data.rows[i].id, listCcq.data.rows[i].shortName, listCcq.data.rows[i].name,listCcq.data.rows[i].owner.shortName, listCcq.data.rows[i].dataFundAssetType.code, listCcq.data.rows[i].nav);
                 listCcqInforResult.push(ccq);
             }
         }
@@ -109,8 +109,21 @@ async function getListCcqInfor(listFundAssetTypeNeedToCompare){
     return listCcqInforResult;
 }
 
+async function getLastedNavOfCcqFromDataDateToPreviousDate(ccqId, dataDate){
+    let isGetAll = false;
+    let jsonDatas;
+    let previous30DayDate = new Date(dataDate);
+    previous30DayDate = convertLongToDateFormat(previous30DayDate.setDate(previous30DayDate.getDate() - 30));
+    jsonDatas = await callApiGetListNavHistoryOfCcq(ccqId, convertDateInputToDateFormatOfFmarket(previous30DayDate), convertDateInputToDateFormatOfFmarket(dataDate), isGetAll);
+    if(jsonDatas.data.length>0){
+        return jsonDatas.data[jsonDatas.data.length-1].nav;
+    }else{
+        return null;
+    }
+}
+
 async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
-    let jsonDatas = await callApiGetListNavHistoryOfCcq(ccqId, fromDate, toDate, isGetAll);
+    let jsonDatas = await callApiGetListNavHistoryOfCcq(ccqId, convertDateInputToDateFormatOfFmarket(fromDate), convertDateInputToDateFormatOfFmarket(toDate), isGetAll);
     let listNavHistoryInfor = [];
     if(chartType == getChartTypeCurrencyVND()){
         for(let i=0,end=jsonDatas.data.length;i<end;++i){
@@ -145,4 +158,12 @@ function calculateGrowthRatio(initial, current){
 // caculate growth ratio from previous day
 function calculateGrowthRatioFromPreviousDay(previousValue, currentValue){
     return (currentValue/previousValue-1)*100;
+}
+
+function convertDateInputToDateFormatOfFmarket(inputDateData){
+    if(inputDateData && inputDateData!=null){
+        return inputDateData.replaceAll('-','');
+    }else{
+        return null;
+    }
 }

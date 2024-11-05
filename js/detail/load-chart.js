@@ -6,7 +6,59 @@ const lineColors = [
   "#6495ED", "#DC143C", "#00FA9A", "#FFD700", "#4B0082"
 ];
 
-async function drawLineChart(dataToWriteChart, columnName){
+function drawPieChart(dataToWriteChart){
+  anychart.onDocumentReady(function () {
+
+    // assign data
+    var data = dataToWriteChart.listData;
+    // var data = [
+    //   {x: "A", value: 637166},
+    //   {x: "B", value: 721630},
+    //   {x: "C", value: 148662},
+    //   {x: "D", value: 78662},
+    //   {x: "E", value: 90000}
+    // ];
+
+    // create a pie chart and set the data
+    var chart = anychart.pie(data);
+  	
+    // create and configure a label
+    var label = anychart.standalones.label();
+    label.text("Total Income: "+ dataToWriteChart.totalProfitPercent +"% / " +dataToWriteChart.totalIncomeValue);
+    label.width("100%");
+    label.height("100%");
+    label.fontColor("#60727b");
+    label.hAlign("center");
+    label.vAlign("middle");
+
+  // set the label as the center content
+  chart.center().content(label);
+
+      /* set the inner radius
+      (to turn the pie chart into a doughnut chart)*/
+      chart.innerRadius("30%");
+
+      // set the position of labels
+      chart.labels().position("outside");
+
+      // configure connectors
+      chart.connectorStroke({color: "#595959", thickness: 2, dash:"2 2"});
+
+      // disable the legend
+      chart.legend(true);
+
+      // set the chart title
+      chart.title("My Category");
+
+      // set the container id
+      chart.container("chartOfMyCategoryData");
+
+      // initiate drawing the chart
+      chart.draw();
+  });
+}
+
+function drawLineChart(dataToWriteChart, columnName){
   anychart.onDocumentReady(function () {
     
     // add data (max: 70 data)

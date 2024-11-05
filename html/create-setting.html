@@ -9,7 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <!-- Library for using chart with any chart -->
+    <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
+            
     
     <!-- Styles for using select2 combobox -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
@@ -18,7 +20,14 @@
     
     <!-- Styles for icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <style>
+        #chartOfMyCategoryData {
+            width: 100%;
+            height: 1000px;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body onload="initScreen()">
     <div>Create your setting</div>
@@ -27,44 +36,52 @@
     </div>
     <div>
         <div>My Invest Category</div>
+        <button id="addCategoryButton">Add Category</button>
         <table id="tableMyCategory">
             <thead>
                 <tr id="headerTableMyCategory">
-                    <td>Category</td>
+                    <td>Category Name</td>
+                    <td>Capital</td>
                     <td>Purchase Date</td>
-                    <td>Price (auto infer when is CCQ)</td>
+                    <td>Purchase Price (auto infer when is CCQ)</td>
+                    <td>Current Price (auto infer when is CCQ)</td>
+                    <td>Profit Percent (auto infer)</td>
+                    <td>Total Income Value (auto infer)</td>
                     <td>Note</td>
                     <td>Delete</td>
                 </tr>
             </thead>
             <tbody>
-                <tr id="rowIdCategoryStr0"  data-ignore=true data-row-id=0 >
+                <!--  style="display: none;"  -->
+                <tr style="display: none;" data-ignore=true data-row-id=0 >
                     <td>
-                        <input type="text" name="product" list="testDataList" />
-                        <datalist  id="testDataList" class="form-select-ccq-for-category" data-placeholder="Choose CCQ For Category">
-                            <option value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
-                            <!-- <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
-                                <option value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
-                            </optgroup>
-                            <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowForNotifyRowData"></optgroup>
-                            <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowForNotifyRowData"></optgroup>
-                            <optgroup label="Bond CCQ" class="groupComboboxBondCcqForNotifyRowData"></optgroup>    -->
+                        <!-- Category name show for user -->
+                        <input class="category-name" list="categoryComboboxDataStr0" />
+                        <datalist  id="categoryComboboxDataStr0" class="datalist-for-category" data-placeholder="Choose CCQ For Category">
+                            <option data-value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
                         </datalist>
+                        <!-- Category value show for handle -->
+                        <input  type="hidden" class="category-value-hidden">
                     </td>
-                    <td><input type="date"></td>
-                    <td><input type="number"></td>
-                    <td><input type="text"></td>
+                    <td><input type="number" class="category-purchase-capital" ></td>
+                    <td><input type="date" class="category-purchase-date"></td>
+                    <td><input type="number" class="category-purchase-price" ></td>
+                    <td><input type="number" class="category-current-price" ></td>
+                    <td><div class="category-profit-percent">0%</div></td>
+                    <td><div class="category-income-value">0</div></td>
+                    <td><input type="text" class="catogory-note" ></td>
                     <td>
-                        <button class="button-delete-category" data-row-id=0>
+                        <button class="button-delete-category">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <button id="redloadChartOfCategoryButton">Reload Chart</button>
         <div>
             <div>Chart of My Category</div>
-
+            <div id="chartOfMyCategoryData"></div>
         </div>
     </div>
     <div>
@@ -73,16 +90,17 @@
         <table id="tableCqqNotification">
             <thead>
                 <tr id="headerTableCqqNotification">
-                    <td>CCQ</td>
-                    <td>Initial Value (Point or VND)</td>
-                    <td>Predict Value (Point or VND)</td>
+                    <td>CCQ/Index</td>
+                    <td>Initial Value</td>
+                    <td>Predict Value</td>
                     <td>Loss Config To Send Notify</td>
                     <td>Profit Config To Send Notify</td>
                     <td>Delete</td>
                 </tr>
             </thead>
             <tbody>
-                <tr style="display: none;" data-ignore=true data-rowId=0 id="rowIdNotificationStr0">
+                <!--  id="rowIdNotificationStr0"  -->
+                <tr style="display: none;" data-ignore=true data-row-id=0 >
                     <td>
                         <select class="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
                             <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
@@ -132,7 +150,7 @@
         <table id="tableCqqClassification">
             <thead>
                 <tr id="headerTableCqqClassification">
-                    <td>CCQ Classification</td>
+                    <td>CCQ Classification Name</td>
                     <td>List CCQ</td>
                     <td>Note</td>
                     <td>Compare CCQ</td>
@@ -140,7 +158,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr style="display: none;" id="rowIdClassificationStr0" data-ignore=true>
+                <!--  id="rowIdClassificationStr0"  -->
+                <tr style="display: none;" data-ignore=true>
                     <td>
                         <input type="Text" class ="classification-name" placeholder="Classification">
                     </td>
@@ -194,6 +213,7 @@
     <button id="exportAllSettingButton"><i class="fa-solid fa-file-arrow-down"></i> Export All Setting</button>
     <script src="../js/common.js"></script>
     <script src="../js/handler/fmarket-handler.js"></script>
+    <script src="../js/detail/load-chart.js"></script>
     <script src="../js/screen/create-setting.js"></script>
 </body>
 </html>

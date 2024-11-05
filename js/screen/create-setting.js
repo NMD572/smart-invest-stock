@@ -1,15 +1,24 @@
+
+// inclue dto class
 includeJs("../js/dto/CcqClassificationData.js");
 includeJs("../js/dto/CcqNotificationData.js");
+includeJs("../js/dto/MyCategoryInfor.js");
+includeJs("../js/dto/DataToWritePieChart.js");
+includeJs("../js/dto/ElementDataToWritePieChart.js");
 
 const bodyTableCqqClassificationElement = document.getElementById('tableCqqClassification').getElementsByTagName('tbody')[0];
 const bodyTableCqqNotificationElement = document.getElementById('tableCqqNotification').getElementsByTagName('tbody')[0];
+const bodyTableMyCategoryElement = document.getElementById('tableMyCategory').getElementsByTagName('tbody')[0];
+const TABLE_CATEGORY = "TABLE_CATEGORY";
 const TABLE_NOTIFICATION = "TABLE_NOTIFICATION";
 const TABLE_CLASSIFICATION = "TABLE_CLASSIFICATION";
 
-const CONSTANT_PREFIX_ID_OF_ROW_OF_CLASSIFY_TALBE = "rowIdClassificationStr";
-const CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE = "rowIdNotificationStr";
-var currentRowClassificationId = 0;
+// const CONSTANT_PREFIX_ID_OF_ROW_OF_CLASSIFY_TALBE = "rowIdClassificationStr";
+// const CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE = "rowIdNotificationStr";
+const CONSTANT_PREFIX_ID_OF_DATA_LIST_CATEGORY = "categoryComboboxDataStr";
+var currentRowCategoryId = 0;
 var currentRowNotifyId = 0;
+var currentRowClassificationId = 0;
 async function initScreen(){
     await initInfor();
 }
@@ -17,7 +26,7 @@ async function initScreen(){
 async function initInfor(){
     await fillComboboxData();
     bindEvent();
-    loadOldSettingData();
+    await loadOldData();
 }
 /*** Common */
 async function fillComboboxData(){
@@ -27,6 +36,10 @@ async function fillComboboxData(){
     listFundAssetTypeNeedToLoad.push(getFundAssetTypeBond());
     let listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
 
+    // dataset for category
+    let datalistCcqForCategory = document.getElementById("categoryComboboxDataStr0");
+    
+    
     // group combobox for notify
     let groupComboboxStockCcqForNotify = document.getElementsByClassName("groupComboboxStockCcqRowForNotifyRowData")[0];
     let groupComboboxBalanceCcqForNotify = document.getElementsByClassName("groupComboboxBalancedCcqRowForNotifyRowData")[0];
@@ -39,6 +52,8 @@ async function fillComboboxData(){
     
     
     for(let i=0,end=listCcqData.length;i<end;++i){
+        
+        addCCQToDatalist(datalistCcqForCategory,listCcqData[i]);
         switch(listCcqData[i].fundAssetType) {
             case getFundAssetTypeStock():
                 // add to stock ccq combobox group
@@ -60,6 +75,15 @@ async function fillComboboxData(){
                 break;
         }
     }
+}
+function addCCQToDatalist(datalistCcq, ccqInfor){
+    var newOpt = document.createElement('option');
+    // newOpt.value = ccqInfor.id;
+    newOpt.innerHTML = ccqInfor.shortName;
+    newOpt.title = ccqInfor.getExternalInfor;
+    newOpt.dataset.value = ccqInfor.id;
+    newOpt.dataset.price = ccqInfor.currentNav;
+    datalistCcq.appendChild(newOpt);
 }
 
 function addCCQToCombox(groupCcq, ccqInfor) {
@@ -84,35 +108,256 @@ function bindEvent(){
     // BINDING DEFAULT PROPERTIES
     // formatDropDownList('.ccq-for-classification');
     // formatDropDownList('.ccq-for-classification');
+    document.getElementById("addCategoryButton").addEventListener("click", async function(){
+        await addRowForCategory(null);
+    });
     document.getElementById("addClassificationButton").addEventListener("click",function(){
         addRowForClassification(null);
     });
     document.getElementById("addNotifyButton").addEventListener("click",function(){
         addRowForNotify(null);
     });
+    document.getElementById("redloadChartOfCategoryButton").addEventListener("click",function(){
+        reloadMyCategoryPieChart();
+    });
     document.getElementById("submitAllButton").addEventListener("click",function(){
         submitAllData();
     });
+    
     bindEventViewChartByRow(document.getElementsByClassName("button-view-chart")[0]);
     bindEventDeleteRow(document.getElementsByClassName("button-delete-classification")[0], TABLE_CLASSIFICATION);
     bindEventDeleteRow(document.getElementsByClassName("button-delete-notify")[0], TABLE_NOTIFICATION);
+    bindEventDeleteRow(document.getElementsByClassName("button-delete-category")[0], TABLE_CATEGORY);
     bindEventSetInitValueToLastedValue(document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0]);
+    bindEventFocusOutWhenInputCategoryName(document.getElementsByClassName("category-name")[0]);
+    bindEventReloadCategoryInforInChart(document.getElementsByClassName("category-purchase-date")[0]);
+    bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-purchase-price")[0]);
+    bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-current-price")[0]);
+    
     // no need to click that button in disable row
     // document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].click();
 }
 
-function loadOldSettingData(){
-    loadOldNotificationData();
+async function loadOldData(){
+    // load full name of current user
+    // Retrieve old fullname of user
+    let userFullName = retrieveDataFromLocalStorage(getConstantMyFullName());
+    document.getElementById("inputFullName").value = userFullName;
+    // load old setting data
+    await loadOldCategoryData();
+    await loadOldNotificationData();
     loadOldClassificationData();
+
 }
 
 /*** End Common */
 
+/*** Category */
+function reloadMyCategoryPieChart(){
+    document.getElementById("chartOfMyCategoryData").innerHTML = "";
+    let numberOfRowCategorynUserAdded = bodyTableMyCategoryElement.getElementsByTagName("tr").length;
+    if(numberOfRowCategorynUserAdded>1){
+        // because: default it have 1 empty row
+        let totalCapitalValue= 0, totalIncomeVal = 0, totalProfitPercenet = 0;
+        let listElementDataToDrawPieChart = [];
+        let mapCategoryCapitalData = [];
+        let mapCategoryIncomeData = [];
+        for(let i =1; i<numberOfRowCategorynUserAdded; ++i){
+            let categoryName = bodyTableMyCategoryElement.getElementsByClassName("category-name")[i].value;
+            let purchaseCapital = nullTo0(bodyTableMyCategoryElement.getElementsByClassName("category-purchase-capital")[i].value);
+            let incomeValue = nullTo0(bodyTableMyCategoryElement.getElementsByClassName("category-income-value")[i].innerHTML);
+            
+            let previousCapitalVal = 0;
+            let previousIncomeVal = 0;
+            if(mapCategoryCapitalData[categoryName]){
+                previousCapitalVal = mapCategoryCapitalData[categoryName];
+                previousIncomeVal = mapCategoryIncomeData[categoryName];
+            }
+            mapCategoryCapitalData[categoryName] = previousCapitalVal + Number(purchaseCapital);
+            mapCategoryIncomeData[categoryName] = previousIncomeVal + Number(incomeValue);
+        }
+        console.log(mapCategoryCapitalData);
+        console.log(mapCategoryIncomeData);
+        for (let categoryKey of Object.keys(mapCategoryCapitalData)) {
+            let totalCapitalValueOfSingleCategory = mapCategoryCapitalData[categoryKey];
+            let totalIncomeValueOfSingleCategory = mapCategoryIncomeData[categoryKey];
+            let profitValue = totalIncomeValueOfSingleCategory - totalCapitalValueOfSingleCategory;
+            let profitPercent = Math.round((profitValue/totalCapitalValueOfSingleCategory)*10000)/100;
+            let labelForPieChart = categoryKey + " (" + profitPercent + "% / "+profitValue+")";
+            listElementDataToDrawPieChart.push(new ElementDataToWritePieChart(labelForPieChart,totalIncomeValueOfSingleCategory));
+            totalCapitalValue += totalCapitalValueOfSingleCategory;
+            totalIncomeVal += totalIncomeValueOfSingleCategory;
+        }
+        totalCapitalValue = Math.round(totalCapitalValue*100)/100;
+        totalIncomeVal = Math.round(totalIncomeVal*100)/100;
+        totalProfitPercenet = Math.round(totalIncomeVal/totalCapitalValue*100)/100;
+        let dataToWriteChart = new DataToWritePieChart(totalProfitPercenet, totalIncomeVal, listElementDataToDrawPieChart);
+        console.log(dataToWriteChart);
+        drawPieChart(dataToWriteChart)
+    }
+}
+async function loadOldCategoryData(){
+    // Retrieve old category data
+    let listOldCategoryData = retrieveDataFromLocalStorage(getConstantMyCategories());
+    //   console.log(listOldClassificationData);
+    if(listOldCategoryData && listOldCategoryData != null){
+      for(let oldCategoryData of listOldCategoryData){
+          await addRowForCategory(oldCategoryData);
+      }
+      reloadMyCategoryPieChart();
+    }
+}
+
+function bindEventReloadCategoryInforInChart(element){
+    element.addEventListener("focusout", async function(){
+        let currentRow = element.parentElement.parentElement;  // get row id in tr element
+        await inferCategoryInfor(currentRow);
+    });
+}
+async function addRowForCategory(rowData){
+    // Get HTML of the first row and create a new row from it
+    const firstRowHTML = bodyTableMyCategoryElement.getElementsByTagName("tr")[0].innerHTML;
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = firstRowHTML;
+    ++currentRowCategoryId;
+
+    newRow.style.display = "table-row";
+    // Get the dropdown in the new row
+    let buttonDelete = newRow.getElementsByClassName("button-delete-category")[0];
+    let inputCategoryName = newRow.getElementsByClassName("category-name")[0];
+    let inputPurchaseDate = newRow.getElementsByClassName("category-purchase-date")[0];
+    let inputPurchaseCapital = newRow.getElementsByClassName("category-purchase-capital")[0];
+    let datalistForCategory = newRow.getElementsByClassName("datalist-for-category")[0];
+    datalistForCategory.setAttribute("id",CONSTANT_PREFIX_ID_OF_DATA_LIST_CATEGORY + currentRowCategoryId);
+    inputCategoryName.setAttribute("list",CONSTANT_PREFIX_ID_OF_DATA_LIST_CATEGORY + currentRowCategoryId);
+    // console.log("New row's id added: " + buttonDelete.dataset.rowId);
+    newRow.dataset.rowId = currentRowCategoryId;
+    
+    // bind event
+    bindEventDeleteRow(buttonDelete, TABLE_CATEGORY);
+    bindEventFocusOutWhenInputCategoryName(inputCategoryName);
+    bindEventReloadCategoryInforInChart(inputPurchaseDate);
+    bindEventReloadCategoryInforInChart(inputPurchaseCapital);
+    bindEventReCaculateProfitAndIncome(newRow.getElementsByClassName("category-purchase-price")[0]);
+    bindEventReCaculateProfitAndIncome(newRow.getElementsByClassName("category-current-price")[0]);
+
+    // Append the new row to the table
+    bodyTableMyCategoryElement.appendChild(newRow);
+
+    // assign data
+    if(rowData && rowData !=null){
+        let categoryId = rowData.categoryId;
+        let categoryName = categoryId;
+        let purchaseCapital = rowData.purchaseCapital;
+        let purchaseDate = rowData.purchaseDate;
+        let purchasePrice = rowData.purchasePrice;
+        let currentPrice = rowData.currentPrice;
+        let note = rowData.note;
+        // infer category name
+        for (let option of newRow.querySelectorAll('#' + datalistForCategory.getAttribute("id") + ' option')) {
+            // console.log("Value: " + option.value);
+            if (option.dataset.value == categoryId) {
+                categoryName = option.innerHTML;
+                break;
+            }
+        }
+        newRow.getElementsByClassName("category-name")[0].value = categoryName;
+        newRow.getElementsByClassName("category-value-hidden")[0].value = categoryId;
+        
+        newRow.getElementsByClassName("category-purchase-capital")[0].value = purchaseCapital;
+        newRow.getElementsByClassName("category-purchase-date")[0].value = purchaseDate;
+        newRow.getElementsByClassName("category-purchase-price")[0].value = purchasePrice;
+        newRow.getElementsByClassName("category-current-price")[0].value = currentPrice;
+        newRow.getElementsByClassName("catogory-note")[0].value = note;
+        
+        await inferCategoryInfor(newRow);
+        calculateProfitAndIncome(newRow);
+    }
+}
+
+function bindEventFocusOutWhenInputCategoryName(element){
+    element.addEventListener("focusout", async function(){
+        // assign id of option to input tag
+        let currentRow = element.parentElement.parentElement;  // get row id in tr element
+        let listId = element.getAttribute('list'),
+            options = bodyTableMyCategoryElement.querySelectorAll('#' + listId + ' option'),
+            hiddenInput = currentRow.getElementsByClassName("category-value-hidden")[0],
+            inputValue = element.value;
+
+        hiddenInput.value = inputValue;
+        
+        for(var i = 0; i < options.length; i++) {
+            if(options[i].innerText === inputValue) {
+                hiddenInput.value = options[i].dataset.value;
+                isSelectInDropDownList = true;
+                break;
+            }
+        }
+    
+        await inferCategoryInfor(currentRow);
+        
+    });
+}
+
+function bindEventReCaculateProfitAndIncome(element){
+    element.addEventListener("focusout", function(){
+        let currentRow = element.parentElement.parentElement;  // get tr element of current selected row
+        calculateProfitAndIncome(currentRow);
+    });
+}
+
+function calculateProfitAndIncome(currentRow){
+    let profitPercenetElement = currentRow.getElementsByClassName("category-profit-percent")[0];
+    let incomeValueElement = currentRow.getElementsByClassName("category-income-value")[0];
+    let purchaseCapitalValue = nullTo0(currentRow.getElementsByClassName("category-purchase-capital")[0].value);
+    let purchasePriceVal = currentRow.getElementsByClassName("category-purchase-price")[0].value;
+    let currentPriceVal = currentRow.getElementsByClassName("category-current-price")[0].value;
+    let incomePercenet = 0;
+    let totalIncomeVal = 0;
+    if(purchasePriceVal && purchasePriceVal != null && currentPriceVal && currentPriceVal!=null){
+        incomePercenet = Math.round((currentPriceVal/purchasePriceVal - 1)*10000)/100;
+        totalIncomeVal = Math.round((Number(purchaseCapitalValue)*100 + incomePercenet*purchaseCapitalValue)*100)/10000;
+    }
+    profitPercenetElement.innerHTML = incomePercenet +"%";
+    incomeValueElement.innerHTML = totalIncomeVal;
+    
+}
+
+
+
+async function inferCategoryInfor(currentRow){
+    // bind event infer purchase price, current price and profit percent
+    // if have purchase date data and selected data in select box
+    let categoryValueInputHiddenValue = currentRow.getElementsByClassName("category-value-hidden")[0].value;
+    let categoryNameInputValue = currentRow.getElementsByClassName("category-name")[0].value;
+    let purchaseDateData = currentRow.getElementsByClassName("category-purchase-date")[0].value;
+    let isSelectInDropDownList = categoryValueInputHiddenValue != categoryNameInputValue;
+    // console.log(isSelectInDropDownList + categoryValueInputHiddenValue+ purchaseDateData);
+    if(isSelectInDropDownList === true && categoryValueInputHiddenValue !='Index-VNindex' && purchaseDateData && purchaseDateData !=null){
+        let purchasePrice = await getLastedNavOfCcqFromDataDateToPreviousDate(categoryValueInputHiddenValue,purchaseDateData);
+        let currentPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(categoryValueInputHiddenValue,formatDate(new Date()));
+        let incomePercenet = 0;
+        if(currentPrice && currentPrice !=null && purchasePrice && purchasePrice != null){
+            incomePercenet = Math.round((currentPrice/purchasePrice - 1)*10000)/100;
+        }
+        let purchasePriceElement = currentRow.getElementsByClassName("category-purchase-price")[0];
+        let currentPriceElement = currentRow.getElementsByClassName("category-current-price")[0];
+        purchasePriceElement.value = purchasePrice;
+        currentPriceElement.value = currentPrice;
+        calculateProfitAndIncome(currentRow);
+        // disable purchasePriceElement, currentPriceElement (user can not edit that field)
+        purchasePriceElement.disabled = true;
+        currentPriceElement.disabled = true;
+    }
+            
+}
+/*** End Category */
 /** Notification */
-function loadOldNotificationData(){
-    // Retrieve old classification data
-  let listOldNotificationData = retrieveDataFromLocalStorage(getConstantListCcqNotification());
-  //   console.log(listOldClassificationData);
+
+async function loadOldNotificationData(){
+    // Retrieve old notification data
+    let listOldNotificationData = retrieveDataFromLocalStorage(getConstantListCcqNotification());
+    //   console.log(listOldClassificationData);
     if(listOldNotificationData && listOldNotificationData != null){
       for(let oldNotificationData of listOldNotificationData){
           addRowForNotify(oldNotificationData);
@@ -183,7 +428,8 @@ function addRowForNotify(rowData){
     buttonDelete.dataset.rowId = currentRowNotifyId;
     linkAutoSetDefaultValue.dataset.rowId = currentRowNotifyId;
     // console.log("New row's id added: " + buttonDelete.dataset.rowId);
-    newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
+    // newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
+    newRow.dataset.rowId = currentRowNotifyId;
     bindEventDeleteRow(buttonDelete, TABLE_NOTIFICATION);
     bindEventSetInitValueToLastedValue(linkAutoSetDefaultValue);
 
@@ -207,9 +453,22 @@ function loadOldClassificationData(){
 }
   
 function submitAllData(){
+    // get name
+    let myFullName = document.getElementById("inputFullName").value;
+
     // handle category
     let listCategory = [];
-
+    let numberOfRowCategorynUserAdded = bodyTableMyCategoryElement.getElementsByTagName("tr").length;
+    // start 1 to numberOfRowCategorynUserAdded - 1
+    for(let i =1; i<numberOfRowCategorynUserAdded; ++i){
+        let categoryId = bodyTableMyCategoryElement.getElementsByClassName("category-value-hidden")[i].value;
+        let purchaseCapital = bodyTableMyCategoryElement.getElementsByClassName("category-purchase-capital")[i].value;
+        let purchaseDate = bodyTableMyCategoryElement.getElementsByClassName("category-purchase-date")[i].value;
+        let purchasePrice = bodyTableMyCategoryElement.getElementsByClassName("category-purchase-price")[i].value;
+        let currentPrice = bodyTableMyCategoryElement.getElementsByClassName("category-current-price")[i].value;
+        let note = bodyTableMyCategoryElement.getElementsByClassName("catogory-note")[i].value;
+        listCategory.push(new MyCategoryInfor(categoryId, purchaseCapital, purchaseDate, purchasePrice, currentPrice, note));
+    }
     // handle notification
     let listNotification = [];
     let numberOfRowNotificationUserAdded = bodyTableCqqNotificationElement.getElementsByTagName("tr").length;
@@ -266,6 +525,7 @@ function submitAllData(){
     storeDataInLocalStorage(getConstantListCcqClassification(),listClassification);
     storeDataInLocalStorage(getConstantListCcqNotification(),listNotification);
     storeDataInLocalStorage(getConstantMyCategories(),listCategory);
+    storeDataInLocalStorage(getConstantMyFullName(),myFullName);
 }
 
 function bindEventViewChartByRow(element){
@@ -277,23 +537,24 @@ function bindEventViewChartByRow(element){
 
 function bindEventDeleteRow(element, tableName){
     element.addEventListener("click",function(){
-        let rowId = $(element).data('rowId');
+        // let rowId = $(element).data('rowId');
         // console.log("Row id deleted: " + rowId);
-        let prefixRowId, tableBodyToDeleteRow;
+        let bodyTableToDeleteRow;
         switch(tableName){
             case TABLE_CLASSIFICATION:
-                prefixRowId = CONSTANT_PREFIX_ID_OF_ROW_OF_CLASSIFY_TALBE;
-                tableBodyToDeleteRow = bodyTableCqqClassificationElement;    
+                bodyTableToDeleteRow = bodyTableCqqClassificationElement;    
                 break;
             case TABLE_NOTIFICATION:
-                prefixRowId = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE;
-                tableBodyToDeleteRow = bodyTableCqqNotificationElement;    
+                bodyTableToDeleteRow = bodyTableCqqNotificationElement;    
                 break;
+            case TABLE_CATEGORY:
+                bodyTableToDeleteRow = bodyTableMyCategoryElement;
             default:
                 // ignore
                 break;
         }
-        tableBodyToDeleteRow.removeChild(document.getElementById(prefixRowId+rowId));
+        //element.parentElement.parentElement to get tr element which contain button delete
+        bodyTableToDeleteRow.removeChild(element.parentElement.parentElement);
     });
 }
 
@@ -336,7 +597,8 @@ function addRowForClassification(rowData) {
     buttonDelete.dataset.rowId = currentRowClassificationId;
     buttonViewChart.dataset.rowId = currentRowClassificationId;
     // console.log("New row's id added: " + buttonDelete.dataset.rowId);
-    newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_CLASSIFY_TALBE+currentRowClassificationId;
+    // newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_CLASSIFY_TALBE+currentRowClassificationId;
+    newRow.dataset.rowId = currentRowClassificationId;
     bindEventDeleteRow(buttonDelete, TABLE_CLASSIFICATION);
     bindEventViewChartByRow(buttonViewChart);
 

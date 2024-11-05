@@ -181,7 +181,7 @@ async function getDataAndDrawChart(){
     // write new chart
     let dataToDrawChart = await handleChartData(listSelectedBasicCcqInfor,fromDate,toDate,getDataIsNotGetAllNavHistory(),columnType);
     // console.log("final result "+ dataToDrawChart);
-    await drawLineChart(dataToDrawChart, columnName);
+    drawLineChart(dataToDrawChart, columnName);
 }
 
 function getWorkingDays(fromDate, toDate){
@@ -190,10 +190,7 @@ function getWorkingDays(fromDate, toDate){
     let currentDate = fromDate;
     while (currentDate <= toDate)  {  
 
-        let weekDay = currentDate.getDay();
-        // console.log("Day: "+ currentDate + " Weekday:" + weekDay);
-        if(weekDay != 0 && weekDay != 6){  
-            // ignore saturday (6) and sunday (0) (because it is not working)
+        if(isWorkingDay(currentDate)){  
             // format date: yyyy-MM-dd to show in chart
             listAllWorkingDateInRange.push(formatDate(currentDate));
         }
@@ -213,11 +210,9 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
     let listUsedIndexAllCcq = [];
     let listAllDayForShowInChart = getWorkingDays(new Date(fromDate), new Date(toDate));
     // let indexMaxLength = 0;
-    let fromDateStr = fromDate.replaceAll('-','');
-    let toDateStr = toDate.replaceAll('-','');
     for(let i=0,end=listSelectedBasicCcqInfor.length;i<end;++i){
         if(listSelectedBasicCcqInfor[i].id !='Index-VNindex'){
-            listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await getListNavHistory(listSelectedBasicCcqInfor[i].id, fromDateStr, toDateStr, isGetAll, chartType)));
+            listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await getListNavHistory(listSelectedBasicCcqInfor[i].id, fromDate, toDate, isGetAll, chartType)));
         }
     }
     // convert to data to draw chart

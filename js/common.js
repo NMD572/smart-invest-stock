@@ -8,7 +8,12 @@ const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in
 const CONSTANT_LIST_CCQ_CLASSIFICATION = "CONSTANT_LIST_CCQ_CLASSIFICATION";    
 const CONSTANT_LIST_CCQ_NOTIFICATION = "CONSTANT_LIST_CCQ_NOTIFICATION";    
 const CONSTANT_MY_CATEGORIES = "CONSTANT_MY_CATEGORIES";    
+const CONSTANT_MY_FULL_NAME = "CONSTANT_MY_FULL_NAME";    
 // Constant data for screen
+
+function getConstantMyFullName(){
+    return CONSTANT_MY_FULL_NAME;
+}
 
 function getConstantListCcqClassification(){
     return CONSTANT_LIST_CCQ_CLASSIFICATION;
@@ -84,10 +89,10 @@ function getDataIsGetAllNavHistory(){
 }
 
 function nullTo0(data){
-    if(data||data == null){
-        return 0;
-    }else{
+    if(data && data != null){
         return data;
+    }else{
+        return 0;
     }
 }
 
@@ -113,4 +118,10 @@ function convertLongToDateFormat(timeInLongFormat){
     // 1729789200000
     let dateObj = new Date(timeInLongFormat);   // convert to date object
     return formatDate(dateObj);                 // format to 'yyyy-MM-dd' format
+}
+
+function isWorkingDay(inputDate){
+    // console.log("Day: "+ inputDate + " Weekday:" + weekDay);
+    // saturday (6) and sunday (0) (because it is not working)
+    return (inputDate.getDay() != 0 && inputDate.getDay() != 6);
 }
