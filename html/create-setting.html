@@ -104,7 +104,7 @@
                     <td>
                         <select class="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
                             <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
-                                <option value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
+                                <option data-price = 12345 value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
                             </optgroup>
                             <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowForNotifyRowData"></optgroup>
                             <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowForNotifyRowData"></optgroup>
@@ -113,7 +113,7 @@
                     </td>
                     <td>
                         <input class="notify-init-value" type="number" value=0>
-                        <a class="notify-set-default-init-value-to-lasted-value-link" data-row-id = 0 data-lasted-value=0>Set Lasted Value</a>
+                        <a class="notify-set-default-init-value-to-lasted-value-link" data-lasted-value=0>Set Lasted Value</a>
                     </td>
                     <td>
                         <!-- just show (cannot edit value )-->
@@ -165,6 +165,7 @@
                     </td>
                     <td class="ccq-for-classification-column">
                         <select class="form-select-ccq-to-classify" data-placeholder="Choose CCQ To Classify" multiple>
+                            <!--  data-price = 12345 -->
                             <optgroup label="Stock CCQ" class="groupComboboxStockCcqForClassificationRowData"></optgroup>
                             <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqqForClassificationRowData"></optgroup>
                             <optgroup label="Bond CCQ" class="groupComboboxBondCcqqForClassificationRowData"></optgroup>        

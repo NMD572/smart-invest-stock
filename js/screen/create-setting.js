@@ -91,6 +91,7 @@ function addCCQToCombox(groupCcq, ccqInfor) {
     newOpt.value = ccqInfor.id;
     newOpt.innerHTML = ccqInfor.shortName;
     newOpt.title = ccqInfor.getExternalInfor;
+    newOpt.dataset.price = ccqInfor.currentNav;
     groupCcq.appendChild(newOpt);
 }
 
@@ -130,6 +131,7 @@ function bindEvent(){
     bindEventDeleteRow(document.getElementsByClassName("button-delete-category")[0], TABLE_CATEGORY);
     bindEventSetInitValueToLastedValue(document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0]);
     bindEventFocusOutWhenInputCategoryName(document.getElementsByClassName("category-name")[0]);
+    bindEventChangeWhenSelectCcqOrIndex(document.getElementsByClassName("form-select-ccq-to-notify")[0]);
     bindEventReloadCategoryInforInChart(document.getElementsByClassName("category-purchase-date")[0]);
     bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-purchase-price")[0]);
     bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-current-price")[0]);
@@ -181,7 +183,7 @@ function reloadMyCategoryPieChart(){
         for (let categoryKey of Object.keys(mapCategoryCapitalData)) {
             let totalCapitalValueOfSingleCategory = mapCategoryCapitalData[categoryKey];
             let totalIncomeValueOfSingleCategory = mapCategoryIncomeData[categoryKey];
-            let profitValue = totalIncomeValueOfSingleCategory - totalCapitalValueOfSingleCategory;
+            let profitValue = Math.round((totalIncomeValueOfSingleCategory - totalCapitalValueOfSingleCategory)*100)/100;
             let profitPercent = Math.round((profitValue/totalCapitalValueOfSingleCategory)*10000)/100;
             let labelForPieChart = categoryKey + " (" + profitPercent + "% / "+profitValue+")";
             listElementDataToDrawPieChart.push(new ElementDataToWritePieChart(labelForPieChart,totalIncomeValueOfSingleCategory));
@@ -336,7 +338,6 @@ async function inferCategoryInfor(currentRow){
     if(isSelectInDropDownList === true && categoryValueInputHiddenValue !='Index-VNindex' && purchaseDateData && purchaseDateData !=null){
         let purchasePrice = await getLastedNavOfCcqFromDataDateToPreviousDate(categoryValueInputHiddenValue,purchaseDateData);
         let currentPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(categoryValueInputHiddenValue,formatDate(new Date()));
-        let incomePercenet = 0;
         if(currentPrice && currentPrice !=null && purchasePrice && purchasePrice != null){
             incomePercenet = Math.round((currentPrice/purchasePrice - 1)*10000)/100;
         }
@@ -353,6 +354,31 @@ async function inferCategoryInfor(currentRow){
 }
 /*** End Category */
 /** Notification */
+function bindEventChangeWhenSelectCcqOrIndex(element){
+    /***
+     * 
+     As of version 4.0.0, events such as select2-selecting, no longer work. They are renamed as follows:
+
+        select2-close is now select2:close
+        select2-open is now select2:open
+        select2-opening is now select2:opening
+        select2-selecting is now select2:selecting
+        select2-removed is now select2:removed
+        select2-removing is now select2:unselecting
+     */
+    $(element).on("select2:selecting", function(e) {
+        console.log("Change CCQ");
+        // assign id of option to input tag
+        let currentRow = element.parentElement.parentElement;  // get row id in tr element
+        for(let option of element.options) {
+            if(option.selected) {
+                console.log(option.dataset);
+                currentRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].dataset.lastedValue = option.dataset.price;
+                break;
+            }
+        }
+    });
+}
 
 async function loadOldNotificationData(){
     // Retrieve old notification data
@@ -368,11 +394,11 @@ async function loadOldNotificationData(){
 function bindEventSetInitValueToLastedValue(element){
     element.addEventListener("click",function(){
         // when set using rowId (html parse to data-row-id)
-        let rowId = $(element).data('rowId');
-        let lastedValue = $(element).data('lastedValue');
-        console.log("Row id bind init value: " + rowId +" with value: "+ lastedValue);
+        let currentRow = element.parentElement.parentElement;
+        let lastedValue = element.dataset.lastedValue;
+        console.log("Row id bind init value: " + currentRow.dataset.rowId +" with value: "+ lastedValue);
         
-        bodyTableCqqNotificationElement.getElementsByClassName("notify-init-value")[rowId].value = lastedValue;
+        currentRow.getElementsByClassName("notify-init-value")[0].value = lastedValue;
     });
 }
 
@@ -388,7 +414,7 @@ function addRowForNotify(rowData){
     let dropdownCcq = newRow.getElementsByClassName("form-select-ccq-to-notify")[0];
     let buttonDelete = newRow.getElementsByClassName("button-delete-notify")[0];
     let linkAutoSetDefaultValue = newRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0];
-     
+    
     if(rowData && rowData !=null){
         let ccqId = rowData.ccqId;
         //  
@@ -426,13 +452,12 @@ function addRowForNotify(rowData){
     // Reinitialize Select2 on the dropdown
     formatDropDownList(dropdownCcq);
     buttonDelete.dataset.rowId = currentRowNotifyId;
-    linkAutoSetDefaultValue.dataset.rowId = currentRowNotifyId;
     // console.log("New row's id added: " + buttonDelete.dataset.rowId);
     // newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
     newRow.dataset.rowId = currentRowNotifyId;
     bindEventDeleteRow(buttonDelete, TABLE_NOTIFICATION);
     bindEventSetInitValueToLastedValue(linkAutoSetDefaultValue);
-
+    bindEventChangeWhenSelectCcqOrIndex(newRow.getElementsByClassName("form-select-ccq-to-notify")[0]);
     // Append the new row to the table
     bodyTableCqqNotificationElement.appendChild(newRow);
 }
