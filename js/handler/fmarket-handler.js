@@ -61,14 +61,14 @@ function getAndConvertDataListStockOfCcq(originalCcqData){
     if(originalCcqData.data.productTopHoldingList){
         for(let i=0,end=originalCcqData.data.productTopHoldingList.length;i<end;++i){
             let singleData = originalCcqData.data.productTopHoldingList[i];
-            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent, getFundAssetTypeStock());
+            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent, getComponentTypeStock(), singleData.updateAt);
             listStockOfCcq.push(stockData);
         }
     }
     if(originalCcqData.data.productTopHoldingBondList){
         for(let i=0,end=originalCcqData.data.productTopHoldingBondList.length;i<end;++i){
             let singleData = originalCcqData.data.productTopHoldingBondList[i];
-            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent, getFundAssetTypeBond());
+            let stockData = new InvestComponentDetailData(singleData.stockCode,singleData.industry,singleData.netAssetPercent, singleData.price, singleData.changeFromPrevious, singleData.changeFromPreviousPercent, getComponentTypeBond(), singleData.updateAt);
             listStockOfCcq.push(stockData);
         }
     }

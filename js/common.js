@@ -1,15 +1,42 @@
 
+// CONSTANT DATA TO API INTERAGE
 const FUND_TYPE_STOCK = "STOCK";                // list stock ccq (all in ccq)
 const FUND_TYPE_BALANCED = "BALANCED";          // list balanced ccq (invest in both stock and bonds)
 const FUND_TYPE_BOND = "BOND";                  // list bond ccq (all in bond and money)
-const INTEREST_RATE_NO_RISK = 6;                // Interest rate with no risk
-const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in year
 // Constant data for LOCAL STORAGE
 const CONSTANT_LIST_CCQ_CLASSIFICATION = "CONSTANT_LIST_CCQ_CLASSIFICATION";    
 const CONSTANT_LIST_CCQ_NOTIFICATION = "CONSTANT_LIST_CCQ_NOTIFICATION";    
 const CONSTANT_MY_CATEGORIES = "CONSTANT_MY_CATEGORIES";    
 const CONSTANT_MY_FULL_NAME = "CONSTANT_MY_FULL_NAME";    
 // Constant data for screen
+
+// Constant data for predict
+const INTEREST_RATE_NO_RISK = 6;                // Interest rate with no risk
+const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in year
+const PRICE_MOVEMENT_FOR_TOP_3_STOCK_COMPONENT = 1.5; // Interest rate with no risk
+const PRICE_MOVEMENT_FOR_TOP_4_TO_N_STOCK_COMPONENT = 0.75; // Interest rate with no risk
+const RATIO_FOR_BIG_STOCK_IMPACT = 2; // Interest rate with no risk
+
+
+function getComponentTypeStock(){
+    return FUND_TYPE_STOCK;
+}
+
+function getComponentTypeBond(){
+    return FUND_TYPE_BOND;
+}
+
+function getConstantPriceMovementForTop3Stock(){
+    return PRICE_MOVEMENT_FOR_TOP_3_STOCK_COMPONENT;
+}
+
+function getConstantPriceMovementForTop4ToNStock(){
+    return PRICE_MOVEMENT_FOR_TOP_4_TO_N_STOCK_COMPONENT;
+}
+
+function getRatioForBigStockImpact(){
+    return RATIO_FOR_BIG_STOCK_IMPACT;
+}
 
 function getConstantMyFullName(){
     return CONSTANT_MY_FULL_NAME;

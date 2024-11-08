@@ -5,197 +5,30 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>View Detail CCQ</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f4f8;
-                margin: 0;
-                padding: 0;
-            }
-            .sub-title {
-                font-size: 26px;
-                color: #444;
-                text-align: center;
-                margin: 20px 0;
-            }
-            /* Tab container */
-            .tab-buttons {
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-            /* Style tab buttons */
-            button {
-                background-color: #2196F3;
-                color: white;
-                padding: 12px 24px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 16px;
-                transition: all 0.3s ease;
-            }
-            button:hover, button.active {
-                background-color: #1769aa;
-                transform: scale(1.05);
-            }
-            /* Tab content style */
-            .tabcontent {
-                display: none;
-                padding: 20px;
-                max-width: 800px;
-                margin: auto;
-                background-color: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                transition: opacity 0.3s ease-in-out;
-            }
-            .tabcontent.active {
-                display: block;
-                opacity: 1;
-            }
-            /* Content inside tabs */
-            .tabcontent span {
-                display: block;
-                font-size: 16px;
-                color: #555;
-                margin-bottom: 8px;
-            }
-            table {
-                width: 100%;
-                margin-top: 15px;
-                border-collapse: collapse;
-                background-color: #fafafa;
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            table thead {
-                background-color: #2196F3;
-                color: white;
-            }
-            table th, table td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-                font-size: 14px;
-            }
-            table tbody tr:hover {
-                background-color: #e3f2fd;
-            }
-        </style>
-        
-        
-
     </head>
     <body>
-        <h2 class="sub-title">Thông tin chi tiết</h2>
-        <div>
-            <button id="tabGeneralInforButton" onclick="showTabData(event, 'generalInfor')">Tổng quan</button>
-            <button id="tabComponentDetailInforButton" onclick="showTabData(event, 'listInvestComponentDetailInfor')">Danh mục đầu tư lớn</button>
-            <button id="tabInvestGroupInforButton" onclick="showTabData(event, 'listInvestGroupInfor')">Phân bổ theo ngành</button>
-            <button id="tabAssetPercentInforButton" onclick="showTabData(event, 'listAssetPercentInfor')">Phân bổ tài sản</button>
-        </div>
-        <div id="generalInfor" class="tabcontent">
-            <div>
-                <span>
-                    <span>Tổ chức phát hành: </span>
-                    <span id="generalIssueCompany">SSIAM</span>
-                </span>
-                <span>
-                    <span>Tổng tài sản ròng: </span>
-                    <span id="generalTotalMoneyOfFund">-</span>
-                </span>
-                <span>
-                    <span>Chỉ số Sharpe ratio: </span>
-                    <span id="generalSharpeRatio">1</span>
-                </span>
-            </div>
-            <div>
-                <span>
-                    <span>Đặt lệnh và chuyển tiền mua: </span>
-                    <span id="generalTransactionNote">Trước 14:40 ngày 29/10/2024</span>
-                </span>
-                <span>
-                    <span>Phiên khớp lệnh tiếp theo: </span>
-                    <span id="generalNextTransactionDate">30/10/2024</span>
-                </span>
-            </div>
-        </div>
-        <div id="listInvestComponentDetailInfor" class="tabcontent">
-            <table id="tableInvestComponentDetail">
-                <thead>
-                    <tr id="headerInvestComponentDetail">
-                        <td>Cổ phiếu</td>
-                        <td>Ngành</td>
-                        <td>% Giá trị tài sản (GAV)</td>
-                        <td>Giá (ngàn đồng)</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Data</td>
-                        <td>Data</td>
-                        <td>Data</td>
-                        <td>Data</td>
-                    </tr>
-                </tbody>
-              </table>
-        </div>
-        <div id="listInvestGroupInfor" class="tabcontent">
-            <table id="tableInvestGroup">
-                <thead> 
-                    <tr id="headerInvestGroup">
-                        <td>Tên</td>
-                        <td>% GAV</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Data</td>
-                        <td>Data</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="listAssetPercentInfor" class="tabcontent">
-            <table id="tableAssetPercent">
-                <thead>
-                    <tr id="headerAssetPercent">
-                        <td>Tên</td>
-                        <td>% GAV</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Data</td>
-                        <td>Data</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        
         <script>
-            function showTabData(evt, divId) {
-                // Declare all variables
-                var i, tabcontent, tablinks;
-
-                // Get all elements with class="tabcontent" and hide them
-                tabcontent = document.getElementsByClassName("tabcontent");
-                for (i = 0; i < tabcontent.length; i++) {
-                    tabcontent[i].style.display = "none";
+            let listResult=[];
+            let generalArray=[];
+            let firstArray=[1,2];
+            let secondArray=[3,4];
+            let thirdArray=[5,6];
+            generalArray.push(firstArray);
+            generalArray.push(secondArray);
+            generalArray.push(thirdArray);
+            calc(generalArray,0,1);
+            console.log(listResult);
+            function calc(generalArray, currentRow, previousMultipleResult){
+                for(let number of generalArray[currentRow]){
+                    let multipleResult = previousMultipleResult*number;
+                    if(currentRow<generalArray.length - 1){
+                        calc(generalArray,currentRow+1,multipleResult);
+                    }else{
+                        listResult.push(multipleResult);
+                    }
                 }
-
-                // Get all elements with class="tablinks" and remove the class "active"
-                tablinks = document.getElementsByClassName("tablinks");
-                for (i = 0; i < tablinks.length; i++) {
-                    tablinks[i].className = tablinks[i].className.replace(" active", "");
-                }
-
-                // Show the current tab, and add an "active" class to the button that opened the tab
-                document.getElementById(divId).style.display = "block";
-                evt.currentTarget.className += " active";
             }
-            document.getElementById("tabGeneralInforButton").click();
         </script>
     </body>
 </html>
