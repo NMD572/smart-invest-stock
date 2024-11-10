@@ -16,7 +16,21 @@ const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in
 const PRICE_MOVEMENT_FOR_TOP_3_STOCK_COMPONENT = 1.5; // Interest rate with no risk
 const PRICE_MOVEMENT_FOR_TOP_4_TO_N_STOCK_COMPONENT = 0.75; // Interest rate with no risk
 const RATIO_FOR_BIG_STOCK_IMPACT = 2; // Interest rate with no risk
+// Constant data for asset type
+const ASSET_TYPE_CASH = "CASH";  
 
+function getDetailAssetTypeStock(){
+    return FUND_TYPE_STOCK;
+}
+
+function getDetailAssetTypeCash(){
+    return ASSET_TYPE_CASH;
+}
+
+function getDetailAssetTypeBond(){
+    return FUND_TYPE_BOND;
+}
+//
 
 function getComponentTypeStock(){
     return FUND_TYPE_STOCK;
@@ -152,3 +166,8 @@ function isWorkingDay(inputDate){
     // saturday (6) and sunday (0) (because it is not working)
     return (inputDate.getDay() != 0 && inputDate.getDay() != 6);
 }
+
+function calculateAverage(array) {
+    const sum = array.reduce((acc, val) => acc + val, 0);
+    return array.length ? sum / array.length : 0;
+  }

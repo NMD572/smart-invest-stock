@@ -9,7 +9,7 @@
     <body>
         
         <script>
-            let listResult=[];
+            let listResultData=[];
             let generalArray=[];
             let firstArray=[1,2];
             let secondArray=[3,4];
@@ -17,13 +17,13 @@
             generalArray.push(firstArray);
             generalArray.push(secondArray);
             generalArray.push(thirdArray);
-            calc(generalArray,0,1);
-            console.log(listResult);
-            function calc(generalArray, currentRow, previousMultipleResult){
+            calcAllCaseOfListImpactPercentOfEachComponent(generalArray,0,1,listResultData);
+            console.log(listResultData);
+            function calcAllCaseOfListImpactPercentOfEachComponent(generalArray, currentRow, previousMultipleResult, listResult){
                 for(let number of generalArray[currentRow]){
                     let multipleResult = previousMultipleResult*number;
                     if(currentRow<generalArray.length - 1){
-                        calc(generalArray,currentRow+1,multipleResult);
+                        calcAllCaseOfListImpactPercentOfEachComponent(generalArray,currentRow+1,multipleResult, listResult);
                     }else{
                         listResult.push(multipleResult);
                     }

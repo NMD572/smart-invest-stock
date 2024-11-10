@@ -1,5 +1,6 @@
 // Handle class
 includeJs("../js/detail/load-chart.js");
+includeJs("../js/handler/predict-handler.js");
 // DTO
 includeJs("../js/dto/CCQInfor.js");
 includeJs("../js/dto/BasicCCQInfor.js");
@@ -10,6 +11,7 @@ var currentCcqId;
 var currentCcqShortName;
 var currentFundType;
 var listFundAssetTypeNeedToCompare;
+var ccqDetailData;
 // var checkboxChartTypeElement = document.getElementById("checkboxChartType");
 var reloadChartButton = document.getElementById("reloadChartButton");
 
@@ -31,10 +33,13 @@ async function initInfor(){
     if(currentCcqShortName && currentCcqShortName!= null){
         currentCcqShortName = currentCcqShortName.toUpperCase();
         // handle all ccq infor in the page
-        let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
+        ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
+        let defaultPredictStockMarketBigImpact = 0;
+        // let predictValue = ;
         currentCcqId = ccqDetailData.id;
         currentFundType = ccqDetailData.fundAssetType;
         listFundAssetTypeNeedToCompare = ccqDetailData.listFundAssetTypeNeedToCompare;
+        
         // console.log(ccqDetailData);
         fillDataToPageCcqDetail(ccqDetailData);
         // handle combox ccq
@@ -65,6 +70,20 @@ async function initInfor(){
         placeholder: $( this ).data( 'placeholder' ),
         closeOnSelect: false,
     } );
+    document.getElementById("predictStockMarketBigImpact").addEventListener('change', async function(){
+        reloadCalculateImpactEvent(document.getElementById("predictStockMarketBigImpact"));
+    });
+    document.getElementById("predictStockMarketBigImpact").checked=true;
+    reloadCalculateImpactEvent(document.getElementById("predictStockMarketBigImpact"));
+}
+
+async function reloadCalculateImpactEvent(isPredictImpactFlagElement){
+    let isPredictStockMarketBigImpact = false;
+    if(isPredictImpactFlagElement.checked){
+        isPredictStockMarketBigImpact = true;
+    }
+    let predictImpactPercent = await predictPriceOfStockOrBalancedCcq(ccqDetailData,isPredictStockMarketBigImpact);
+    document.getElementById("ccqPredictPrice").innerText = predictImpactPercent + " (Cập nhật ngày " + formatDate(new Date()) + ")";
 }
 
 function showTabData(evt, divId) {

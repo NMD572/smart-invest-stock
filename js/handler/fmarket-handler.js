@@ -36,7 +36,7 @@ function getListAssetPercent(originalCcqData){
     if(originalCcqData.data.productAssetHoldingList){
         for(let i=0,end=originalCcqData.data.productAssetHoldingList.length;i<end;++i){
             let singleData = originalCcqData.data.productAssetHoldingList[i];
-            let assetPercentData = new AssetPercentOfCcq(singleData.assetType.name,singleData.assetPercent);
+            let assetPercentData = new AssetPercentOfCcq(singleData.assetType.code,singleData.assetType.name,singleData.assetPercent);
             listAssetPercent.push(assetPercentData);
         }
     }
