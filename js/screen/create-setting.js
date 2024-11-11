@@ -1,4 +1,6 @@
-
+// include external handler class
+includeJs("../js/handler/fmarket-handler.js");
+includeJs("../js/detail/load-chart.js");
 // inclue dto class
 includeJs("../js/dto/CcqClassificationData.js");
 includeJs("../js/dto/CcqNotificationData.js");

@@ -1,5 +1,6 @@
 // Handle class
 includeJs("../js/detail/load-chart.js");
+includeJs("../js/handler/fmarket-handler.js");
 includeJs("../js/handler/predict-handler.js");
 // DTO
 includeJs("../js/dto/CCQInfor.js");
