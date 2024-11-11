@@ -192,7 +192,7 @@ function reloadMyCategoryPieChart(){
         }
         totalCapitalValue = Math.round(totalCapitalValue*100)/100;
         totalIncomeVal = Math.round(totalIncomeVal*100)/100;
-        totalProfitPercenet = Math.round(totalIncomeVal/totalCapitalValue*100)/100;
+        totalProfitPercenet = Math.round((totalIncomeVal/totalCapitalValue)*10000)/100;
         let dataToWriteChart = new DataToWritePieChart(totalProfitPercenet, totalIncomeVal, listElementDataToDrawPieChart);
         console.log(dataToWriteChart);
         drawPieChart(dataToWriteChart)
