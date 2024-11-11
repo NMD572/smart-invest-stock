@@ -34,9 +34,8 @@ async function predictPriceOfStockOrBalancedCcq(ccqInfor, isStockMarketInBigImpa
         result =  Math.round(impactStockPercent*100)/100;
     }
     if(result>0){
-        result = "+"+result;
+        result = result;
     }
-    result += "%";
     // console.log(result);
     return result;
 }

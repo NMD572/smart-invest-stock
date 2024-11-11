@@ -83,6 +83,10 @@ async function reloadCalculateImpactEvent(isPredictImpactFlagElement){
         isPredictStockMarketBigImpact = true;
     }
     let predictImpactPercent = await predictPriceOfStockOrBalancedCcq(ccqDetailData,isPredictStockMarketBigImpact);
+    if(predictImpactPercent>0){
+        predictImpactPercent = "+" + predictImpactPercent;
+    }
+    predictImpactPercent += "%";
     document.getElementById("ccqPredictPrice").innerText = predictImpactPercent + " (Cập nhật ngày " + formatDate(new Date()) + ")";
 }
 
