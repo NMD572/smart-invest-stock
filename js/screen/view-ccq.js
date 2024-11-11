@@ -71,19 +71,19 @@ async function initInfor(){
         placeholder: $( this ).data( 'placeholder' ),
         closeOnSelect: false,
     } );
-    document.getElementById("predictStockMarketBigImpact").addEventListener('change', async function(){
-        reloadCalculateImpactEvent(document.getElementById("predictStockMarketBigImpact"));
-    });
-    document.getElementById("predictStockMarketBigImpact").checked=true;
-    reloadCalculateImpactEvent(document.getElementById("predictStockMarketBigImpact"));
+    // document.getElementById("predictStockMarketBigImpact").addEventListener('change', async function(){
+    //     reloadCalculateImpactEvent(document.getElementById("predictStockMarketBigImpact"));
+    // });
+    // document.getElementById("predictStockMarketBigImpact").checked=true;
+    reloadCalculateImpactEvent();
 }
 
-async function reloadCalculateImpactEvent(isPredictImpactFlagElement){
-    let isPredictStockMarketBigImpact = false;
-    if(isPredictImpactFlagElement.checked){
-        isPredictStockMarketBigImpact = true;
-    }
-    let predictImpactPercent = await predictPriceOfStockOrBalancedCcq(ccqDetailData,isPredictStockMarketBigImpact);
+async function reloadCalculateImpactEvent(){
+    // let isPredictStockMarketBigImpact = false;
+    // if(isPredictImpactFlagElement.checked){
+    //     isPredictStockMarketBigImpact = true;
+    // }
+    let predictImpactPercent = await predictPriceOfStockOrBalancedCcq(ccqDetailData);
     if(predictImpactPercent>0){
         predictImpactPercent = "+" + predictImpactPercent;
     }

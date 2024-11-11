@@ -1,4 +1,4 @@
-async function predictPriceOfStockOrBalancedCcq(ccqInfor, isStockMarketInBigImpact){
+async function predictPriceOfStockOrBalancedCcq(ccqInfor){
     let result;
     let listStockComponent = [];
     let listBondComponent = [];
@@ -17,7 +17,7 @@ async function predictPriceOfStockOrBalancedCcq(ccqInfor, isStockMarketInBigImpa
         }
     }
     
-    let impactStockPercent = predictImpactPercentStockComponent(listStockComponent, isStockMarketInBigImpact);
+    let impactStockPercent = predictImpactPercentStockComponent(listStockComponent);
     // console.log(impactStockPercent);
     if(ccqInfor.fundAssetType == getComponentTypeStock() || ccqInfor.fundAssetType == getFundAssetTypeBalanced()){
         // get all stock percent
@@ -41,29 +41,32 @@ async function predictPriceOfStockOrBalancedCcq(ccqInfor, isStockMarketInBigImpa
 }
 
 function predictImpactPercentStockComponent(listStockComponent, isStockMarketInBigImpact){
-    let listAllMultiple = [];
-    let listImpactPercentOfEachComponent = [];
+    let result=0;
+    // let listAllMultiple = [];
+    // let listImpactPercentOfEachComponent = [];
     for(let i = 0, end = listStockComponent.length;i<end;++i){
-        let impactPercentOfSingleComponent = [];
         let stockComponent = listStockComponent[i];
-        let impactFromPreviousComponentList = getImpactPercentOfStockComponent(i,isStockMarketInBigImpact,stockComponent.updateAt);
-        // gavPercent: 10 %(unit: %)
-        // changeFromPreviousPercent: 0.5 % (unit: %)
-        let smallGavImpactPercent = 0;
-        if(stockComponent.gavPercent-impactFromPreviousComponentList>0){
-            // when decrease gav percent --> 0 is min value --> So can not calculate when gav percent after is negative
-            smallGavImpactPercent = Math.round((stockComponent.gavPercent-impactFromPreviousComponentList)*stockComponent.gapPricePercent*100)/100;
-        }
-        let bigGavImpactPercent = Math.round((stockComponent.gavPercent+impactFromPreviousComponentList)*stockComponent.gapPricePercent*100)/100;
-        // impact percent: 0.95% (unit: %)
-        impactPercentOfSingleComponent.push(smallGavImpactPercent);
-        impactPercentOfSingleComponent.push(bigGavImpactPercent);
-        listImpactPercentOfEachComponent.push(impactPercentOfSingleComponent);
+        // let impactPercentOfSingleComponent = [];
+        // let impactFromPreviousComponentList = getImpactPercentOfStockComponent(i,isStockMarketInBigImpact,stockComponent.updateAt);
+        // // gavPercent: 10 %(unit: %)
+        // // changeFromPreviousPercent: 0.5 % (unit: %)
+        // let smallGavImpactPercent = 0;
+        // if(stockComponent.gavPercent-impactFromPreviousComponentList>0){
+        //     // when decrease gav percent --> 0 is min value --> So can not calculate when gav percent after is negative
+        //     smallGavImpactPercent = Math.round((stockComponent.gavPercent-impactFromPreviousComponentList)*stockComponent.gapPricePercent*100)/100;
+        // }
+        // let bigGavImpactPercent = Math.round((stockComponent.gavPercent+impactFromPreviousComponentList)*stockComponent.gapPricePercent*100)/100;
+        // // impact percent: 0.95% (unit: %)
+        // impactPercentOfSingleComponent.push(smallGavImpactPercent);
+        // impactPercentOfSingleComponent.push(bigGavImpactPercent);
+        // listImpactPercentOfEachComponent.push(impactPercentOfSingleComponent);
+        result += stockComponent.gavPercent*stockComponent.gapPricePercent;
     }
-    calcAllCaseOfListImpactPercentOfEachComponent(listImpactPercentOfEachComponent, 0, 0, listAllMultiple);
+    // calcAllCaseOfListImpactPercentOfEachComponent(listImpactPercentOfEachComponent, 0, 0, listAllMultiple);
     // 10000: % gav + % gap percent
-    // bỏ 1 % --> /100
-    return calculateAverage(listAllMultiple)/100;
+    // bỏ 1 % --> /100    
+    // return calculateAverage(listAllMultiple)/100;
+    return result/100;
 }
 
 function calcAllCaseOfListImpactPercentOfEachComponent(generalArray, currentRow, previousMultipleResult, listResult){
