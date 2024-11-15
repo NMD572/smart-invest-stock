@@ -35,6 +35,12 @@
         <label>Enter your name:</label><input type ="text" id="inputFullName">
     </div>
     <div>
+        <div>Notify time setting</div>
+        <label>Start time (HH:MM):</label><input type ="text" id="inputStartNotifyTime">
+        <label>End time (HH:MM):</label><input type ="text" id="inputEndNotifyTime">
+        <label>Gap time (S):</label><input type ="number" id="inputGapNotifyTime">
+    </div>
+    <div>
         <div>My Invest Category</div>
         <button id="addCategoryButton">Add Category</button>
         <table id="tableMyCategory">
@@ -131,14 +137,14 @@
                         <input type="number" value="5" class="loss-point-to-send-notify">
                         <select class="form-select-loss-unit-to-send-noitfy">
                             <option value="%" label ="%"></option>
-                            <option value="P" label ="Point"></option>
+                            <!-- <option value="P" label ="Point"></option> -->
                         </select>
                     </td>
                     <td>
                         <input type="number" value="10" class="profit-point-to-send-notify">
                         <select class="form-select-profit-unit-to-send-noitfy">
                             <option value="%" label ="%"></option>
-                            <option value="P" label ="Point"></option>
+                            <!-- <option value="P" label ="Point"></option> -->
                         </select>
                     </td>
                     <td>

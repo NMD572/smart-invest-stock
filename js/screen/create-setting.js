@@ -107,6 +107,15 @@ function formatDropDownList(element){
     } );
 }
 
+function formatDropDownListSelectOne(element){
+    $( element ).select2( {
+        theme: "bootstrap-5",
+        // width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+        placeholder: $( this ).data( 'placeholder' ),
+        closeOnSelect: true,
+    } );
+}
+
 function bindEvent(){
     // BINDING DEFAULT PROPERTIES
     // formatDropDownList('.ccq-for-classification');
@@ -368,17 +377,20 @@ function bindEventChangeWhenSelectCcqOrIndex(element){
         select2-removed is now select2:removed
         select2-removing is now select2:unselecting
      */
-    $(element).on("select2:selecting", function(e) {
+    $(element).on("select2:close", function(e) {
         console.log("Change CCQ");
         // assign id of option to input tag
         let currentRow = element.parentElement.parentElement;  // get row id in tr element
-        for(let option of element.options) {
-            if(option.selected) {
-                console.log(option.dataset);
-                currentRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].dataset.lastedValue = option.dataset.price;
-                break;
-            }
-        }
+        // console.log($(element).find(':selected').data('price'));
+        currentRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].dataset.lastedValue = $(element).find(':selected').data('price');
+        // for(let option of element.options) {
+        //     if(option.selected) {
+        //         console.log(option);
+        //         console.log(option.dataset);
+        //         currentRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].dataset.lastedValue = option.dataset.price;
+        //         break;
+        //     }
+        // }
     });
 }
 
@@ -452,7 +464,7 @@ function addRowForNotify(rowData){
         }
     }
     // Reinitialize Select2 on the dropdown
-    formatDropDownList(dropdownCcq);
+    formatDropDownListSelectOne(dropdownCcq);
     buttonDelete.dataset.rowId = currentRowNotifyId;
     // console.log("New row's id added: " + buttonDelete.dataset.rowId);
     // newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
