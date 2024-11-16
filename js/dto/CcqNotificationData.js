@@ -1,8 +1,8 @@
 class CcqNotificationData{
 
-    constructor(ccqId, initValue, lossPointToSendNotify, lossUnit, profitPointToSendNotify, profitUnit) {
+    constructor(ccqId, initValueHidden, lossPointToSendNotify, lossUnit, profitPointToSendNotify, profitUnit) {
         this.ccqId = ccqId;
-        this.initValue = initValue;
+        this.initValueHidden = initValueHidden;
         this.lossPointToSendNotify = lossPointToSendNotify;
         this.lossUnit = lossUnit;
         this.profitPointToSendNotify = profitPointToSendNotify;

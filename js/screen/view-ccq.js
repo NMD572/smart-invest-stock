@@ -35,8 +35,6 @@ async function initInfor(){
         currentCcqShortName = currentCcqShortName.toUpperCase();
         // handle all ccq infor in the page
         ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
-        let defaultPredictStockMarketBigImpact = 0;
-        // let predictValue = ;
         currentCcqId = ccqDetailData.id;
         currentFundType = ccqDetailData.fundAssetType;
         listFundAssetTypeNeedToCompare = ccqDetailData.listFundAssetTypeNeedToCompare;

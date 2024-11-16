@@ -1,6 +1,7 @@
 // include external handler class
 includeJs("../js/handler/fmarket-handler.js");
 includeJs("../js/detail/load-chart.js");
+includeJs("../js/handler/predict-handler.js");
 // inclue dto class
 includeJs("../js/dto/CcqClassificationData.js");
 includeJs("../js/dto/CcqNotificationData.js");
@@ -126,8 +127,8 @@ function bindEvent(){
     document.getElementById("addClassificationButton").addEventListener("click",function(){
         addRowForClassification(null);
     });
-    document.getElementById("addNotifyButton").addEventListener("click",function(){
-        addRowForNotify(null);
+    document.getElementById("addNotifyButton").addEventListener("click", async function(){
+        await addRowForNotify(null);
     });
     document.getElementById("redloadChartOfCategoryButton").addEventListener("click",function(){
         reloadMyCategoryPieChart();
@@ -140,12 +141,13 @@ function bindEvent(){
     bindEventDeleteRow(document.getElementsByClassName("button-delete-classification")[0], TABLE_CLASSIFICATION);
     bindEventDeleteRow(document.getElementsByClassName("button-delete-notify")[0], TABLE_NOTIFICATION);
     bindEventDeleteRow(document.getElementsByClassName("button-delete-category")[0], TABLE_CATEGORY);
-    bindEventSetInitValueToLastedValue(document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0]);
+    // bindEventSetInitValueToLastedValue(document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0]);
     bindEventFocusOutWhenInputCategoryName(document.getElementsByClassName("category-name")[0]);
     bindEventChangeWhenSelectCcqOrIndex(document.getElementsByClassName("form-select-ccq-to-notify")[0]);
     bindEventReloadCategoryInforInChart(document.getElementsByClassName("category-purchase-date")[0]);
     bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-purchase-price")[0]);
     bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-current-price")[0]);
+    bindEventReCaculateProfitAndIncome(document.getElementsByClassName("category-purchase-capital")[0]);
     
     // no need to click that button in disable row
     // document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].click();
@@ -189,8 +191,8 @@ function reloadMyCategoryPieChart(){
             mapCategoryCapitalData[categoryName] = previousCapitalVal + Number(purchaseCapital);
             mapCategoryIncomeData[categoryName] = previousIncomeVal + Number(incomeValue);
         }
-        console.log(mapCategoryCapitalData);
-        console.log(mapCategoryIncomeData);
+        // console.log(mapCategoryCapitalData);
+        // console.log(mapCategoryIncomeData);
         for (let categoryKey of Object.keys(mapCategoryCapitalData)) {
             let totalCapitalValueOfSingleCategory = mapCategoryCapitalData[categoryKey];
             let totalIncomeValueOfSingleCategory = mapCategoryIncomeData[categoryKey];
@@ -205,7 +207,7 @@ function reloadMyCategoryPieChart(){
         totalIncomeVal = Math.round(totalIncomeVal*100)/100;
         totalProfitPercenet = Math.round((totalIncomeVal/totalCapitalValue)*10000)/100;
         let dataToWriteChart = new DataToWritePieChart(totalProfitPercenet, totalIncomeVal, listElementDataToDrawPieChart);
-        console.log(dataToWriteChart);
+        // console.log(dataToWriteChart);
         drawPieChart(dataToWriteChart)
     }
 }
@@ -253,6 +255,7 @@ async function addRowForCategory(rowData){
     bindEventReloadCategoryInforInChart(inputPurchaseCapital);
     bindEventReCaculateProfitAndIncome(newRow.getElementsByClassName("category-purchase-price")[0]);
     bindEventReCaculateProfitAndIncome(newRow.getElementsByClassName("category-current-price")[0]);
+    bindEventReCaculateProfitAndIncome(newRow.getElementsByClassName("category-purchase-capital")[0]);
 
     // Append the new row to the table
     bodyTableMyCategoryElement.appendChild(newRow);
@@ -377,21 +380,37 @@ function bindEventChangeWhenSelectCcqOrIndex(element){
         select2-removed is now select2:removed
         select2-removing is now select2:unselecting
      */
-    $(element).on("select2:close", function(e) {
+    $(element).on("select2:close", async function(e) {
         console.log("Change CCQ");
         // assign id of option to input tag
         let currentRow = element.parentElement.parentElement;  // get row id in tr element
+        let initValue = currentRow.getElementsByClassName("notify-init-value"[0]).value;
         // console.log($(element).find(':selected').data('price'));
-        currentRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].dataset.lastedValue = $(element).find(':selected').data('price');
-        // for(let option of element.options) {
-        //     if(option.selected) {
-        //         console.log(option);
-        //         console.log(option.dataset);
-        //         currentRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].dataset.lastedValue = option.dataset.price;
-        //         break;
-        //     }
-        // }
+        let currentCcqShortName  = $(element).find(':selected').text();
+        if(currentCcqShortName != 'Index-VNindex'){
+            let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
+            let predictImpactPercentForNoitify = predictForNotify(ccqDetailData,initValue);
+            if(predictImpactPercentForNoitify>0){
+                predictImpactPercentForNoitify = "+" + predictImpactPercentForNoitify;
+            }
+            predictImpactPercentForNoitify += "%";
+            currentRow.getElementsByClassName("notify-predict-value")[0].innerHTML = predictImpactPercentForNoitify;
+
+        }
+        // set current price value
+        currentRow.getElementsByClassName("notify-init-value")[0].value = $(element).find(':selected').data('price');
+        currentRow.getElementsByClassName("notify-init-value")[0].dataset.lastedValue = $(element).find(':selected').data('price');
+        currentRow.getElementsByClassName("notify-init-value-hidden")[0].value = getConstantLastedValue();
+
     });
+}
+
+function predictForNotify(ccqDetailData, initValue){
+    let currentNav = ccqDetailData.curNav;
+    let predictImpactCurrentDayPercent = predictPriceOfStockOrBalancedCcq(ccqDetailData);
+    let currentImpactValue = currentNav*(1+predictImpactCurrentDayPercent/100);        
+    let impactPercentFromInitValue = Math.round((currentImpactValue/initValue - 1)*100/100);
+    return impactPercentFromInitValue;
 }
 
 async function loadOldNotificationData(){
@@ -400,23 +419,26 @@ async function loadOldNotificationData(){
     //   console.log(listOldClassificationData);
     if(listOldNotificationData && listOldNotificationData != null){
       for(let oldNotificationData of listOldNotificationData){
-          addRowForNotify(oldNotificationData);
+          await addRowForNotify(oldNotificationData);
       }
     }
 }
 
-function bindEventSetInitValueToLastedValue(element){
-    element.addEventListener("click",function(){
+function bindEventChangeValue(element){
+    element.addEventListener("focusout",function(){
         // when set using rowId (html parse to data-row-id)
         let currentRow = element.parentElement.parentElement;
+
         let lastedValue = element.dataset.lastedValue;
-        console.log("Row id bind init value: " + currentRow.dataset.rowId +" with value: "+ lastedValue);
-        
-        currentRow.getElementsByClassName("notify-init-value")[0].value = lastedValue;
+        let currentInputValue = element.value;
+        // console.log("Row id bind init value: " + currentRow.dataset.rowId +" with value: "+ lastedValue);
+        if(currentInputValue != lastedValue){
+            currentRow.getElementsByClassName("notify-init-value-hidden")[0].value = currentInputValue;
+        }
     });
 }
 
-function addRowForNotify(rowData){
+async function addRowForNotify(rowData){
     // Get HTML of the first row and create a new row from it
     const firstRowHTML = bodyTableCqqNotificationElement.getElementsByTagName("tr")[0].innerHTML;
     const newRow = document.createElement("tr");
@@ -427,12 +449,14 @@ function addRowForNotify(rowData){
     // Get the dropdown in the new row
     let dropdownCcq = newRow.getElementsByClassName("form-select-ccq-to-notify")[0];
     let buttonDelete = newRow.getElementsByClassName("button-delete-notify")[0];
-    let linkAutoSetDefaultValue = newRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0];
+    // let linkAutoSetDefaultValue = newRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0];
     
     if(rowData && rowData !=null){
         let ccqId = rowData.ccqId;
-        //  
-        newRow.getElementsByClassName("notify-init-value")[0].value = rowData.initValue;
+        let ccqShortName;
+        let initValueHidden = rowData.initValueHidden;
+        let initValue;
+        newRow.getElementsByClassName("notify-init-value-hidden")[0].value = initValueHidden;
         newRow.getElementsByClassName("loss-point-to-send-notify")[0].value = rowData.lossPointToSendNotify;
         newRow.getElementsByClassName("profit-point-to-send-notify")[0].value = rowData.profitPointToSendNotify;
         
@@ -441,9 +465,19 @@ function addRowForNotify(rowData){
             // console.log("Value: " + option.value);
             if (option.value == ccqId) {
                 option.selected = "selected";
+                initValue = option.dataset.price;
+                ccqShortName = option.innerHTML;
                 break;
             }
         }
+        // set init value
+        // if initValueHidden = CONSTANT_LASTED_VALUE --> initValue = get lasted price
+        // else initValue = initValueHidden (the value that user input)
+        if(initValueHidden != getConstantLastedValue()){
+            initValue = initValueHidden;
+        }
+        newRow.getElementsByClassName("notify-init-value")[0].value = initValue;
+        
         // Selected Loss Unit
         let dropdownLossUnit = newRow.getElementsByClassName("form-select-loss-unit-to-send-noitfy")[0];
         for (let option of dropdownLossUnit.options) {
@@ -462,6 +496,17 @@ function addRowForNotify(rowData){
                 break;
             }
         }
+        // predict impact 
+        if(ccqShortName!='VNindex'){
+            let ccqDetailData = await handleDataDetailCcq(ccqShortName);
+            let predictImpactPercent = predictPriceOfStockOrBalancedCcq(ccqDetailData);
+            if(predictImpactPercent>0){
+                predictImpactPercent = "+"+predictImpactPercent;
+            }
+            predictImpactPercent += "%";
+            newRow.getElementsByClassName("notify-predict-value")[0].innerText = predictImpactPercent;
+        }
+        
     }
     // Reinitialize Select2 on the dropdown
     formatDropDownListSelectOne(dropdownCcq);
@@ -470,8 +515,8 @@ function addRowForNotify(rowData){
     // newRow.id = CONSTANT_PREFIX_ID_OF_ROW_OF_NOTIFY_TALBE+currentRowNotifyId;
     newRow.dataset.rowId = currentRowNotifyId;
     bindEventDeleteRow(buttonDelete, TABLE_NOTIFICATION);
-    bindEventSetInitValueToLastedValue(linkAutoSetDefaultValue);
-    bindEventChangeWhenSelectCcqOrIndex(newRow.getElementsByClassName("form-select-ccq-to-notify")[0]);
+    bindEventChangeValue(newRow.getElementsByClassName("notify-init-value")[0]);
+    bindEventChangeWhenSelectCcqOrIndex(dropdownCcq);
     // Append the new row to the table
     bodyTableCqqNotificationElement.appendChild(newRow);
 }
@@ -514,7 +559,7 @@ function submitAllData(){
     // start 1 to numberOfRowNotificationUserAdded - 1
     for(let i = 1; i<numberOfRowNotificationUserAdded;++i){
         let selectedCcqId;
-        let initValue = bodyTableCqqNotificationElement.getElementsByClassName("notify-init-value")[i].value;
+        let initValueHidden = bodyTableCqqNotificationElement.getElementsByClassName("notify-init-value-hidden")[i].value;
         let dropdownSelectedCcq = bodyTableCqqNotificationElement.getElementsByClassName("form-select-ccq-to-notify")[i];
         for (let option of dropdownSelectedCcq.options) {
             if (option.selected) {
@@ -542,7 +587,7 @@ function submitAllData(){
                 break; // because 1 row in notification setting can only pick 1 profit unit
             }
         }
-        listNotification.push(new CcqNotificationData(selectedCcqId,initValue,lossPoint,lossUnit,profitPoint,profitUnit));
+        listNotification.push(new CcqNotificationData(selectedCcqId,initValueHidden,lossPoint,lossUnit,profitPoint,profitUnit));
     }
     // handle classification
     let listClassification = [];
@@ -569,7 +614,7 @@ function submitAllData(){
 
 function bindEventViewChartByRow(element){
     element.addEventListener("click",function(){
-        let rowId = $(this).data('rowId');
+        let currentRow = element.parentElement.parentElement;
         // TODO: open new tab and forward to compare ccq page
     });
 }

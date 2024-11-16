@@ -8,8 +8,7 @@ const CONSTANT_LIST_CCQ_CLASSIFICATION = "CONSTANT_LIST_CCQ_CLASSIFICATION";
 const CONSTANT_LIST_CCQ_NOTIFICATION = "CONSTANT_LIST_CCQ_NOTIFICATION";    
 const CONSTANT_MY_CATEGORIES = "CONSTANT_MY_CATEGORIES";    
 const CONSTANT_MY_FULL_NAME = "CONSTANT_MY_FULL_NAME";    
-// Constant data for screen
-
+const CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY = "CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY";  
 // Constant data for predict
 const INTEREST_RATE_NO_RISK = 6;                // Interest rate with no risk
 const NUMBER_TRANSACTION_DATE_IN_YEAR = 250;    // Number of transaction date in year
@@ -18,6 +17,17 @@ const PRICE_MOVEMENT_FOR_TOP_4_TO_N_STOCK_COMPONENT = 0.75; // Interest rate wit
 const RATIO_FOR_BIG_STOCK_IMPACT = 2; // Interest rate with no risk
 // Constant data for asset type
 const ASSET_TYPE_CASH = "CASH";  
+// Constant data for screen
+const CONSTANT_LASTED_VALUE = "CONSTANT_LASTED_VALUE";  
+
+
+function getConstantInferLastedImpactOfPreviousDay(){
+    return CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY;
+}
+
+function getConstantLastedValue(){
+    return CONSTANT_LASTED_VALUE;
+}
 
 function getDetailAssetTypeStock(){
     return FUND_TYPE_STOCK;
@@ -70,14 +80,38 @@ function getConstantMyCategories(){
 
 // Store data in local storage
 function storeDataInLocalStorage(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, JSON.stringify(value, replacer));
 }
   
 // Retrieve data from local storage
 function retrieveDataFromLocalStorage(key) {
-    const data = localStorage.getItem(key);
-    console.log(data);
-    return data ? JSON.parse(data) : null;
+    let data = localStorage.getItem(key);
+    data = data ? JSON.parse(data, reviver) : null;
+    // console.log("Key: "+ key);
+    // console.log(data);
+    return data;
+}
+
+// custom replacer of JSON.stringify
+function replacer(key, value) {
+if(value instanceof Map) {
+    return {
+        dataType: 'Map',
+        value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
+}
+
+// custom reviver of JSON.parse
+function reviver(key, value) {
+    if(typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value);
+        }
+    }
+    return value;
 }
 
 function getNumberOfTransactionDateInYear(){
@@ -143,6 +177,15 @@ function nullToNA(data){
     }else{
         return data;
     }
+}
+
+function getPreviousWorkingDay(selectedDate){
+    let currentDate = selectedDate;
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-1);
+    while(!isWorkingDay(currentDate)){
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-1);
+    }
+    return currentDate;
 }
 
 // Format the date as 'yyyy-MM-dd' 

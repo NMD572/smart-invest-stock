@@ -1,42 +1,55 @@
-async function predictPriceOfStockOrBalancedCcq(ccqInfor){
-    let result;
-    let listStockComponent = [];
-    let listBondComponent = [];
-    let allStockComponentPercent = 0;
-    for(let investComponent of ccqInfor.listInvestComponentDetail){
-        switch(investComponent.fundType){
-            case getComponentTypeStock():
-                allStockComponentPercent += investComponent.gavPercent;
-                listStockComponent.push(investComponent);
-                break;
-            case getComponentTypeBond(): 
-                listBondComponent.push(investComponent);
-                break;
-            default:
-                break;
-        }
-    }
-    
-    let impactStockPercent = predictImpactPercentStockComponent(listStockComponent);
-    // console.log(impactStockPercent);
-    if(ccqInfor.fundAssetType == getComponentTypeStock() || ccqInfor.fundAssetType == getFundAssetTypeBalanced()){
-        // get all stock percent
-        let realAllStockPercent = 0;
-        let listAllAssetPercent = ccqInfor.listAssetPercent;
-        for(let assetPercent of listAllAssetPercent){
-            if(assetPercent.code == getDetailAssetTypeStock()){
-                realAllStockPercent = assetPercent.percent;
-                break;
+function predictPriceOfStockOrBalancedCcq(ccqInfor){
+
+    let result=0;
+    if(isWorkingDay(new Date())){
+        let listStockComponent = [];
+        let listBondComponent = [];
+        let allStockComponentPercent = 0;
+        for(let investComponent of ccqInfor.listInvestComponentDetail){
+            switch(investComponent.fundType){
+                case getComponentTypeStock():
+                    allStockComponentPercent += investComponent.gavPercent;
+                    listStockComponent.push(investComponent);
+                    break;
+                case getComponentTypeBond(): 
+                    listBondComponent.push(investComponent);
+                    break;
+                default:
+                    break;
             }
         }
-        result = Math.round((impactStockPercent/allStockComponentPercent)*realAllStockPercent*100)/100;
-    }else{
-        result =  Math.round(impactStockPercent*100)/100;
+        
+        let impactStockPercent = predictImpactPercentStockComponent(listStockComponent);
+        // console.log(impactStockPercent);
+        if(ccqInfor.fundAssetType == getComponentTypeStock() || ccqInfor.fundAssetType == getFundAssetTypeBalanced()){
+            // get all stock percent
+            let realAllStockPercent = 0;
+            let listAllAssetPercent = ccqInfor.listAssetPercent;
+            for(let assetPercent of listAllAssetPercent){
+                if(assetPercent.code == getDetailAssetTypeStock()){
+                    realAllStockPercent = assetPercent.percent;
+                    break;
+                }
+            }
+            result = Math.round((impactStockPercent/allStockComponentPercent)*realAllStockPercent*100)/100;
+        }else{
+            result =  Math.round(impactStockPercent*100)/100;
+        }
     }
-    if(result>0){
-        result = result;
+    let previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(new Date()));
+    // let previousWorkingDateInStringFormat = "2024-11-15";
+    // console.log("Previous result: " + result);
+    // console.log(previousWorkingDateInStringFormat);
+    console.log("Start: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
+    while(ccqInfor.curNavDate <= previousWorkingDateInStringFormat){
+        let previousDateInDateFormat = new Date(previousWorkingDateInStringFormat);
+        console.log("Process: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
+        // if cur nav date is not previous date 
+        // --> impact = current day impact + previous day impact
+        result += getPreviousPredictValueByCcqShortName(ccqInfor.shortName, previousWorkingDateInStringFormat);
+        previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(previousDateInDateFormat));
     }
-    // console.log(result);
+    // console.log("Final result: " + result);
     return result;
 }
 
@@ -67,6 +80,22 @@ function predictImpactPercentStockComponent(listStockComponent, isStockMarketInB
     // bỏ 1 % --> /100    
     // return calculateAverage(listAllMultiple)/100;
     return result/100;
+}
+
+
+function getPreviousPredictValueByCcqShortName(ccqShortName, selectedDateInStringFormat){
+    let predictValue = 0;
+    let keyPredictImpactPreviousDay = getConstantInferLastedImpactOfPreviousDay() + selectedDateInStringFormat;
+    let mapPredictImpactCcqOfPreviousDay = retrieveDataFromLocalStorage(keyPredictImpactPreviousDay);
+    if(mapPredictImpactCcqOfPreviousDay && mapPredictImpactCcqOfPreviousDay != null){
+        predictValue = mapPredictImpactCcqOfPreviousDay.get(ccqShortName);
+    }
+    if(predictValue && predictValue!=null){
+        return predictValue;
+    }else{
+        return 0;
+    }
+
 }
 
 function calcAllCaseOfListImpactPercentOfEachComponent(generalArray, currentRow, previousMultipleResult, listResult){

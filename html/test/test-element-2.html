@@ -9,26 +9,48 @@
     <body>
         
         <script>
-            let listResultData=[];
-            let generalArray=[];
-            let firstArray=[1,2];
-            let secondArray=[3,4];
-            let thirdArray=[5,6];
-            generalArray.push(firstArray);
-            generalArray.push(secondArray);
-            generalArray.push(thirdArray);
-            calcAllCaseOfListImpactPercentOfEachComponent(generalArray,0,1,listResultData);
-            console.log(listResultData);
-            function calcAllCaseOfListImpactPercentOfEachComponent(generalArray, currentRow, previousMultipleResult, listResult){
-                for(let number of generalArray[currentRow]){
-                    let multipleResult = previousMultipleResult*number;
-                    if(currentRow<generalArray.length - 1){
-                        calcAllCaseOfListImpactPercentOfEachComponent(generalArray,currentRow+1,multipleResult, listResult);
-                    }else{
-                        listResult.push(multipleResult);
-                    }
-                }
-            }
+            const map1 = new Map();
+
+map1.set('VMEEF', -20);
+map1.set('VCBF-BCF', -10);
+
+// Expected output: 2
+storeDataInLocalStorage("CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY2024-11-15",map1);
+console.log(retrieveDataFromLocalStorage("CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY2024-11-15"));
+// Store data in local storage
+function storeDataInLocalStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value, replacer));
+}
+  
+// Retrieve data from local storage
+function retrieveDataFromLocalStorage(key) {
+    const data = localStorage.getItem(key);
+    console.log(key + data);
+    return data ? JSON.parse(data, reviver) : null;
+}
+
+// custom replacer of JSON.stringify
+function replacer(key, value) {
+if(value instanceof Map) {
+    return {
+        dataType: 'Map',
+        value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
+}
+
+// custom reviver of JSON.parse
+function reviver(key, value) {
+    if(typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+        return new Map(value.value);
+        }
+    }
+    return value;
+}
+
         </script>
     </body>
 </html>
