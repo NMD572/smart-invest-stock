@@ -1,6 +1,6 @@
 function predictPriceOfStockOrBalancedCcq(ccqInfor){
-
-    let result=0;
+    let predictImpactPercentResult = 1;
+    let predictImpactPercentList = [];
     if(isWorkingDay(new Date())){
         let listStockComponent = [];
         let listBondComponent = [];
@@ -31,9 +31,9 @@ function predictPriceOfStockOrBalancedCcq(ccqInfor){
                     break;
                 }
             }
-            result = Math.round((impactStockPercent/allStockComponentPercent)*realAllStockPercent*100)/100;
+            predictImpactPercentList.push(Math.round((impactStockPercent/allStockComponentPercent)*realAllStockPercent*100)/100);
         }else{
-            result =  Math.round(impactStockPercent*100)/100;
+            predictImpactPercentList.push(Math.round(impactStockPercent*100)/100);
         }
     }
     let previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(new Date()));
@@ -46,11 +46,18 @@ function predictPriceOfStockOrBalancedCcq(ccqInfor){
         console.log("Process: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
         // if cur nav date is not previous date 
         // --> impact = current day impact + previous day impact
-        result += getPreviousPredictValueByCcqShortName(ccqInfor.shortName, previousWorkingDateInStringFormat);
+        predictImpactPercentList.push(getPreviousPredictValueByCcqShortName(ccqInfor.shortName, previousWorkingDateInStringFormat));
         previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(previousDateInDateFormat));
     }
     // console.log("Final result: " + result);
-    return result;
+    if(predictImpactPercentList && predictImpactPercentList!=null){
+        for(let start = predictImpactPercentList.length - 1; start >= 0; --start){
+            predictImpactPercentResult*=(1+predictImpactPercentList[start]/100);
+        }
+    }
+    predictImpactPercentResult -= 1;
+    // return raw percent without rounding result
+    return predictImpactPercentResult;
 }
 
 function predictImpactPercentStockComponent(listStockComponent, isStockMarketInBigImpact){

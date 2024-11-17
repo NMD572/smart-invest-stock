@@ -92,6 +92,10 @@ function retrieveDataFromLocalStorage(key) {
     return data;
 }
 
+function checkKeyIsExistInLocalStorage(key){
+    return localStorage.hasOwnProperty(key);
+}
+
 // custom replacer of JSON.stringify
 function replacer(key, value) {
 if(value instanceof Map) {
@@ -213,4 +217,38 @@ function isWorkingDay(inputDate){
 function calculateAverage(array) {
     const sum = array.reduce((acc, val) => acc + val, 0);
     return array.length ? sum / array.length : 0;
-  }
+}
+
+// handle common function
+async function calculateImpactOfAllCcqAt15PM() {
+    var now = new Date(),
+        start,
+        wait;
+
+    if (now.getHours() < 15) {
+        start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 0, 0, 0);
+    } 
+
+    wait = start.getTime() - now.getTime();
+
+    if(wait <= 0) { //If missed 8am before going into the setTimeout
+        console.log('Oops, missed the hour for calculate impact percent of all ccq');
+        if(!checkKeyIsExistInLocalStorage(getConstantInferLastedImpactOfPreviousDay()+formatDate(new Date()))){
+            let mapImpactCcq = await calculateImpactOfAllStockCcq();
+        }
+    } else {
+        // when pass <wait> millisecond from now it will do contain function
+        setTimeout(async function () { //Wait 8am
+            setInterval(async function () {
+                let mapImpactCcq = await calculateImpactOfAllStockCcq();
+            }, 86400000); //Every day
+        },wait);
+    }
+}
+
+async function calculateImpactOfAllStockCcq(){
+    let currentDate = new Date();
+    if(isWorkingDay(currentDate)){
+        // If is working date --> calculate impact percent of current day
+    }
+}

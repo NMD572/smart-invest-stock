@@ -384,9 +384,15 @@ function bindEventChangeWhenSelectCcqOrIndex(element){
         console.log("Change CCQ");
         // assign id of option to input tag
         let currentRow = element.parentElement.parentElement;  // get row id in tr element
-        let initValue = currentRow.getElementsByClassName("notify-init-value"[0]).value;
         // console.log($(element).find(':selected').data('price'));
         let currentCcqShortName  = $(element).find(':selected').text();
+        let currentCcqPrice =  $(element).find(':selected').data('price');
+        let initValue = currentCcqPrice;
+        // set current price value
+        currentRow.getElementsByClassName("notify-init-value")[0].value = currentCcqPrice;
+        currentRow.getElementsByClassName("notify-init-value")[0].dataset.lastedValue = currentCcqPrice;
+        currentRow.getElementsByClassName("notify-init-value-hidden")[0].value = getConstantLastedValue();
+
         if(currentCcqShortName != 'Index-VNindex'){
             let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
             let predictImpactPercentForNoitify = predictForNotify(ccqDetailData,initValue);
@@ -395,21 +401,20 @@ function bindEventChangeWhenSelectCcqOrIndex(element){
             }
             predictImpactPercentForNoitify += "%";
             currentRow.getElementsByClassName("notify-predict-value")[0].innerHTML = predictImpactPercentForNoitify;
-
         }
-        // set current price value
-        currentRow.getElementsByClassName("notify-init-value")[0].value = $(element).find(':selected').data('price');
-        currentRow.getElementsByClassName("notify-init-value")[0].dataset.lastedValue = $(element).find(':selected').data('price');
-        currentRow.getElementsByClassName("notify-init-value-hidden")[0].value = getConstantLastedValue();
-
     });
 }
 
 function predictForNotify(ccqDetailData, initValue){
     let currentNav = ccqDetailData.curNav;
-    let predictImpactCurrentDayPercent = predictPriceOfStockOrBalancedCcq(ccqDetailData);
-    let currentImpactValue = currentNav*(1+predictImpactCurrentDayPercent/100);        
-    let impactPercentFromInitValue = Math.round((currentImpactValue/initValue - 1)*100/100);
+    let predictImpactPercentResult = predictPriceOfStockOrBalancedCcq(ccqDetailData);
+    console.log(predictImpactPercentResult);
+
+    console.log("Predict percent: "+ predictImpactPercentResult);
+    let currentImpactValue = currentNav*(1 + predictImpactPercentResult);    
+    console.log(currentImpactValue+ " - "+initValue);    
+    let impactPercentFromInitValue = Math.round((currentImpactValue/initValue - 1)*10000)/100;
+    console.log("Impact percent: "+ impactPercentFromInitValue);
     return impactPercentFromInitValue;
 }
 
@@ -499,7 +504,7 @@ async function addRowForNotify(rowData){
         // predict impact 
         if(ccqShortName!='VNindex'){
             let ccqDetailData = await handleDataDetailCcq(ccqShortName);
-            let predictImpactPercent = predictPriceOfStockOrBalancedCcq(ccqDetailData);
+            let predictImpactPercent = predictForNotify(ccqDetailData,initValue);
             if(predictImpactPercent>0){
                 predictImpactPercent = "+"+predictImpactPercent;
             }
