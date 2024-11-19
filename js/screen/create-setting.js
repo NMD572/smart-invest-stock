@@ -22,6 +22,7 @@ const CONSTANT_PREFIX_ID_OF_DATA_LIST_CATEGORY = "categoryComboboxDataStr";
 var currentRowCategoryId = 0;
 var currentRowNotifyId = 0;
 var currentRowClassificationId = 0;
+var listCcqData;
 async function initScreen(){
     await initInfor();
 }
@@ -30,6 +31,7 @@ async function initInfor(){
     await fillComboboxData();
     bindEvent();
     await loadOldData();
+    await calculateImpactOfAllCcqAt15PM();
 }
 /*** Common */
 async function fillComboboxData(){
@@ -37,7 +39,7 @@ async function fillComboboxData(){
     listFundAssetTypeNeedToLoad.push(getFundAssetTypeStock());
     listFundAssetTypeNeedToLoad.push(getFundAssetTypeBalanced());
     listFundAssetTypeNeedToLoad.push(getFundAssetTypeBond());
-    let listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
+    listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
 
     // dataset for category
     let datalistCcqForCategory = document.getElementById("categoryComboboxDataStr0");
@@ -393,21 +395,15 @@ function bindEventChangeWhenSelectCcqOrIndex(element){
         currentRow.getElementsByClassName("notify-init-value")[0].dataset.lastedValue = currentCcqPrice;
         currentRow.getElementsByClassName("notify-init-value-hidden")[0].value = getConstantLastedValue();
 
-        if(currentCcqShortName != 'Index-VNindex'){
-            let ccqDetailData = await handleDataDetailCcq(currentCcqShortName);
-            let predictImpactPercentForNoitify = predictForNotify(ccqDetailData,initValue);
-            if(predictImpactPercentForNoitify>0){
-                predictImpactPercentForNoitify = "+" + predictImpactPercentForNoitify;
-            }
-            predictImpactPercentForNoitify += "%";
-            currentRow.getElementsByClassName("notify-predict-value")[0].innerHTML = predictImpactPercentForNoitify;
+        if(currentCcqShortName !== 'Index-VNindex'){
+            await predictImpactOfCcq(currentCcqShortName, currentRow, initValue);
         }
     });
 }
 
 function predictForNotify(ccqDetailData, initValue){
     let currentNav = ccqDetailData.curNav;
-    let predictImpactPercentResult = predictPriceOfStockOrBalancedCcq(ccqDetailData);
+    let predictImpactPercentResult = predictPriceOfStockOrBalancedCcq(ccqDetailData, true);
     console.log(predictImpactPercentResult);
 
     console.log("Predict percent: "+ predictImpactPercentResult);
@@ -430,15 +426,20 @@ async function loadOldNotificationData(){
 }
 
 function bindEventChangeValue(element){
-    element.addEventListener("focusout",function(){
+    element.addEventListener("focusout",async function(){
         // when set using rowId (html parse to data-row-id)
         let currentRow = element.parentElement.parentElement;
-
+        let dropDownCcq = currentRow.getElementsByClassName("form-select-ccq-to-notify")[0];
+        let ccqShortName = $(dropDownCcq).find(':selected').text();
         let lastedValue = element.dataset.lastedValue;
         let currentInputValue = element.value;
         // console.log("Row id bind init value: " + currentRow.dataset.rowId +" with value: "+ lastedValue);
         if(currentInputValue != lastedValue){
             currentRow.getElementsByClassName("notify-init-value-hidden")[0].value = currentInputValue;
+        }
+        // predict impact 
+        if(ccqShortName!='VNindex'){
+            await predictImpactOfCcq(ccqShortName, currentRow, currentInputValue);
         }
     });
 }
@@ -503,13 +504,7 @@ async function addRowForNotify(rowData){
         }
         // predict impact 
         if(ccqShortName!='VNindex'){
-            let ccqDetailData = await handleDataDetailCcq(ccqShortName);
-            let predictImpactPercent = predictForNotify(ccqDetailData,initValue);
-            if(predictImpactPercent>0){
-                predictImpactPercent = "+"+predictImpactPercent;
-            }
-            predictImpactPercent += "%";
-            newRow.getElementsByClassName("notify-predict-value")[0].innerText = predictImpactPercent;
+            await predictImpactOfCcq(ccqShortName, newRow, initValue);
         }
         
     }
@@ -524,6 +519,15 @@ async function addRowForNotify(rowData){
     bindEventChangeWhenSelectCcqOrIndex(dropdownCcq);
     // Append the new row to the table
     bodyTableCqqNotificationElement.appendChild(newRow);
+}
+async function predictImpactOfCcq(ccqShortName, currentRow, initValue){
+    let ccqDetailData = await handleDataDetailCcq(ccqShortName);
+    let predictImpactPercent = predictForNotify(ccqDetailData,initValue);
+    if(predictImpactPercent>0){
+        predictImpactPercent = "+"+predictImpactPercent;
+    }
+    predictImpactPercent += "%";
+    currentRow.getElementsByClassName("notify-predict-value")[0].innerText = predictImpactPercent;
 }
 
 /** End Notification */
@@ -698,3 +702,54 @@ function addRowForClassification(rowData) {
 
 /** End Classification */
 
+
+/** handle predict impact of all ccq function */
+async function calculateImpactOfAllCcqAt15PM() {
+    var now = new Date(),
+        start = new Date(),
+        wait;
+
+    if (now.getHours() < 15) {
+        start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 0, 0, 0);
+    } 
+
+    wait = start.getTime() - now.getTime();
+
+    if(wait <= 0) { //If missed 15pm before going into the setTimeout
+        console.log('Oops, missed the hour for calculate impact percent of all ccq');
+        if(!checkKeyIsExistInLocalStorage(getConstantInferLastedImpactOfPreviousDay()+formatDate(new Date()))){
+            await predictImpactCcqAndStoreToLocalStorage();
+        }
+    } else {
+        // when pass <wait> millisecond from now it will do contain function
+        setTimeout(function () { //Wait 15pm
+            setInterval(async function () {
+                predictImpactCcqAndStoreToLocalStorage();
+            }, 86400000); //Every day
+        },wait);
+    }
+}
+
+async function predictImpactCcqAndStoreToLocalStorage(){
+    if(listCcqData && listCcqData!=null && !checkKeyIsExistInLocalStorage(getConstantInferLastedImpactOfPreviousDay()+formatDate(new Date()))){
+        let mapImpactCcq = await calculateImpactOfAllStockCcq();
+        console.log(mapImpactCcq);
+        if(mapImpactCcq && mapImpactCcq!=null && mapImpactCcq.size>0){
+            let currentDateStr = formatDate(new Date());
+            storeDataInLocalStorage(CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY+currentDateStr,mapImpactCcq);
+        }
+
+    }
+}
+
+async function calculateImpactOfAllStockCcq(){
+    let currentDate = new Date();
+    if(isWorkingDay(currentDate)){
+        // If is working date --> calculate impact percent of current day
+        return await predictImpactOfAllCcqAtCurrentDay(listCcqData);
+    }else{
+        return null;
+    }
+}
+
+/** end handle predict impact of all ccq function */

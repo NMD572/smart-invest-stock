@@ -1,4 +1,17 @@
-function predictPriceOfStockOrBalancedCcq(ccqInfor){
+async function predictImpactOfAllCcqAtCurrentDay(listAllCcqInfor){
+    let mapPredictImpactCcq = new Map();
+    for(let ccqInfor of listAllCcqInfor){
+        if(ccqInfor.fundAssetType === getFundAssetTypeStock() || ccqInfor.fundAssetType === getFundAssetTypeBalanced()){
+            let ccqDetailInfor = await handleDataDetailCcq(ccqInfor.shortName);
+            let predictImpactAtCurrentDay = predictPriceOfStockOrBalancedCcq(ccqDetailInfor,false);
+            predictImpactAtCurrentDay = Math.round(predictImpactAtCurrentDay*10000)/100;
+            mapPredictImpactCcq.set(ccqInfor.shortName, predictImpactAtCurrentDay);
+        }
+    }
+    return mapPredictImpactCcq;
+}
+
+function predictPriceOfStockOrBalancedCcq(ccqInfor, isGetOldData){
     let predictImpactPercentResult = 1;
     let predictImpactPercentList = [];
     if(isWorkingDay(new Date())){
@@ -18,7 +31,7 @@ function predictPriceOfStockOrBalancedCcq(ccqInfor){
                     break;
             }
         }
-        
+         
         let impactStockPercent = predictImpactPercentStockComponent(listStockComponent);
         // console.log(impactStockPercent);
         if(ccqInfor.fundAssetType == getComponentTypeStock() || ccqInfor.fundAssetType == getFundAssetTypeBalanced()){
@@ -36,18 +49,20 @@ function predictPriceOfStockOrBalancedCcq(ccqInfor){
             predictImpactPercentList.push(Math.round(impactStockPercent*100)/100);
         }
     }
-    let previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(new Date()));
-    // let previousWorkingDateInStringFormat = "2024-11-15";
-    // console.log("Previous result: " + result);
-    // console.log(previousWorkingDateInStringFormat);
-    console.log("Start: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
-    while(ccqInfor.curNavDate <= previousWorkingDateInStringFormat){
-        let previousDateInDateFormat = new Date(previousWorkingDateInStringFormat);
-        console.log("Process: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
-        // if cur nav date is not previous date 
-        // --> impact = current day impact + previous day impact
-        predictImpactPercentList.push(getPreviousPredictValueByCcqShortName(ccqInfor.shortName, previousWorkingDateInStringFormat));
-        previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(previousDateInDateFormat));
+    if(isGetOldData){
+        let previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(new Date()));
+        // let previousWorkingDateInStringFormat = "2024-11-15";
+        // console.log("Previous result: " + result);
+        // console.log(previousWorkingDateInStringFormat);
+        console.log("Start: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
+        while(ccqInfor.curNavDate <= previousWorkingDateInStringFormat){
+            let previousDateInDateFormat = new Date(previousWorkingDateInStringFormat);
+            console.log("Process: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
+            // if cur nav date is not previous date 
+            // --> impact = current day impact + previous day impact
+            predictImpactPercentList.push(getPreviousPredictValueByCcqShortName(ccqInfor.shortName, previousWorkingDateInStringFormat));
+            previousWorkingDateInStringFormat = formatDate(getPreviousWorkingDay(previousDateInDateFormat));
+        }
     }
     // console.log("Final result: " + result);
     if(predictImpactPercentList && predictImpactPercentList!=null){

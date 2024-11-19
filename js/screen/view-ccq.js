@@ -81,7 +81,7 @@ async function reloadCalculateImpactEvent(){
     // if(isPredictImpactFlagElement.checked){
     //     isPredictStockMarketBigImpact = true;
     // }
-    let predictImpactPercent = predictPriceOfStockOrBalancedCcq(ccqDetailData);
+    let predictImpactPercent = predictPriceOfStockOrBalancedCcq(ccqDetailData, false);
     predictImpactPercent = Math.round(predictImpactPercent*10000)/100;
     if(predictImpactPercent>0){
         predictImpactPercent = "+" + predictImpactPercent;

@@ -22,7 +22,7 @@ async function callApiGetListInvestementCertificateSTOCK(sortField, fundAssetTyp
         }
     }) 
     .then((response) => response.json());
-    // await sleep(500);   // sleep 0.5s for prevent spam api
+    await sleep(500);   // sleep 0.5s for prevent spam api
     return jsonDatas;
 
 }
@@ -37,7 +37,7 @@ async function getDetailCcq(ccqShortName){
         }
     }) 
     .then((response) => response.json());
-    // await sleep(500);   // sleep 0.5s for prevent spam api
+    await sleep(500);   // sleep 0.5s for prevent spam api
     // console.log(jsonDatas);
     return jsonDatas;
 
@@ -59,7 +59,7 @@ async function callApiGetListNavHistoryOfCcq(ccqId, fromDate, toDate, isGetAll){
         }
     }) 
     .then((response) => response.json());
-    // await sleep(500);   // sleep 0.5s for prevent spam api
+    await sleep(500);   // sleep 0.5s for prevent spam api
     return jsonDatas;
 
 }
