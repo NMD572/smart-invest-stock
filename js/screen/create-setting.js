@@ -159,7 +159,9 @@ async function loadOldData(){
     // load full name of current user
     // Retrieve old fullname of user
     let userFullName = retrieveDataFromLocalStorage(getConstantMyFullName());
+    let userStrategy = retrieveDataFromLocalStorage(getConstantMyStrategy());
     document.getElementById("inputFullName").value = userFullName;
+    document.getElementById("inputMyStrategy").value = userStrategy;
     // load old setting data
     await loadOldCategoryData();
     await loadOldNotificationData();
@@ -548,7 +550,8 @@ function loadOldClassificationData(){
 function submitAllData(){
     // get name
     let myFullName = document.getElementById("inputFullName").value;
-
+    // get strategy
+    let myStrategy = document.getElementById("inputMyStrategy").value;
     // handle category
     let listCategory = [];
     let numberOfRowCategorynUserAdded = bodyTableMyCategoryElement.getElementsByTagName("tr").length;
@@ -619,6 +622,7 @@ function submitAllData(){
     storeDataInLocalStorage(getConstantListCcqNotification(),listNotification);
     storeDataInLocalStorage(getConstantMyCategories(),listCategory);
     storeDataInLocalStorage(getConstantMyFullName(),myFullName);
+    storeDataInLocalStorage(getConstantMyStrategy(),myStrategy);
 }
 
 function bindEventViewChartByRow(element){
@@ -714,7 +718,7 @@ async function calculateImpactOfAllCcqAt15PM() {
     } 
 
     wait = start.getTime() - now.getTime();
-
+    console.log("Wait time: "+wait);
     if(wait <= 0) { //If missed 15pm before going into the setTimeout
         console.log('Oops, missed the hour for calculate impact percent of all ccq');
         if(!checkKeyIsExistInLocalStorage(getConstantInferLastedImpactOfPreviousDay()+formatDate(new Date()))){
@@ -722,7 +726,8 @@ async function calculateImpactOfAllCcqAt15PM() {
         }
     } else {
         // when pass <wait> millisecond from now it will do contain function
-        setTimeout(function () { //Wait 15pm
+        setTimeout(async function () { //Wait 15pm
+            await predictImpactCcqAndStoreToLocalStorage();
             setInterval(async function () {
                 predictImpactCcqAndStoreToLocalStorage();
             }, 86400000); //Every day
