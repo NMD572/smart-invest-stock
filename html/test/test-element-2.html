@@ -7,53 +7,31 @@
         <title>View Detail CCQ</title>
     </head>
     <body>
-        
+        <button class="btn btn-outline-secondary btn-sm" id="exportHistory" onclick="exportHistory()">Export History</button > 
+
+            <a id="exportHistoryLink" style="display: none;">Export</a>
         <script>
-            const map1 = new Map();
+ function exportHistory() {  
+    console.log("started"); 
+    var _myArray = JSON.stringify(localStorage , null, 4); //indentation in json format, human readable
 
-map1.set('VMEEF', -20);
-map1.set('VCBF-BCF', -10);
 
-// Expected output: 2
-storeDataInLocalStorage("CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY2024-11-15",map1);
-console.log(retrieveDataFromLocalStorage("CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY2024-11-15"));
-console.log(localStorage.hasOwnProperty("CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY2024-11-1511"));
-// Store data in local storage
-function storeDataInLocalStorage(key, value) {
-    localStorage.setItem(key, JSON.stringify(value, replacer));
-}
-  
-// Retrieve data from local storage
-function retrieveDataFromLocalStorage(key) {
-    const data = localStorage.getItem(key);
-    console.log(key + data);
-    return data ? JSON.parse(data, reviver) : null;
-}
+    //Note: We use the anchor tag here instead button.
+    var vLink = document.getElementById('exportHistoryLink');
 
-// custom replacer of JSON.stringify
-function replacer(key, value) {
-if(value instanceof Map) {
-    return {
-        dataType: 'Map',
-        value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}
+    var vBlob = new Blob([_myArray], {type: "octet/stream"});
+    vName = 'setting_data.json';
+    vUrl = window.URL.createObjectURL(vBlob);
+    console.log(vLink);
 
-// custom reviver of JSON.parse
-function reviver(key, value) {
-    if(typeof value === 'object' && value !== null) {
-        if (value.dataType === 'Map') {
-        return new Map(value.value);
-        }
-    }
-    return value;
+    vLink.setAttribute('href', vUrl);
+    vLink.setAttribute('download', vName );
+
+    //Note: Programmatically click the link to download the file
+    vLink.click();
+
+    console.log("finished");    
 }
-setInterval(async function () {
-    console.log("testttttttttt");
-}, 10000); //Every day
         </script>
     </body>
 </html>
