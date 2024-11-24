@@ -1,79 +1,38 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>View Detail CCQ</title>
-    </head>
-    <body>
-        <button class="btn btn-outline-secondary btn-sm" id="exportHistory" onclick="exportLocalStorageData()">Export History</button > 
-            <input type="file" id="fileInput" accept=".json" />
-            <a id="exportHistoryLink" style="display: none;">Export</a>
-    
-    <script src="../../js/common.js"></script>
-<script>
-    bindEventUploadSettingFileToStoreLocalStorageData(document.getElementById("fileInput"));
-    function bindEventUploadSettingFileToStoreLocalStorageData(element){
-        element.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function () {
-                const content = reader.result;
-                let mapLocalStorageData = JSON.parse(content, reviverJsonData);
-                console.log( mapLocalStorageData);
-                storeMapDataToLocalStorage(mapLocalStorageData);
-                // store data to local storage
-                element.value = "";    // reset for user can upload same file
-                if(reader != null){
-                    reader.close();
-                }
-                alert('Read file successfully!');
-            };
-
-            reader.onerror = function () {
-                element.value = "";    // reset for user can upload same file
-                if(reader != null){
-                    reader.close();
-                }
-                console.error('We can not read your file, please check the file and try again!');                                  
-            };
-            
-            reader.readAsText(file, 'utf-8');                           
-        
-        });
-    }
-    
-    function storeMapDataToLocalStorage(mapLocalStorageData){
-        localStorage.clear();
-        mapLocalStorageData.forEach((value, key) => {
-            storeDataInLocalStorage(key,value);
-        });
-    }
-    function exportLocalStorageData() {  
-        console.log("started"); 
-        // storage all local storage data to map
-        let myLocalStorageData = new Map();
-        for (let i = 0; i < localStorage.length; i++){
-            let key = localStorage.key(i);
-            myLocalStorageData.set(key,retrieveDataFromLocalStorage(key));
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Invest Setting</title>
+    <style>
+        #buttonRow {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ccc;
+            z-index: 999; /* Ensure it's always on top */
         }
-        // convert to JSON format
-        let resultExportData = JSON.stringify(myLocalStorageData, replacerJsonData);
-        // We use the anchor tag here instead button.
-        let vLink = document.getElementById('exportHistoryLink');
-
-        let vBlob = new Blob([resultExportData], {type: "octet/stream"});
-        vName = 'setting_data.json';
-        vUrl = window.URL.createObjectURL(vBlob);
-        console.log(vLink);
-
-        vLink.setAttribute('href', vUrl);
-        vLink.setAttribute('download', vName );
-
-        // Programmatically click the link to download the file
-        vLink.click();
-    }
-        </script>
-    </body>
+    </style>
+</head>
+<body >
+    <div id="createSettingContainer">
+        <div>Create your setting</div>
+        <div>
+            <label>Enter your name:</label><input type ="text" id="inputFullName">
+        </div>
+        <div>
+            <label>Enter your strategy:</label><textarea id="inputMyStrategy"></textarea>
+        </div>
+        
+        <div id="buttonRow">
+            <p>Note: You can change information at anytime you want</p>
+            <button id="submitAllButton"><i class="fa-solid fa-cloud"></i> Save To Browser</button>
+            <input type="file" id="uploadSettingFileButton" accept=".json" style="display:none;"/><label for="uploadSettingFileButton"><i class="fa-solid fa-file-arrow-up"></i>Upload setting file</label>
+            <button id="exportAllSettingButton"><i class="fa-solid fa-file-arrow-down"></i> Export All Setting</button>
+            <a id="exportAllSettingLink" style="display: none;">Export Link</a>
+        </diV>
+    </div>
+</body>
 </html>
