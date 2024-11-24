@@ -84,13 +84,13 @@ function getConstantMyCategories(){
 
 // Store data in local storage
 function storeDataInLocalStorage(key, value) {
-    localStorage.setItem(key, JSON.stringify(value, replacer));
+    localStorage.setItem(key, JSON.stringify(value, replacerJsonData));
 }
   
 // Retrieve data from local storage
 function retrieveDataFromLocalStorage(key) {
     let data = localStorage.getItem(key);
-    data = data ? JSON.parse(data, reviver) : null;
+    data = data ? JSON.parse(data, reviverJsonData) : null;
     // console.log("Key: "+ key);
     // console.log(data);
     return data;
@@ -101,7 +101,7 @@ function checkKeyIsExistInLocalStorage(key){
 }
 
 // custom replacer of JSON.stringify
-function replacer(key, value) {
+function replacerJsonData(key, value) {
 if(value instanceof Map) {
     return {
         dataType: 'Map',
@@ -113,7 +113,7 @@ if(value instanceof Map) {
 }
 
 // custom reviver of JSON.parse
-function reviver(key, value) {
+function reviverJsonData(key, value) {
     if(typeof value === 'object' && value !== null) {
         if (value.dataType === 'Map') {
             return new Map(value.value);

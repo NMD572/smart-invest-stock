@@ -30,205 +30,211 @@
     </style>
 </head>
 <body onload="initScreen()">
-    <div>Create your setting</div>
-    <div>
-        <label>Enter your name:</label><input type ="text" id="inputFullName">
-    </div>
-    <div>
-        <label>Enter your strategy:</label><textarea id="inputMyStrategy"></textarea>
-    </div>
-    <div>
-        <div>Notify time setting</div>
-        <label>Start time (HH:MM):</label><input type="time" id="inputStartNotifyTime">
-        <label>End time (HH:MM):</label><input type="time" id="inputEndNotifyTime">
-        <label>Gap time (S):</label><input type ="number" id="inputGapNotifyTime">
-    </div>
-    <div>
-        <div>My Invest Category</div>
-        <button id="addCategoryButton">Add Category</button>
-        <table id="tableMyCategory">
-            <thead> 
-                <tr id="headerTableMyCategory">
-                    <td>Category Name</td>
-                    <td>Capital</td>
-                    <td>Purchase Date</td>
-                    <td>Purchase Price (auto infer when is CCQ)</td>
-                    <td>Current Price (auto infer when is CCQ)</td>
-                    <td>Profit Percent (auto infer)</td>
-                    <td>Total Income Value (auto infer)</td>
-                    <td>Note</td>
-                    <td>Delete</td>
-                </tr>
-            </thead>
-            <tbody>
-                <!--  style="display: none;"  -->
-                <tr style="display: none;" data-ignore=true data-row-id=0 >
-                    <td>
-                        <!-- Category name show for user -->
-                        <input class="category-name" list="categoryComboboxDataStr0" />
-                        <datalist  id="categoryComboboxDataStr0" class="datalist-for-category" data-placeholder="Choose CCQ For Category">
-                            <option data-value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
-                        </datalist>
-                        <!-- Category value show for handle -->
-                        <input  type="hidden" class="category-value-hidden">
-                    </td>
-                    <td><input type="number" class="category-purchase-capital" ></td>
-                    <td><input type="date" class="category-purchase-date"></td>
-                    <td><input type="number" class="category-purchase-price" ></td>
-                    <td><input type="number" class="category-current-price" ></td>
-                    <td><div class="category-profit-percent">0%</div></td>
-                    <td><div class="category-income-value">0</div></td>
-                    <td><input type="text" class="catogory-note" ></td>
-                    <td>
-                        <button class="button-delete-category">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <button id="redloadChartOfCategoryButton">Reload Chart</button>
+    <div id="createSettingContainer">
+        <div>Create your setting</div>
         <div>
-            <div>Chart of My Category</div>
-            <div id="chartOfMyCategoryData"></div>
+            <label>Enter your name:</label><input type ="text" id="inputFullName">
         </div>
+        <div>
+            <label>Enter your strategy:</label><textarea id="inputMyStrategy"></textarea>
+        </div>
+        <div>
+            <div>Notify time setting</div>
+            <label>Start time (HH:MM):</label><input type="time" id="inputStartNotifyTime">
+            <label>End time (HH:MM):</label><input type="time" id="inputEndNotifyTime">
+            <label>Gap time (S):</label><input type ="number" id="inputGapNotifyTime">
+        </div>
+        <div>
+            <div>My Invest Category</div>
+            <button id="addCategoryButton">Add Category</button>
+            <table id="tableMyCategory">
+                <thead> 
+                    <tr id="headerTableMyCategory">
+                        <td>Category Name</td>
+                        <td>Capital</td>
+                        <td>Purchase Date</td>
+                        <td>Purchase Price (auto infer when is CCQ)</td>
+                        <td>Current Price (auto infer when is CCQ)</td>
+                        <td>Profit Percent (auto infer)</td>
+                        <td>Total Income Value (auto infer)</td>
+                        <td>Note</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--  style="display: none;"  -->
+                    <tr style="display: none;" data-ignore=true data-row-id=0 >
+                        <td>
+                            <!-- Category name show for user -->
+                            <input class="category-name" list="categoryComboboxDataStr0" />
+                            <datalist  id="categoryComboboxDataStr0" class="datalist-for-category" data-placeholder="Choose CCQ For Category">
+                                <option data-value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
+                            </datalist>
+                            <!-- Category value show for handle -->
+                            <input  type="hidden" class="category-value-hidden">
+                        </td>
+                        <td><input type="number" class="category-purchase-capital" ></td>
+                        <td><input type="date" class="category-purchase-date"></td>
+                        <td><input type="number" class="category-purchase-price" ></td>
+                        <td><input type="number" class="category-current-price" ></td>
+                        <td><div class="category-profit-percent">0%</div></td>
+                        <td><div class="category-income-value">0</div></td>
+                        <td><input type="text" class="catogory-note" ></td>
+                        <td>
+                            <button class="button-delete-category">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="redloadChartOfCategoryButton">Reload Chart</button>
+            <div>
+                <div>Chart of My Category</div>
+                <div id="chartOfMyCategoryData"></div>
+            </div>
+        </div>
+        <div>
+            <div>Notify Setting</div>
+            <!-- <div>
+                <label for="notifyPredictStockMarketImpact">Thị trường chứng khoán đang biến động mạnh</label>
+                <input type="checkbox" id="notifyPredictStockMarketBigImpact">  
+            </div> -->
+            <div>        
+                <button id="addNotifyButton">Add Notify Setting</button>
+            </div>  
+            <table id="tableCqqNotification">
+                <thead>
+                    <tr id="headerTableCqqNotification">
+                        <td>CCQ/Index</td>
+                        <td>Initial Value</td>
+                        <td>Predict Value</td>
+                        <td>Loss Config To Send Notify</td>
+                        <td>Profit Config To Send Notify</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--  id="rowIdNotificationStr0"  -->
+                    <tr style="display: none;" data-ignore=true data-row-id=0 >
+                        <td>
+                            <select class="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
+                                <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
+                                    <option data-price = 12345 value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
+                                </optgroup>
+                                <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowForNotifyRowData"></optgroup>
+                                <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowForNotifyRowData"></optgroup>
+                                <optgroup label="Bond CCQ" class="groupComboboxBondCcqForNotifyRowData"></optgroup>        
+                            </select>
+                        </td>
+                        <td>
+                            <input class="notify-init-value" type="number" data-lasted-value=0 value=0 title="Default is lasted value in everyday, when you input another value it will hold your value to another day.">
+                            <input class="notify-init-value-hidden" type="hidden" value=0>
+                            
+                            <!-- <a class="notify-set-default-init-value-to-lasted-value-link" data-lasted-value=0>Set Lasted Value</a> -->
+                        </td>
+                        <td>
+                            <!-- just show (cannot edit value )-->
+                            <div class="notify-predict-value">
+                                -
+                            </div>
+                        </td>
+                        <td>
+                            <input type="number" value="5" class="loss-point-to-send-notify">
+                            <select class="form-select-loss-unit-to-send-noitfy">
+                                <option value="%" label ="%"></option>
+                                <!-- <option value="P" label ="Point"></option> -->
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" value="10" class="profit-point-to-send-notify">
+                            <select class="form-select-profit-unit-to-send-noitfy">
+                                <option value="%" label ="%"></option>
+                                <!-- <option value="P" label ="Point"></option> -->
+                            </select>
+                        </td>
+                        <td>
+                            <button class="button-delete-notify" data-rowId=0>
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div>Ccq Classification</div>
+            <button id="addClassificationButton">Add Classification</button>
+            <table id="tableCqqClassification">
+                <thead>
+                    <tr id="headerTableCqqClassification">
+                        <td>CCQ Classification Name</td>
+                        <td>List CCQ</td>
+                        <td>Note</td>
+                        <td>Compare CCQ</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--  id="rowIdClassificationStr0"  -->
+                    <tr style="display: none;" data-ignore=true>
+                        <td>
+                            <input type="Text" class ="classification-name" placeholder="Classification">
+                        </td>
+                        <td class="ccq-for-classification-column">
+                            <select class="form-select-ccq-to-classify" data-placeholder="Choose CCQ To Classify" multiple>
+                                <!--  data-price = 12345 -->
+                                <optgroup label="Stock CCQ" class="groupComboboxStockCcqForClassificationRowData"></optgroup>
+                                <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqqForClassificationRowData"></optgroup>
+                                <optgroup label="Bond CCQ" class="groupComboboxBondCcqqForClassificationRowData"></optgroup>        
+                            </select>
+                        </td>
+                        <td>
+                            <input type="Text"  class ="classification-note" placeholder="Note">
+                        </td>               
+                        <td>
+                            <button class="button-view-chart" data-rowId=0>
+                                <i class="fa-solid fa-chart-line"></i>
+                            </button>
+                        </td>          
+                        <td>
+                            <button class="button-delete-classification" data-rowId=0>
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- <tr>
+                        <td>
+                            <input type="Text" placeholder="Mid And Low Cap">
+                        </td>
+                        <td>
+                            <select class="form-select ccq-for-classification" data-placeholder="Choose CCQ To Classify" multiple>
+                                <optgroup label="Genral Index" id="groupComboboxGeneralIndex">
+                                    <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
+                                </optgroup>
+                                <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
+                                <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
+                                <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>        
+                            </select>
+                        </td>
+                        <td>
+                            <input type="Text" placeholder="Note">
+                        </td>
+                        <td>
+                            <i class="fas fa-trash-alt" data-row-id="1"></i>
+                        </td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </div>
+        <div id="buttonRow">
+            <p>Note: You can change information at anytime you want</p>
+            <button id="submitAllButton"><i class="fa-solid fa-cloud"></i> Save To Browser</button>
+            <input type="file" id="uploadSettingFileButton" accept=".json" style="display:none;"/><label for="uploadSettingFileButton"><i class="fa-solid fa-file-arrow-up"></i>Upload setting file</label>
+            <button id="exportAllSettingButton"><i class="fa-solid fa-file-arrow-down"></i> Export All Setting</button>
+            <a id="exportAllSettingLink" style="display: none;">Export Link</a>
+        </diV>
     </div>
-    <div>
-        <div>Notify Setting</div>
-        <!-- <div>
-            <label for="notifyPredictStockMarketImpact">Thị trường chứng khoán đang biến động mạnh</label>
-            <input type="checkbox" id="notifyPredictStockMarketBigImpact">  
-        </div> -->
-        <div>        
-            <button id="addNotifyButton">Add Notify Setting</button>
-        </div>  
-        <table id="tableCqqNotification">
-            <thead>
-                <tr id="headerTableCqqNotification">
-                    <td>CCQ/Index</td>
-                    <td>Initial Value</td>
-                    <td>Predict Value</td>
-                    <td>Loss Config To Send Notify</td>
-                    <td>Profit Config To Send Notify</td>
-                    <td>Delete</td>
-                </tr>
-            </thead>
-            <tbody>
-                <!--  id="rowIdNotificationStr0"  -->
-                <tr style="display: none;" data-ignore=true data-row-id=0 >
-                    <td>
-                        <select class="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
-                            <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
-                                <option data-price = 12345 value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
-                            </optgroup>
-                            <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowForNotifyRowData"></optgroup>
-                            <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowForNotifyRowData"></optgroup>
-                            <optgroup label="Bond CCQ" class="groupComboboxBondCcqForNotifyRowData"></optgroup>        
-                        </select>
-                    </td>
-                    <td>
-                        <input class="notify-init-value" type="number" data-lasted-value=0 value=0 title="Default is lasted value in everyday, when you input another value it will hold your value to another day.">
-                        <input class="notify-init-value-hidden" type="hidden" value=0>
-                        
-                        <!-- <a class="notify-set-default-init-value-to-lasted-value-link" data-lasted-value=0>Set Lasted Value</a> -->
-                    </td>
-                    <td>
-                        <!-- just show (cannot edit value )-->
-                        <div class="notify-predict-value">
-                            -
-                        </div>
-                    </td>
-                    <td>
-                        <input type="number" value="5" class="loss-point-to-send-notify">
-                        <select class="form-select-loss-unit-to-send-noitfy">
-                            <option value="%" label ="%"></option>
-                            <!-- <option value="P" label ="Point"></option> -->
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" value="10" class="profit-point-to-send-notify">
-                        <select class="form-select-profit-unit-to-send-noitfy">
-                            <option value="%" label ="%"></option>
-                            <!-- <option value="P" label ="Point"></option> -->
-                        </select>
-                    </td>
-                    <td>
-                        <button class="button-delete-notify" data-rowId=0>
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <div>Ccq Classification</div>
-        <button id="addClassificationButton">Add Classification</button>
-        <table id="tableCqqClassification">
-            <thead>
-                <tr id="headerTableCqqClassification">
-                    <td>CCQ Classification Name</td>
-                    <td>List CCQ</td>
-                    <td>Note</td>
-                    <td>Compare CCQ</td>
-                    <td>Delete</td>
-                </tr>
-            </thead>
-            <tbody>
-                <!--  id="rowIdClassificationStr0"  -->
-                <tr style="display: none;" data-ignore=true>
-                    <td>
-                        <input type="Text" class ="classification-name" placeholder="Classification">
-                    </td>
-                    <td class="ccq-for-classification-column">
-                        <select class="form-select-ccq-to-classify" data-placeholder="Choose CCQ To Classify" multiple>
-                            <!--  data-price = 12345 -->
-                            <optgroup label="Stock CCQ" class="groupComboboxStockCcqForClassificationRowData"></optgroup>
-                            <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqqForClassificationRowData"></optgroup>
-                            <optgroup label="Bond CCQ" class="groupComboboxBondCcqqForClassificationRowData"></optgroup>        
-                        </select>
-                    </td>
-                    <td>
-                        <input type="Text"  class ="classification-note" placeholder="Note">
-                    </td>               
-                    <td>
-                        <button class="button-view-chart" data-rowId=0>
-                            <i class="fa-solid fa-chart-line"></i>
-                        </button>
-                    </td>          
-                    <td>
-                        <button class="button-delete-classification" data-rowId=0>
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>
-                <!-- <tr>
-                    <td>
-                        <input type="Text" placeholder="Mid And Low Cap">
-                    </td>
-                    <td>
-                        <select class="form-select ccq-for-classification" data-placeholder="Choose CCQ To Classify" multiple>
-                            <optgroup label="Genral Index" id="groupComboboxGeneralIndex">
-                                <option value="VNindex" title="Chỉ số VNindex">VNindex</option>
-                            </optgroup>
-                            <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
-                            <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
-                            <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>        
-                        </select>
-                    </td>
-                    <td>
-                        <input type="Text" placeholder="Note">
-                    </td>
-                    <td>
-                        <i class="fas fa-trash-alt" data-row-id="1"></i>
-                    </td>
-                </tr> -->
-            </tbody>
-        </table>
-    </div>
-    <p>Note: You can change it at anytime you want</p>
-    <button id="submitAllButton"><i class="fa-solid fa-cloud"></i> Save To Browser</button>
-    <button id="exportAllSettingButton"><i class="fa-solid fa-file-arrow-down"></i> Export All Setting</button>
     <script src="../js/common.js"></script>
     <script src="../js/screen/create-setting.js"></script>
 </body>

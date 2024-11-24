@@ -7,31 +7,73 @@
         <title>View Detail CCQ</title>
     </head>
     <body>
-        <button class="btn btn-outline-secondary btn-sm" id="exportHistory" onclick="exportHistory()">Export History</button > 
-
+        <button class="btn btn-outline-secondary btn-sm" id="exportHistory" onclick="exportLocalStorageData()">Export History</button > 
+            <input type="file" id="fileInput" accept=".json" />
             <a id="exportHistoryLink" style="display: none;">Export</a>
-        <script>
- function exportHistory() {  
-    console.log("started"); 
-    var _myArray = JSON.stringify(localStorage , null, 4); //indentation in json format, human readable
+    
+    <script src="../../js/common.js"></script>
+<script>
+    bindEventUploadSettingFileToStoreLocalStorageData(document.getElementById("fileInput"));
+    function bindEventUploadSettingFileToStoreLocalStorageData(element){
+        element.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function () {
+                const content = reader.result;
+                let mapLocalStorageData = JSON.parse(content, reviverJsonData);
+                console.log( mapLocalStorageData);
+                storeMapDataToLocalStorage(mapLocalStorageData);
+                // store data to local storage
+                element.value = "";    // reset for user can upload same file
+                if(reader != null){
+                    reader.close();
+                }
+                alert('Read file successfully!');
+            };
 
+            reader.onerror = function () {
+                element.value = "";    // reset for user can upload same file
+                if(reader != null){
+                    reader.close();
+                }
+                console.error('We can not read your file, please check the file and try again!');                                  
+            };
+            
+            reader.readAsText(file, 'utf-8');                           
+        
+        });
+    }
+    
+    function storeMapDataToLocalStorage(mapLocalStorageData){
+        localStorage.clear();
+        mapLocalStorageData.forEach((value, key) => {
+            storeDataInLocalStorage(key,value);
+        });
+    }
+    function exportLocalStorageData() {  
+        console.log("started"); 
+        // storage all local storage data to map
+        let myLocalStorageData = new Map();
+        for (let i = 0; i < localStorage.length; i++){
+            let key = localStorage.key(i);
+            myLocalStorageData.set(key,retrieveDataFromLocalStorage(key));
+        }
+        // convert to JSON format
+        let resultExportData = JSON.stringify(myLocalStorageData, replacerJsonData);
+        // We use the anchor tag here instead button.
+        let vLink = document.getElementById('exportHistoryLink');
 
-    //Note: We use the anchor tag here instead button.
-    var vLink = document.getElementById('exportHistoryLink');
+        let vBlob = new Blob([resultExportData], {type: "octet/stream"});
+        vName = 'setting_data.json';
+        vUrl = window.URL.createObjectURL(vBlob);
+        console.log(vLink);
 
-    var vBlob = new Blob([_myArray], {type: "octet/stream"});
-    vName = 'setting_data.json';
-    vUrl = window.URL.createObjectURL(vBlob);
-    console.log(vLink);
+        vLink.setAttribute('href', vUrl);
+        vLink.setAttribute('download', vName );
 
-    vLink.setAttribute('href', vUrl);
-    vLink.setAttribute('download', vName );
-
-    //Note: Programmatically click the link to download the file
-    vLink.click();
-
-    console.log("finished");    
-}
+        // Programmatically click the link to download the file
+        vLink.click();
+    }
         </script>
     </body>
 </html>

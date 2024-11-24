@@ -153,6 +153,9 @@ function bindEvent(){
     
     // no need to click that button in disable row
     // document.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0].click();
+    
+    bindEventUploadSettingFileToStoreLocalStorageData(document.getElementById("uploadSettingFileButton"));
+    bindEventExportAllLocalStorageInJsonFormat(document.getElementById("exportAllSettingButton"));
 }
 
 async function loadOldData(){
@@ -758,3 +761,63 @@ async function calculateImpactOfAllStockCcq(){
 }
 
 /** end handle predict impact of all ccq function */
+
+/** upload, export file */ 
+function bindEventUploadSettingFileToStoreLocalStorageData(element){
+    element.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function () {
+            const content = reader.result;
+            let mapLocalStorageData = JSON.parse(content, reviverJsonData);
+            console.log( mapLocalStorageData);
+            storeMapDataToLocalStorage(mapLocalStorageData);
+            // store data to local storage
+            element.value = "";    // reset for user can upload same file
+            alert('Read file successfully!');
+            window.location.href = window.location.href;
+        };
+
+        reader.onerror = function () {
+            element.value = "";    // reset for user can upload same file
+            console.error('We can not read your file, please check the file and try again!');                                  
+        };
+        
+        reader.readAsText(file, 'utf-8');                           
+    
+    });
+}
+
+function storeMapDataToLocalStorage(mapLocalStorageData){
+    localStorage.clear();
+    mapLocalStorageData.forEach((value, key) => {
+        storeDataInLocalStorage(key,value);
+    });
+}
+
+function bindEventExportAllLocalStorageInJsonFormat(element){
+    element.addEventListener('click', (event) => {
+        // read all local storage data to map
+        let myLocalStorageData = new Map();
+        for (let i = 0; i < localStorage.length; i++){
+            let key = localStorage.key(i);
+            myLocalStorageData.set(key,retrieveDataFromLocalStorage(key));
+        }
+        // convert to JSON format
+        let resultExportData = JSON.stringify(myLocalStorageData, replacerJsonData);
+        // We use the anchor tag here instead button.
+        let vLink = document.getElementById('exportAllSettingLink');
+
+        let vBlob = new Blob([resultExportData], {type: "octet/stream"});
+        vName = 'setting_data.json';
+        vUrl = window.URL.createObjectURL(vBlob);
+        console.log(vLink);
+
+        vLink.setAttribute('href', vUrl);
+        vLink.setAttribute('download', vName );
+
+        // Programmatically click the link to download the file
+        vLink.click();
+    });
+}
+/** end upload, export file */ 
