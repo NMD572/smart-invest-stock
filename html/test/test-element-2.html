@@ -1,38 +1,366 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" class="mdl-js"><head><style type="text/css">.anychart-credits{position:absolute;overflow:hidden;right:9px;bottom:6px;height:10px;}.anychart-credits a {text-decoration:none;}.anychart-credits-logo{border:none;margin-right:2px;height:10px;width:10px;display:inline-block;vertical-align:top;}.anychart-credits-text{font-size:10px;line-height:9px;display:inline-block;vertical-align:top;text-decoration:none;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#929292;height:10px;}</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Invest Setting</title>
+
+    <!-- Library for using select2 combobox -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Library for using chart with any chart -->
+    <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
+            
+    
+    <!-- Styles for using select2 combobox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+    
+    <!-- Styles for icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f8fa;
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 60px; /* Add padding equal to the height of #buttonRow */
+            color: #333;
+        }
+
+        /* Main Title Styling */
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #007bff; /* Highlighted color */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid #007bff;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        /* Sub-Title Styling */
+        .sub-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+        }
+
+        /* Chart Container Styling */
+        #chartOfMyCategoryData {
+            width: 100%;
+            height: 1100px; /* Increased height */
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background-color: #007bff;
+            color: white;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        tbody td {
+            white-space: nowrap; /* Prevent wrapping */
+            vertical-align: middle;
+        }
+
+        .loss-profit-config input {
+            max-width: 80%; /* Limit input size */
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .loss-profit-config select{
+            max-width: 20%; /* Limit input size */
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        /* Input Styling */
+        input[type="text"], input[type="number"], input[type="time"], input[type="date"], input[class="category-name"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Button Styling */
+        button, #uploadSettingFileButtonLabel {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover, #uploadSettingFileButtonLabel:hover {
+            background-color: #0056b3;
+        }
+
+        button i, #uploadSettingFileButtonLabel i {
+            margin-right: 5px;
+        }
+
+        /* Form Labels */
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        #uploadSettingFileButtonLabel{
+            font-weight: bold;
+            margin-top: 0px;
+            display: block;
+        }
+
+        /* Fixed Button Row */
         #buttonRow {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px; /* Space between buttons */
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-top: 1px solid #ddd;
             position: fixed;
             bottom: 0;
+            left: 0;
             right: 0;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-top: 1px solid #ccc;
-            z-index: 999; /* Ensure it's always on top */
+            z-index: 1000;
         }
+
     </style>
 </head>
-<body >
+<body onload="initScreen()" data-new-gr-c-s-check-loaded="14.1209.0" data-gr-ext-installed="">
     <div id="createSettingContainer">
-        <div>Create your setting</div>
+        <div class="main-title">Create your setting</div>
         <div>
-            <label>Enter your name:</label><input type ="text" id="inputFullName">
+            <label>Enter your name:</label><input type="text" id="inputFullName" value="Nguyen Van Nam">
         </div>
         <div>
-            <label>Enter your strategy:</label><textarea id="inputMyStrategy"></textarea>
+            <label>Enter your strategy:</label><textarea id="inputMyStrategy">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</textarea>
         </div>
-        
+        <div>
+            <div class="sub-title">Notify time setting</div>
+            <label>Start time (HH:MM):</label><input type="time" id="inputStartNotifyTime" value="20:00">
+            <label>End time (HH:MM):</label><input type="time" id="inputEndNotifyTime" value="22:00">
+            <label>Gap time (S):</label><input type="number" id="inputGapNotifyTime" value="5">
+        </div>
+        <div>
+            <div class="sub-title">My Invest Category</div>
+            <button id="addCategoryButton">Add Category</button>
+            <table id="tableMyCategory">
+                <thead> 
+                    <tr id="headerTableMyCategory">
+                        <td>Category Name</td>
+                        <td>Capital</td>
+                        <td>Purchase Date</td>
+                        <td>Purchase Price (auto infer when is CCQ)</td>
+                        <td>Current Price (auto infer when is CCQ)</td>
+                        <td>Profit Percent (auto infer)</td>
+                        <td>Total Income Value (auto infer)</td>
+                        <td>Note</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                      <tr data-row-id="19" style="display: table-row;">
+                        <td>
+                            <!-- Category name show for user -->
+                            <input class="category-name" list="categoryComboboxDataStr19">
+                            <datalist id="categoryComboboxDataStr19" class="datalist-for-category" data-placeholder="Choose CCQ For Category">
+                                <option data-value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
+                            <option title="QUỸ ĐẦU TƯ CỔ PHIẾU KINH TẾ HIỆN ĐẠI VINACAPITAL (VINACAPITAL)" data-value="68" data-price="14508.61">VMEEF</option><option title="QUỸ ĐẦU TƯ LỢI THẾ CẠNH TRANH BỀN VỮNG SSI (SSIAM)" data-value="11" data-price="38784.59">SSISCA</option><option title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DÀI HẠN VIỆT NAM (SSIAM)" data-value="49" data-price="11772.44">VLGF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TRIỂN VỌNG BẢO VIỆT (BAOVIETFUND)" data-value="14" data-price="20404">BVPF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU HÀNG ĐẦU VCBF (VIETCOMBANK FUND)" data-value="32" data-price="33655.65">VCBF-BCF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG BALLAD VIỆT NAM (SGIC)" data-value="41" data-price="9360.48">TBLF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU HƯNG THỊNH VINACAPITAL (VINACAPITAL)" data-value="20" data-price="29576.15">VEOF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG VCBF (VIETCOMBANK FUND)" data-value="46" data-price="12501.65">VCBF-MGF</option><option title="QUỸ ĐẦU TƯ CHỨNG KHOÁN NĂNG ĐỘNG DC (DCVFM)" data-value="28" data-price="77302.84">DCDS</option><option title="QUỸ ĐẦU TƯ GIÁ TRỊ MB CAPITAL (MBCAPITAL)" data-value="47" data-price="21443">MBVF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG MIRAE ASSET VIỆT NAM (MIRAE ASSET)" data-value="35" data-price="16236.26">MAGEF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TIẾP CẬN THỊ TRƯỜNG VINACAPITAL (VINACAPITAL)" data-value="23" data-price="29937.16">VESAF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU MANULIFE (MANULIFE IM (VN))" data-value="72" data-price="17361">MAFEQI</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU UNITED ESG VIỆT NAM (UOBAM VIETNAM)" data-value="58" data-price="14002.75">UVEEF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU NĂNG ĐỘNG BẢO VIỆT (BAOVIETFUND)" data-value="12" data-price="21742">BVFED</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TẬP TRUNG CỔ TỨC DC (DCVFM)" data-value="25" data-price="27155.32">DCDE</option><option title="QUỸ ĐẦU TƯ CHỦ ĐỘNG VND (IPAAM)" data-value="38" data-price="15683.16">VNDAF</option><option title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DFVN (DFVN)" data-value="29" data-price="15323.98">DCAF</option><option title="QUỸ ĐẦU TƯ CHỌN LỌC PHÚ HƯNG VIỆT NAM (PHFM)" data-value="66" data-price="11652.66">PHVSF</option><option title="QUỸ ĐẦU TƯ GIA TĂNG GIÁ TRỊ GFM (GFM)" data-value="69" data-price="9900.74">GFM-VIF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU TRIỂN VỌNG NTP (NTP AM)" data-value="52" data-price="9790.57">NTPPF</option><option title="QUỸ ĐẦU TƯ CỔ PHIẾU CỔ TỨC NĂNG ĐỘNG VINACAPITAL (VINACAPITAL)" data-value="80" data-price="9877.67">VDEF</option><option title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG THÀNH CÔNG (TCAM)" data-value="79" data-price="9733.39">TCGF</option><option title="QUỸ ĐẦU TƯ NĂNG ĐỘNG LIGHTHOUSE (LIGHTHOUSE CAPITAL)" data-value="76" data-price="10382.95">LHCDF</option><option title="QUỸ ĐẦU TƯ BẢN VIỆT DISCOVERY (VCAM)" data-value="75" data-price="9371.37">VCAMDF</option><option title="QUỸ ĐẦU TƯ CÂN BẰNG CHIẾN LƯỢC VCBF (VIETCOMBANK FUND)" data-value="31" data-price="31831.17">VCBF-TBF</option><option title="QUỸ ĐẦU TƯ CÂN BẰNG TUỆ SÁNG VINACAPITAL (VINACAPITAL)" data-value="22" data-price="17275.94">VIBF</option><option title="QUỸ ĐẦU TƯ NĂNG ĐỘNG EASTSPRING INVESTMENTS VIỆT NAM (EASTSPRING VIET NAM)" data-value="81" data-price="35857">ENF</option><option title="QUỸ ĐẦU TƯ CÂN BẰNG BẢN VIỆT (VCAM)" data-value="70" data-price="18148.47">VCAMBF</option><option title="QUỸ ĐẦU TƯ CÂN BẰNG MANULIFE (MANULIFE IM (VN))" data-value="71" data-price="15833">MAFBAL</option><option title="QUỸ ĐẦU TƯ CÂN BẰNG PVCOM (PVCB CAPITAL)" data-value="61" data-price="10224.05">PBIF</option><option title="QUỸ ĐẦU TƯ UNITED THU NHẬP NĂNG ĐỘNG VIỆT NAM (UOBAM VIETNAM)" data-value="78" data-price="9818">UVDIF</option><option title="QUỸ ĐẦU TƯ NĂNG ĐỘNG MANULIFE (MANULIFE IM (VN))" data-value="77" data-price="10759">MDI</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU LIGHTHOUSE (LIGHTHOUSE CAPITAL)" data-value="64" data-price="13499.86">LHBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU MB (MBCAPITAL)" data-value="48" data-price="15098">MBBOND</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU LINH HOẠT MIRAE ASSET VIỆT NAM (MIRAE ASSET)" data-value="50" data-price="12395.63">MAFF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU VND (IPAAM)" data-value="37" data-price="14428.24">VNDBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU BẢO VIỆT  (BAOVIETFUND)" data-value="13" data-price="20491">BVBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU VCBF (VIETCOMBANK FUND)" data-value="33" data-price="14329.2">VCBF-FIF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU DC (DCVFM)" data-value="27" data-price="26882.89">DCBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU BẢO THỊNH VINACAPITAL (VINACAPITAL)" data-value="21" data-price="23595.84">VFF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU SSI (SSIAM)" data-value="8" data-price="15601.04">SSIBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU PHÁT TRIỂN VIỆT NAM VCAM-NH (VCAM)" data-value="63" data-price="11424.09">VCAM-NH VABF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU PVCOM (PVCB CAPITAL)" data-value="45" data-price="14265.88">PVBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU AN BÌNH (ABF)" data-value="65" data-price="13039.48">ABBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU AN TOÀN AMBER (AMBER CAPITAL)" data-value="51" data-price="11947.61">ASBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU GIA TĂNG THU NHẬP CỐ ĐỊNH DC (DCVFM)" data-value="67" data-price="11181.07">DCIP</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU LINH HOẠT VND (IPAAM)" data-value="40" data-price="10735.85">VNDCF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU LỢI TỨC CAO HD (HDCAPITAL)" data-value="62" data-price="11327.46">HDBOND</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU THANH KHOẢN VINACAPITAL (VINACAPITAL)" data-value="53" data-price="11677.51">VLBF</option><option title="QUỸ ĐẦU TƯ TRÁI PHIẾU DFVN (DFVN)" data-value="30" data-price="11345.31">DFIX</option></datalist>
+                            <!-- Category value show for handle -->
+                            <input type="hidden" class="category-value-hidden" value="68">
+                        </td>
+                        <td><input type="number" class="category-purchase-capital" value="1000000000"></td>
+                        <td><input type="date" class="category-purchase-date" value="2024-01-01"></td>
+                        <td><input type="number" class="category-purchase-price" value="1000232" disabled=""></td>
+                        <td><input type="number" class="category-current-price" value="1000233" disabled=""></td>
+                        <td><div class="category-profit-percent">-1.1%</div></td>
+                        <td><div class="category-income-value">989000</div></td>
+                        <td><input type="text" class="catogory-note"></td>
+                        <td>
+                            <button class="button-delete-category">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr></tbody>
+            </table>
+            <button id="redloadChartOfCategoryButton">Reload Chart</button>
+            <div>
+                <div class="sub-title">Chart of My Category</div>
+                <div id="chartOfMyCategoryData"><div style="position: relative; left: 0px; top: 0px; overflow: hidden; width: 100%; height: 100%;"><svg xmlns="http://www.w3.org/2000/svg" border="0" data-ac-wrapper-id="2" width="100%" height="100%" class="anychart-ui-support" ac-id="ac_stage_36796e95_0" role="presentation" style="display: block;"><defs><clipPath clip-rule="nonzero" id="ac_clip_36796e95_t"><path data-ac-wrapper-id="33" id="ac_rect_36796e95_u" fill="none" stroke="black" d="M 0 0 L 999.5500183105469 0 999.5500183105469 25 0 25 0 0 Z"></path></clipPath><clipPath clip-rule="nonzero" id="ac_clip_36796e95_z"><circle data-ac-wrapper-id="37" cx="754.5" cy="499.6000003814697" r="113.87719990730285" id="ac_circle_36796e95_10" fill="none" stroke="black"></circle></clipPath><clipPath clip-rule="nonzero" id="ac_clip_36796e95_1k"><path data-ac-wrapper-id="56" id="ac_rect_36796e95_1l" fill="none" stroke="black" d="M 10 39.20000076293945 L 1499 39.20000076293945 1499 960 10 960 10 39.20000076293945 Z"></path></clipPath></defs><g data-ac-wrapper-id="3" id="ac_layer_36796e95_1"><g data-ac-wrapper-id="6" role="article" aria-label="pie chart  entitled My Category, with 5 points. Min value is 10963800, max value is 106970473.5." id="ac_chart_36796e95_2"><path data-ac-wrapper-id="44" id="ac_path_36796e95_18" fill="none" stroke="#595959" stroke-width="2" stroke-dasharray="2 2" d="M 0,0"></path><g data-ac-wrapper-id="7" id="ac_layer_36796e95_4"><path data-ac-wrapper-id="8" id="ac_path_36796e95_3" fill="#ffffff" stroke="none" d="M 0 0 L 1519 0 1519 0 1519 1000 1519 1000 0 1000 0 1000 0 0 0 0 Z"></path></g><circle data-ac-wrapper-id="75" cx="754.5" cy="499.6000003814697" r="111.87719990730285" id="ac_circle_36796e95_25" fill="none" stroke="none"></circle><g data-ac-wrapper-id="34" clip-path="url(&quot;#ac_clip_36796e95_z&quot;)" clipPathUnits="userSpaceOnUse" id="ac_layer_36796e95_11"><g data-ac-wrapper-id="35" id="ac_layer_36796e95_x"><text data-ac-wrapper-id="36" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" fill="#60727b" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="middle" x="754.5" y="497.20000076293945" aria-hidden="true" id="ac_text_36796e95_w" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="754.5" dy="0">Total Income: 100.39%</tspan><tspan x="754.5" dy="15.199999809265137">/ 232217248.5</tspan></text></g></g><g data-ac-wrapper-id="57" id="ac_layer_36796e95_1s"><path data-ac-wrapper-id="58" id="ac_path_36796e95_1n" fill="#b3dbfb" fill-opacity="0.5" stroke="none" d="M 0,0"></path><path data-ac-wrapper-id="59" id="ac_path_36796e95_1o" fill="#8ebce9" fill-opacity="0.5" stroke="none" d="M 0,0"></path><path data-ac-wrapper-id="60" id="ac_path_36796e95_1p" fill="#f7b782" fill-opacity="0.5" stroke="none" d="M 0,0"></path><path data-ac-wrapper-id="61" id="ac_path_36796e95_1q" fill="#ffeba9" fill-opacity="0.5" stroke="none" d="M 0,0"></path><path data-ac-wrapper-id="62" id="ac_path_36796e95_1r" fill="#a4afb3" fill-opacity="0.5" stroke="none" d="M 0,0"></path></g><g data-ac-wrapper-id="63" id="ac_layer_36796e95_1y"><path data-ac-wrapper-id="64" id="ac_path_36796e95_1t" fill="#64b5f6" stroke="none" d="M 754.5 126.67600069046023 A 372.9239996910095 372.9239996910095 0 0 1 845.7703926861038 861.1826672288512 L 781.8811178058312 608.0748004356842 A 111.87719990730285 111.87719990730285 0 0 0 754.5 387.72280047416695 Z"></path><path data-ac-wrapper-id="65" id="ac_path_36796e95_1u" fill="#1976d2" stroke="none" d="M 845.7703926861038 861.1826672288512 A 372.9239996910095 372.9239996910095 0 0 1 710.3067617750253 869.8961889126653 L 741.2420285325076 610.6888569408284 A 111.87719990730285 111.87719990730285 0 0 0 781.8811178058312 608.0748004356842 Z"></path><path data-ac-wrapper-id="66" id="ac_path_36796e95_1v" fill="#ef6c00" stroke="none" d="M 710.3067617750253 869.8961889126653 A 372.9239996910095 372.9239996910095 0 0 1 582.2491015637645 830.3596374798462 L 702.8247304691293 598.8278915109827 A 111.87719990730285 111.87719990730285 0 0 0 741.2420285325076 610.6888569408284 Z"></path><path data-ac-wrapper-id="67" id="ac_path_36796e95_1w" fill="#ffd54f" stroke="none" d="M 582.2491015637645 830.3596374798462 A 372.9239996910095 372.9239996910095 0 0 1 493.08538404941055 765.5599750260502 L 676.0756152148232 579.3879927748438 A 111.87719990730285 111.87719990730285 0 0 0 702.8247304691293 598.8278915109827 Z"></path><path data-ac-wrapper-id="68" id="ac_path_36796e95_1x" fill="#455a64" stroke="none" d="M 493.08538404941055 765.5599750260502 A 372.9239996910095 372.9239996910095 0 0 1 754.4999999999999 126.67600069046023 L 754.5 387.7228004741669 A 111.87719990730285 111.87719990730285 0 0 0 676.0756152148232 579.3879927748438 Z"></path></g><g data-ac-wrapper-id="69" pointer-events="none" id="ac_layer_36796e95_24"><path data-ac-wrapper-id="70" id="ac_path_36796e95_1z" fill="none" stroke="none" d="M 754.5 126.67600069046023 A 372.9239996910095 372.9239996910095 0 0 1 845.7703926861038 861.1826672288512 L 781.8811178058312 608.0748004356842 A 111.87719990730285 111.87719990730285 0 0 0 754.5 387.72280047416695 Z"></path><path data-ac-wrapper-id="71" id="ac_path_36796e95_20" fill="none" stroke="none" d="M 845.7703926861038 861.1826672288512 A 372.9239996910095 372.9239996910095 0 0 1 710.3067617750253 869.8961889126653 L 741.2420285325076 610.6888569408284 A 111.87719990730285 111.87719990730285 0 0 0 781.8811178058312 608.0748004356842 Z"></path><path data-ac-wrapper-id="72" id="ac_path_36796e95_21" fill="none" stroke="none" d="M 710.3067617750253 869.8961889126653 A 372.9239996910095 372.9239996910095 0 0 1 582.2491015637645 830.3596374798462 L 702.8247304691293 598.8278915109827 A 111.87719990730285 111.87719990730285 0 0 0 741.2420285325076 610.6888569408284 Z"></path><path data-ac-wrapper-id="73" id="ac_path_36796e95_22" fill="none" stroke="none" d="M 582.2491015637645 830.3596374798462 A 372.9239996910095 372.9239996910095 0 0 1 493.08538404941055 765.5599750260502 L 676.0756152148232 579.3879927748438 A 111.87719990730285 111.87719990730285 0 0 0 702.8247304691293 598.8278915109827 Z"></path><path data-ac-wrapper-id="74" id="ac_path_36796e95_1x" fill="none" stroke="none" d="M 493.08538404941055 765.5599750260502 A 372.9239996910095 372.9239996910095 0 0 1 754.4999999999999 126.67600069046023 L 754.5 387.7228004741669 A 111.87719990730285 111.87719990730285 0 0 0 676.0756152148232 579.3879927748438 Z"></path></g><g data-ac-wrapper-id="38" id="ac_layer_36796e95_17"><path data-ac-wrapper-id="39" id="ac_path_36796e95_12" fill="none" stroke="#595959" stroke-width="2" stroke-dasharray="2 2" d="M 644.4872698341045 855.9278111779131 L 638.5872617757844 875.0377537448534 633.5872617757844 875.0377537448534"></path><path data-ac-wrapper-id="40" id="ac_path_36796e95_13" fill="none" stroke="#595959" stroke-width="2" stroke-dasharray="2 2" d="M 535.2599633834441 801.2721997799414 L 523.5020697215607 817.450949318637 518.5020697215607 817.450949318637"></path><path data-ac-wrapper-id="41" id="ac_path_36796e95_14" fill="none" stroke="#595959" stroke-width="2" stroke-dasharray="2 2" d="M 409.3513602462582 358.3742023781239 L 390.840959197266 350.800230302293 385.840959197266 350.800230302293"></path><path data-ac-wrapper-id="42" id="ac_path_36796e95_15" fill="none" stroke="#595959" stroke-width="2" stroke-dasharray="2 2" d="M 778.4383788731157 871.7548922779316 L 779.722199645871 891.7136448497594 784.722199645871 891.7136448497594"></path><path data-ac-wrapper-id="43" id="ac_path_36796e95_16" fill="none" stroke="#595959" stroke-width="2" stroke-dasharray="2 2" d="M 1124.5778052553324 453.61383286409136 L 1144.4251631921754 451.14758410801835 1149.4251631921754 451.14758410801835"></path></g><g data-ac-wrapper-id="45" clip-path="url(&quot;#ac_clip_36796e95_1k&quot;)" clipPathUnits="userSpaceOnUse" id="ac_layer_36796e95_1m"><g data-ac-wrapper-id="46" id="ac_layer_36796e95_1a"><text data-ac-wrapper-id="47" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#545f69" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="1153.4251631921754" y="455.94758382191606" aria-hidden="true" id="ac_text_36796e95_19" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="1153.4251631921754" dy="0">46.1%</tspan></text></g><g data-ac-wrapper-id="48" id="ac_layer_36796e95_1c"><text data-ac-wrapper-id="49" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#545f69" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="788.722199645871" y="896.5136445636571" aria-hidden="true" id="ac_text_36796e95_1b" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="788.722199645871" dy="0">5.8%</tspan></text></g><g data-ac-wrapper-id="50" id="ac_layer_36796e95_1e"><text data-ac-wrapper-id="51" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#545f69" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="597.0497594869661" y="879.8377534587511" aria-hidden="true" id="ac_text_36796e95_1d" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="597.0497594869661" dy="0">5.8%</tspan></text></g><g data-ac-wrapper-id="52" id="ac_layer_36796e95_1g"><text data-ac-wrapper-id="53" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#545f69" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="481.96456743274234" y="822.2509490325347" aria-hidden="true" id="ac_text_36796e95_1f" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="481.96456743274234" dy="0">4.7%</tspan></text></g><g data-ac-wrapper-id="54" id="ac_layer_36796e95_1i"><text data-ac-wrapper-id="55" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#545f69" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="341.66595996020544" y="355.6002300161907" aria-hidden="true" id="ac_text_36796e95_1h" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="341.66595996020544" dy="0">37.6%</tspan></text></g></g><g data-ac-wrapper-id="9" transform="matrix(1,0,0,1,703.8484382629395,10)" id="ac_layer_36796e95_6"><text data-ac-wrapper-id="10" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="16" font-weight="normal" fill="#7c868e" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="middle" x="50.65156173706055" y="16" aria-hidden="true" id="ac_text_36796e95_5" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1;"><tspan x="50.65156173706055" dy="0">My Category</tspan></text></g><g data-ac-wrapper-id="11" transform="matrix(1,0,0,1,254.72499084472656,960)" clip-path="url(&quot;#ac_clip_36796e95_t&quot;)" clipPathUnits="userSpaceOnUse" id="ac_layer_36796e95_v"><g data-ac-wrapper-id="12" id="ac_layer_36796e95_r"><g data-ac-wrapper-id="13" transform="matrix(1,0,0,1,10,10)" id="ac_layer_36796e95_a"><text data-ac-wrapper-id="14" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#7c868e" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="20" y="12.299999713897705" aria-hidden="true" id="ac_text_36796e95_7" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1; cursor: pointer;"><tspan x="20" dy="0">VCBF-FIF (1.14% / 1210473.5)</tspan></text><path data-ac-wrapper-id="15" id="ac_path_36796e95_8" fill="#64b5f6" stroke="none" d="M 0 0 L 15 0 15 15 0 15 Z" style="cursor: pointer;"></path><path data-ac-wrapper-id="16" id="ac_rect_36796e95_9" fill="#FFFFFF" fill-opacity="0.00001" stroke="none" d="M 0 0 L 211.375 0 211.375 15 0 15 0 0 Z" style="cursor: pointer;"></path></g><g data-ac-wrapper-id="17" transform="matrix(1,0,0,1,236.375,10)" id="ac_layer_36796e95_e"><text data-ac-wrapper-id="18" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#7c868e" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="20" y="12.299999713897705" aria-hidden="true" id="ac_text_36796e95_b" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1; cursor: pointer;"><tspan x="20" dy="0">VMEEF (-0.89% / -121775)</tspan></text><path data-ac-wrapper-id="19" id="ac_path_36796e95_c" fill="#1976d2" stroke="none" d="M 0 0 L 15 0 15 15 0 15 Z" style="cursor: pointer;"></path><path data-ac-wrapper-id="20" id="ac_rect_36796e95_d" fill="#FFFFFF" fill-opacity="0.00001" stroke="none" d="M 0 0 L 187.03750610351562 0 187.03750610351562 15 0 15 0 0 Z" style="cursor: pointer;"></path></g><g data-ac-wrapper-id="21" transform="matrix(1,0,0,1,438.4125061035156,10)" id="ac_layer_36796e95_i"><text data-ac-wrapper-id="22" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#7c868e" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="20" y="12.299999713897705" aria-hidden="true" id="ac_text_36796e95_f" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1; cursor: pointer;"><tspan x="20" dy="0">VESAF (-1.08% / -145250)</tspan></text><path data-ac-wrapper-id="23" id="ac_path_36796e95_g" fill="#ef6c00" stroke="none" d="M 0 0 L 15 0 15 15 0 15 Z" style="cursor: pointer;"></path><path data-ac-wrapper-id="24" id="ac_rect_36796e95_h" fill="#FFFFFF" fill-opacity="0.00001" stroke="none" d="M 0 0 L 185.625 0 185.625 15 0 15 0 0 Z" style="cursor: pointer;"></path></g><g data-ac-wrapper-id="25" transform="matrix(1,0,0,1,639.0375061035156,10)" id="ac_layer_36796e95_m"><text data-ac-wrapper-id="26" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#7c868e" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="20" y="12.299999713897705" aria-hidden="true" id="ac_text_36796e95_j" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1; cursor: pointer;"><tspan x="20" dy="0">DCDS (-0.33% / -36200)</tspan></text><path data-ac-wrapper-id="27" id="ac_path_36796e95_k" fill="#ffd54f" stroke="none" d="M 0 0 L 15 0 15 15 0 15 Z" style="cursor: pointer;"></path><path data-ac-wrapper-id="28" id="ac_rect_36796e95_l" fill="#FFFFFF" fill-opacity="0.00001" stroke="none" d="M 0 0 L 173.28750610351562 0 173.28750610351562 15 0 15 0 0 Z" style="cursor: pointer;"></path></g><g data-ac-wrapper-id="29" transform="matrix(1,0,0,1,827.3250122070312,10)" id="ac_layer_36796e95_q"><text data-ac-wrapper-id="30" font-style="normal" font-variant="normal" font-family="Verdana, Helvetica, Arial, sans-serif" font-size="12" font-weight="normal" fill="#7c868e" letter-spacing="normal" text-decoration="none" direction="ltr" text-anchor="start" x="20" y="12.299999713897705" aria-hidden="true" id="ac_text_36796e95_n" style="user-select: none; font-family: Verdana, Helvetica, Arial, sans-serif; opacity: 1; cursor: pointer;"><tspan x="20" dy="0">Capital Money (0% / 0)</tspan></text><path data-ac-wrapper-id="31" id="ac_path_36796e95_o" fill="#455a64" stroke="none" d="M 0 0 L 15 0 15 15 0 15 Z" style="cursor: pointer;"></path><path data-ac-wrapper-id="32" id="ac_rect_36796e95_p" fill="#FFFFFF" fill-opacity="0.00001" stroke="none" d="M 0 0 L 162.22500610351562 0 162.22500610351562 15 0 15 0 0 Z" style="cursor: pointer;"></path></g></g></g></g></g></svg><div class="anychart-credits"><a href="https://www.anychart.com/?utm_source=trial" title="AnyChart - JavaScript Charts designed to be embedded and integrated, v8.11.0.1934" target="_blank"><img class="anychart-credits-logo" alt="AnyChart - JavaScript Charts" src="http://static.anychart.com/logo.png"><span class="anychart-credits-text">AnyChart Trial Version</span></a></div><div style="position: absolute; z-index: 9999; left: 0px; top: 0px; width: 100%; height: 100%; pointer-events: none;"><div style="position: relative; left: 0px; top: 0px; overflow: hidden; width: 100%; height: 100%;"><svg xmlns="http://www.w3.org/2000/svg" border="0" data-ac-wrapper-id="77" width="100%" height="100%" class="anychart-ui-support" ac-id="ac_stage_36796e95_26" style="display: block; position: relative; left: 0px; top: 0px; opacity: 1; pointer-events: none;"><defs></defs><g data-ac-wrapper-id="78" id="ac_layer_36796e95_27"></g></svg></div></div></div></div>
+            </div>
+        </div>
+        <div>
+            <div class="sub-title">Notify Setting</div>
+            <!-- <div>
+                <label for="notifyPredictStockMarketImpact">Thị trường chứng khoán đang biến động mạnh</label>
+                <input type="checkbox" id="notifyPredictStockMarketBigImpact">  
+            </div> -->
+            <div>        
+                <button id="addNotifyButton">Add Notify Setting</button>
+            </div>  
+            <table id="tableCqqNotification">
+                <thead>
+                    <tr id="headerTableCqqNotification">
+                        <td>CCQ/Index</td>
+                        <td>Initial Value</td>
+                        <td>Predict Value</td>
+                        <td>Loss Config To Send Notify</td>
+                        <td>Profit Config To Send Notify</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                <tr data-row-id="1" style="display: table-row;">
+                        <td>
+                            <select class="form-select-ccq-to-notify select2-hidden-accessible" data-placeholder="Choose CCQ To Receive Notify" data-select2-id="select2-data-1-40ok" tabindex="-1" aria-hidden="true">
+                                <optgroup label="Genral Index" class="groupComboboxGeneralIndexForNotifyRowData">
+                                    <option data-price="12345" value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
+                                </optgroup>
+                                <optgroup label="Stock CCQ" class="groupComboboxStockCcqRowForNotifyRowData"><option value="68" title="QUỸ ĐẦU TƯ CỔ PHIẾU KINH TẾ HIỆN ĐẠI VINACAPITAL (VINACAPITAL)" data-price="14508.61" data-select2-id="select2-data-3-xovb">VMEEF</option><option value="11" title="QUỸ ĐẦU TƯ LỢI THẾ CẠNH TRANH BỀN VỮNG SSI (SSIAM)" data-price="38784.59">SSISCA</option><option value="49" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DÀI HẠN VIỆT NAM (SSIAM)" data-price="11772.44">VLGF</option><option value="14" title="QUỸ ĐẦU TƯ CỔ PHIẾU TRIỂN VỌNG BẢO VIỆT (BAOVIETFUND)" data-price="20404">BVPF</option><option value="32" title="QUỸ ĐẦU TƯ CỔ PHIẾU HÀNG ĐẦU VCBF (VIETCOMBANK FUND)" data-price="33655.65">VCBF-BCF</option><option value="41" title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG BALLAD VIỆT NAM (SGIC)" data-price="9360.48">TBLF</option><option value="20" title="QUỸ ĐẦU TƯ CỔ PHIẾU HƯNG THỊNH VINACAPITAL (VINACAPITAL)" data-price="29576.15">VEOF</option><option value="46" title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG VCBF (VIETCOMBANK FUND)" data-price="12501.65">VCBF-MGF</option><option value="28" title="QUỸ ĐẦU TƯ CHỨNG KHOÁN NĂNG ĐỘNG DC (DCVFM)" data-price="77302.84">DCDS</option><option value="47" title="QUỸ ĐẦU TƯ GIÁ TRỊ MB CAPITAL (MBCAPITAL)" data-price="21443">MBVF</option><option value="35" title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG MIRAE ASSET VIỆT NAM (MIRAE ASSET)" data-price="16236.26">MAGEF</option><option value="23" title="QUỸ ĐẦU TƯ CỔ PHIẾU TIẾP CẬN THỊ TRƯỜNG VINACAPITAL (VINACAPITAL)" data-price="29937.16">VESAF</option><option value="72" title="QUỸ ĐẦU TƯ CỔ PHIẾU MANULIFE (MANULIFE IM (VN))" data-price="17361">MAFEQI</option><option value="58" title="QUỸ ĐẦU TƯ CỔ PHIẾU UNITED ESG VIỆT NAM (UOBAM VIETNAM)" data-price="14002.75">UVEEF</option><option value="12" title="QUỸ ĐẦU TƯ CỔ PHIẾU NĂNG ĐỘNG BẢO VIỆT (BAOVIETFUND)" data-price="21742">BVFED</option><option value="25" title="QUỸ ĐẦU TƯ CỔ PHIẾU TẬP TRUNG CỔ TỨC DC (DCVFM)" data-price="27155.32">DCDE</option><option value="38" title="QUỸ ĐẦU TƯ CHỦ ĐỘNG VND (IPAAM)" data-price="15683.16">VNDAF</option><option value="29" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DFVN (DFVN)" data-price="15323.98">DCAF</option><option value="66" title="QUỸ ĐẦU TƯ CHỌN LỌC PHÚ HƯNG VIỆT NAM (PHFM)" data-price="11652.66">PHVSF</option><option value="69" title="QUỸ ĐẦU TƯ GIA TĂNG GIÁ TRỊ GFM (GFM)" data-price="9900.74">GFM-VIF</option><option value="52" title="QUỸ ĐẦU TƯ CỔ PHIẾU TRIỂN VỌNG NTP (NTP AM)" data-price="9790.57">NTPPF</option><option value="80" title="QUỸ ĐẦU TƯ CỔ PHIẾU CỔ TỨC NĂNG ĐỘNG VINACAPITAL (VINACAPITAL)" data-price="9877.67">VDEF</option><option value="79" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG THÀNH CÔNG (TCAM)" data-price="9733.39">TCGF</option><option value="76" title="QUỸ ĐẦU TƯ NĂNG ĐỘNG LIGHTHOUSE (LIGHTHOUSE CAPITAL)" data-price="10382.95">LHCDF</option><option value="75" title="QUỸ ĐẦU TƯ BẢN VIỆT DISCOVERY (VCAM)" data-price="9371.37">VCAMDF</option></optgroup>
+                                <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqRowForNotifyRowData"><option value="31" title="QUỸ ĐẦU TƯ CÂN BẰNG CHIẾN LƯỢC VCBF (VIETCOMBANK FUND)" data-price="31831.17">VCBF-TBF</option><option value="22" title="QUỸ ĐẦU TƯ CÂN BẰNG TUỆ SÁNG VINACAPITAL (VINACAPITAL)" data-price="17275.94">VIBF</option><option value="81" title="QUỸ ĐẦU TƯ NĂNG ĐỘNG EASTSPRING INVESTMENTS VIỆT NAM (EASTSPRING VIET NAM)" data-price="35857">ENF</option><option value="70" title="QUỸ ĐẦU TƯ CÂN BẰNG BẢN VIỆT (VCAM)" data-price="18148.47">VCAMBF</option><option value="71" title="QUỸ ĐẦU TƯ CÂN BẰNG MANULIFE (MANULIFE IM (VN))" data-price="15833">MAFBAL</option><option value="61" title="QUỸ ĐẦU TƯ CÂN BẰNG PVCOM (PVCB CAPITAL)" data-price="10224.05">PBIF</option><option value="78" title="QUỸ ĐẦU TƯ UNITED THU NHẬP NĂNG ĐỘNG VIỆT NAM (UOBAM VIETNAM)" data-price="9818">UVDIF</option><option value="77" title="QUỸ ĐẦU TƯ NĂNG ĐỘNG MANULIFE (MANULIFE IM (VN))" data-price="10759">MDI</option></optgroup>
+                                <optgroup label="Bond CCQ" class="groupComboboxBondCcqForNotifyRowData"><option value="64" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LIGHTHOUSE (LIGHTHOUSE CAPITAL)" data-price="13499.86">LHBF</option><option value="48" title="QUỸ ĐẦU TƯ TRÁI PHIẾU MB (MBCAPITAL)" data-price="15098">MBBOND</option><option value="50" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LINH HOẠT MIRAE ASSET VIỆT NAM (MIRAE ASSET)" data-price="12395.63">MAFF</option><option value="37" title="QUỸ ĐẦU TƯ TRÁI PHIẾU VND (IPAAM)" data-price="14428.24">VNDBF</option><option value="13" title="QUỸ ĐẦU TƯ TRÁI PHIẾU BẢO VIỆT  (BAOVIETFUND)" data-price="20491">BVBF</option><option value="33" title="QUỸ ĐẦU TƯ TRÁI PHIẾU VCBF (VIETCOMBANK FUND)" data-price="14329.2">VCBF-FIF</option><option value="27" title="QUỸ ĐẦU TƯ TRÁI PHIẾU DC (DCVFM)" data-price="26882.89">DCBF</option><option value="21" title="QUỸ ĐẦU TƯ TRÁI PHIẾU BẢO THỊNH VINACAPITAL (VINACAPITAL)" data-price="23595.84">VFF</option><option value="8" title="QUỸ ĐẦU TƯ TRÁI PHIẾU SSI (SSIAM)" data-price="15601.04">SSIBF</option><option value="63" title="QUỸ ĐẦU TƯ TRÁI PHIẾU PHÁT TRIỂN VIỆT NAM VCAM-NH (VCAM)" data-price="11424.09">VCAM-NH VABF</option><option value="45" title="QUỸ ĐẦU TƯ TRÁI PHIẾU PVCOM (PVCB CAPITAL)" data-price="14265.88">PVBF</option><option value="65" title="QUỸ ĐẦU TƯ TRÁI PHIẾU AN BÌNH (ABF)" data-price="13039.48">ABBF</option><option value="51" title="QUỸ ĐẦU TƯ TRÁI PHIẾU AN TOÀN AMBER (AMBER CAPITAL)" data-price="11947.61">ASBF</option><option value="67" title="QUỸ ĐẦU TƯ TRÁI PHIẾU GIA TĂNG THU NHẬP CỐ ĐỊNH DC (DCVFM)" data-price="11181.07">DCIP</option><option value="40" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LINH HOẠT VND (IPAAM)" data-price="10735.85">VNDCF</option><option value="62" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LỢI TỨC CAO HD (HDCAPITAL)" data-price="11327.46">HDBOND</option><option value="53" title="QUỸ ĐẦU TƯ TRÁI PHIẾU THANH KHOẢN VINACAPITAL (VINACAPITAL)" data-price="11677.51">VLBF</option><option value="30" title="QUỸ ĐẦU TƯ TRÁI PHIẾU DFVN (DFVN)" data-price="11345.31">DFIX</option></optgroup>        
+                            </select><span class="select2 select2-container select2-container--bootstrap-5" dir="ltr" data-select2-id="select2-data-2-5ir8" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-n14t-container" aria-controls="select2-n14t-container"><span class="select2-selection__rendered" id="select2-n14t-container" role="textbox" aria-readonly="true" title="QUỸ ĐẦU TƯ CỔ PHIẾU KINH TẾ HIỆN ĐẠI VINACAPITAL (VINACAPITAL)">VMEEF</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                        </td>
+                        <td>
+                            <input class="notify-init-value" type="number" data-lasted-value="0" value="0" title="Default is lasted value in everyday, when you input another value it will hold your value to another day.">
+                            <input class="notify-init-value-hidden" type="hidden" value="CONSTANT_LASTED_VALUE">
+                            
+                            <!-- <a class="notify-set-default-init-value-to-lasted-value-link" data-lasted-value=0>Set Lasted Value</a> -->
+                        </td>
+                        <td>
+                            <!-- just show (cannot edit value )-->
+                            <div class="notify-predict-value">+0.79%</div>
+                        </td>
+                        <td class="loss-profit-config">
+                            <input type="number" value="5" class="loss-point-to-send-notify">
+                            <select class="form-select-loss-unit-to-send-noitfy">
+                                <option value="%" label="%"></option>
+                                <!-- <option value="P" label ="Point"></option> -->
+                            </select>
+                        </td>
+                        <td class="loss-profit-config">
+                            <input type="number" value="10" class="profit-point-to-send-notify">
+                            <select class="form-select-profit-unit-to-send-noitfy">
+                                <option value="%" label="%"></option>
+                                <!-- <option value="P" label ="Point"></option> -->
+                            </select>
+                        </td>
+                        <td>
+                            <button class="button-delete-notify" data-rowid="0" data-row-id="1">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tbody>
+            </table>
+        </div>
+        <div>
+            <div class="sub-title">Ccq Classification</div>
+            <button id="addClassificationButton">Add Classification</button>
+            <table id="tableCqqClassification">
+                <thead>
+                    <tr id="headerTableCqqClassification">
+                        <td>CCQ Classification Name</td>
+                        <td>List CCQ</td>
+                        <td>Note</td>
+                        <td>Compare CCQ</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
+                <tbody>
+                                      
+                <tr data-row-id="1" style="display: table-row;">
+                        <td>
+                            <input type="Text" class="classification-name" placeholder="Classification">
+                        </td>
+                        <td class="ccq-for-classification-column">
+                            <select class="form-select-ccq-to-classify select2-hidden-accessible" data-placeholder="Choose CCQ To Classify" multiple="" data-select2-id="select2-data-10-p73q" tabindex="-1" aria-hidden="true">
+                                <!--  data-price = 12345 -->
+                                <optgroup label="Stock CCQ" class="groupComboboxStockCcqForClassificationRowData"><option value="68" title="QUỸ ĐẦU TƯ CỔ PHIẾU KINH TẾ HIỆN ĐẠI VINACAPITAL (VINACAPITAL)" data-price="14508.61" data-select2-id="select2-data-12-niej">VMEEF</option><option value="11" title="QUỸ ĐẦU TƯ LỢI THẾ CẠNH TRANH BỀN VỮNG SSI (SSIAM)" data-price="38784.59" data-select2-id="select2-data-13-ajge">SSISCA</option><option value="49" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DÀI HẠN VIỆT NAM (SSIAM)" data-price="11772.44" data-select2-id="select2-data-14-dfwe">VLGF</option><option value="14" title="QUỸ ĐẦU TƯ CỔ PHIẾU TRIỂN VỌNG BẢO VIỆT (BAOVIETFUND)" data-price="20404">BVPF</option><option value="32" title="QUỸ ĐẦU TƯ CỔ PHIẾU HÀNG ĐẦU VCBF (VIETCOMBANK FUND)" data-price="33655.65" data-select2-id="select2-data-15-vgau">VCBF-BCF</option><option value="41" title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG BALLAD VIỆT NAM (SGIC)" data-price="9360.48">TBLF</option><option value="20" title="QUỸ ĐẦU TƯ CỔ PHIẾU HƯNG THỊNH VINACAPITAL (VINACAPITAL)" data-price="29576.15">VEOF</option><option value="46" title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG VCBF (VIETCOMBANK FUND)" data-price="12501.65">VCBF-MGF</option><option value="28" title="QUỸ ĐẦU TƯ CHỨNG KHOÁN NĂNG ĐỘNG DC (DCVFM)" data-price="77302.84" data-select2-id="select2-data-16-6xdl">DCDS</option><option value="47" title="QUỸ ĐẦU TƯ GIÁ TRỊ MB CAPITAL (MBCAPITAL)" data-price="21443">MBVF</option><option value="35" title="QUỸ ĐẦU TƯ CỔ PHIẾU TĂNG TRƯỞNG MIRAE ASSET VIỆT NAM (MIRAE ASSET)" data-price="16236.26">MAGEF</option><option value="23" title="QUỸ ĐẦU TƯ CỔ PHIẾU TIẾP CẬN THỊ TRƯỜNG VINACAPITAL (VINACAPITAL)" data-price="29937.16">VESAF</option><option value="72" title="QUỸ ĐẦU TƯ CỔ PHIẾU MANULIFE (MANULIFE IM (VN))" data-price="17361">MAFEQI</option><option value="58" title="QUỸ ĐẦU TƯ CỔ PHIẾU UNITED ESG VIỆT NAM (UOBAM VIETNAM)" data-price="14002.75">UVEEF</option><option value="12" title="QUỸ ĐẦU TƯ CỔ PHIẾU NĂNG ĐỘNG BẢO VIỆT (BAOVIETFUND)" data-price="21742">BVFED</option><option value="25" title="QUỸ ĐẦU TƯ CỔ PHIẾU TẬP TRUNG CỔ TỨC DC (DCVFM)" data-price="27155.32">DCDE</option><option value="38" title="QUỸ ĐẦU TƯ CHỦ ĐỘNG VND (IPAAM)" data-price="15683.16">VNDAF</option><option value="29" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DFVN (DFVN)" data-price="15323.98">DCAF</option><option value="66" title="QUỸ ĐẦU TƯ CHỌN LỌC PHÚ HƯNG VIỆT NAM (PHFM)" data-price="11652.66">PHVSF</option><option value="69" title="QUỸ ĐẦU TƯ GIA TĂNG GIÁ TRỊ GFM (GFM)" data-price="9900.74">GFM-VIF</option><option value="52" title="QUỸ ĐẦU TƯ CỔ PHIẾU TRIỂN VỌNG NTP (NTP AM)" data-price="9790.57">NTPPF</option><option value="80" title="QUỸ ĐẦU TƯ CỔ PHIẾU CỔ TỨC NĂNG ĐỘNG VINACAPITAL (VINACAPITAL)" data-price="9877.67">VDEF</option><option value="79" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG THÀNH CÔNG (TCAM)" data-price="9733.39">TCGF</option><option value="76" title="QUỸ ĐẦU TƯ NĂNG ĐỘNG LIGHTHOUSE (LIGHTHOUSE CAPITAL)" data-price="10382.95">LHCDF</option><option value="75" title="QUỸ ĐẦU TƯ BẢN VIỆT DISCOVERY (VCAM)" data-price="9371.37">VCAMDF</option></optgroup>
+                                <optgroup label="Balanced CCQ" class="groupComboboxBalancedCcqqForClassificationRowData"><option value="31" title="QUỸ ĐẦU TƯ CÂN BẰNG CHIẾN LƯỢC VCBF (VIETCOMBANK FUND)" data-price="31831.17">VCBF-TBF</option><option value="22" title="QUỸ ĐẦU TƯ CÂN BẰNG TUỆ SÁNG VINACAPITAL (VINACAPITAL)" data-price="17275.94">VIBF</option><option value="81" title="QUỸ ĐẦU TƯ NĂNG ĐỘNG EASTSPRING INVESTMENTS VIỆT NAM (EASTSPRING VIET NAM)" data-price="35857">ENF</option><option value="70" title="QUỸ ĐẦU TƯ CÂN BẰNG BẢN VIỆT (VCAM)" data-price="18148.47">VCAMBF</option><option value="71" title="QUỸ ĐẦU TƯ CÂN BẰNG MANULIFE (MANULIFE IM (VN))" data-price="15833">MAFBAL</option><option value="61" title="QUỸ ĐẦU TƯ CÂN BẰNG PVCOM (PVCB CAPITAL)" data-price="10224.05">PBIF</option><option value="78" title="QUỸ ĐẦU TƯ UNITED THU NHẬP NĂNG ĐỘNG VIỆT NAM (UOBAM VIETNAM)" data-price="9818">UVDIF</option><option value="77" title="QUỸ ĐẦU TƯ NĂNG ĐỘNG MANULIFE (MANULIFE IM (VN))" data-price="10759">MDI</option></optgroup>
+                                <optgroup label="Bond CCQ" class="groupComboboxBondCcqqForClassificationRowData"><option value="64" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LIGHTHOUSE (LIGHTHOUSE CAPITAL)" data-price="13499.86">LHBF</option><option value="48" title="QUỸ ĐẦU TƯ TRÁI PHIẾU MB (MBCAPITAL)" data-price="15098">MBBOND</option><option value="50" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LINH HOẠT MIRAE ASSET VIỆT NAM (MIRAE ASSET)" data-price="12395.63">MAFF</option><option value="37" title="QUỸ ĐẦU TƯ TRÁI PHIẾU VND (IPAAM)" data-price="14428.24">VNDBF</option><option value="13" title="QUỸ ĐẦU TƯ TRÁI PHIẾU BẢO VIỆT  (BAOVIETFUND)" data-price="20491">BVBF</option><option value="33" title="QUỸ ĐẦU TƯ TRÁI PHIẾU VCBF (VIETCOMBANK FUND)" data-price="14329.2">VCBF-FIF</option><option value="27" title="QUỸ ĐẦU TƯ TRÁI PHIẾU DC (DCVFM)" data-price="26882.89">DCBF</option><option value="21" title="QUỸ ĐẦU TƯ TRÁI PHIẾU BẢO THỊNH VINACAPITAL (VINACAPITAL)" data-price="23595.84">VFF</option><option value="8" title="QUỸ ĐẦU TƯ TRÁI PHIẾU SSI (SSIAM)" data-price="15601.04">SSIBF</option><option value="63" title="QUỸ ĐẦU TƯ TRÁI PHIẾU PHÁT TRIỂN VIỆT NAM VCAM-NH (VCAM)" data-price="11424.09">VCAM-NH VABF</option><option value="45" title="QUỸ ĐẦU TƯ TRÁI PHIẾU PVCOM (PVCB CAPITAL)" data-price="14265.88">PVBF</option><option value="65" title="QUỸ ĐẦU TƯ TRÁI PHIẾU AN BÌNH (ABF)" data-price="13039.48">ABBF</option><option value="51" title="QUỸ ĐẦU TƯ TRÁI PHIẾU AN TOÀN AMBER (AMBER CAPITAL)" data-price="11947.61">ASBF</option><option value="67" title="QUỸ ĐẦU TƯ TRÁI PHIẾU GIA TĂNG THU NHẬP CỐ ĐỊNH DC (DCVFM)" data-price="11181.07">DCIP</option><option value="40" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LINH HOẠT VND (IPAAM)" data-price="10735.85">VNDCF</option><option value="62" title="QUỸ ĐẦU TƯ TRÁI PHIẾU LỢI TỨC CAO HD (HDCAPITAL)" data-price="11327.46">HDBOND</option><option value="53" title="QUỸ ĐẦU TƯ TRÁI PHIẾU THANH KHOẢN VINACAPITAL (VINACAPITAL)" data-price="11677.51">VLBF</option><option value="30" title="QUỸ ĐẦU TƯ TRÁI PHIẾU DFVN (DFVN)" data-price="11345.31">DFIX</option></optgroup>        
+                            </select><span class="select2 select2-container select2-container--bootstrap-5" dir="ltr" data-select2-id="select2-data-11-91sq" style="width: auto;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-disabled="false"><ul class="select2-selection__rendered" id="select2-r5az-container"><li class="select2-selection__choice" title="QUỸ ĐẦU TƯ CỔ PHIẾU KINH TẾ HIỆN ĐẠI VINACAPITAL (VINACAPITAL)" data-select2-id="select2-data-17-1c9t"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-r5az-container-choice-laru-68"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-r5az-container-choice-laru-68">VMEEF</span></li><li class="select2-selection__choice" title="QUỸ ĐẦU TƯ LỢI THẾ CẠNH TRANH BỀN VỮNG SSI (SSIAM)" data-select2-id="select2-data-18-77ta"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-r5az-container-choice-0c7d-11"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-r5az-container-choice-0c7d-11">SSISCA</span></li><li class="select2-selection__choice" title="QUỸ ĐẦU TƯ TĂNG TRƯỞNG DÀI HẠN VIỆT NAM (SSIAM)" data-select2-id="select2-data-19-bwey"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-r5az-container-choice-811x-49"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-r5az-container-choice-811x-49">VLGF</span></li><li class="select2-selection__choice" title="QUỸ ĐẦU TƯ CỔ PHIẾU HÀNG ĐẦU VCBF (VIETCOMBANK FUND)" data-select2-id="select2-data-20-dji9"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-r5az-container-choice-xuda-32"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-r5az-container-choice-xuda-32">VCBF-BCF</span></li><li class="select2-selection__choice" title="QUỸ ĐẦU TƯ CHỨNG KHOÁN NĂNG ĐỘNG DC (DCVFM)" data-select2-id="select2-data-21-bcfd"><button type="button" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-r5az-container-choice-na99-28"><span aria-hidden="true">×</span></button><span class="select2-selection__choice__display" id="select2-r5az-container-choice-na99-28">DCDS</span></li></ul><span class="select2-search select2-search--inline"><textarea class="select2-search__field" type="search" tabindex="0" autocorrect="off" autocapitalize="none" spellcheck="false" role="searchbox" aria-autocomplete="list" autocomplete="off" aria-label="Search" aria-describedby="select2-r5az-container" placeholder="" style="width: 0.75em;"></textarea></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                        </td>
+                        <td>
+                            <input type="Text" class="classification-note" placeholder="Note">
+                        </td>               
+                        <td>
+                            <button class="button-view-chart" data-rowid="0" data-row-id="1">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </button>
+                        </td>          
+                        <td>
+                            <button class="button-delete-classification" data-rowid="0" data-row-id="1">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+            </table>
+        </div>
         <div id="buttonRow">
-            <p>Note: You can change information at anytime you want</p>
             <button id="submitAllButton"><i class="fa-solid fa-cloud"></i> Save To Browser</button>
-            <input type="file" id="uploadSettingFileButton" accept=".json" style="display:none;"/><label for="uploadSettingFileButton"><i class="fa-solid fa-file-arrow-up"></i>Upload setting file</label>
+            <input type="file" id="label" accept=".json" style="display:none;"><label for="label" id="uploadSettingFileButtonLabel"><i class="fa-solid fa-file-arrow-up"></i>Upload setting file</label>
             <button id="exportAllSettingButton"><i class="fa-solid fa-file-arrow-down"></i> Export All Setting</button>
             <a id="exportAllSettingLink" style="display: none;">Export Link</a>
-        </diV>
+        </div>
     </div>
 </body>
-</html>

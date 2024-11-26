@@ -8,6 +8,7 @@ includeJs("../js/dto/CcqNotificationData.js");
 includeJs("../js/dto/MyCategoryInfor.js");
 includeJs("../js/dto/DataToWritePieChart.js");
 includeJs("../js/dto/ElementDataToWritePieChart.js");
+includeJs("../js/dto/NotificationSettingInfor.js");
 
 const bodyTableCqqClassificationElement = document.getElementById('tableCqqClassification').getElementsByTagName('tbody')[0];
 const bodyTableCqqNotificationElement = document.getElementById('tableCqqNotification').getElementsByTagName('tbody')[0];
@@ -165,7 +166,15 @@ async function loadOldData(){
     let userStrategy = retrieveDataFromLocalStorage(getConstantMyStrategy());
     document.getElementById("inputFullName").value = userFullName;
     document.getElementById("inputMyStrategy").value = userStrategy;
+    
     // load old setting data
+    // load notification setting infor
+    let notificationSettingInfor = retrieveDataFromLocalStorage(getConstantNotificationSettingInfor());
+    if(notificationSettingInfor && notificationSettingInfor!==null){
+        document.getElementById("inputStartNotifyTime").value = notificationSettingInfor.startNotifyTime;
+        document.getElementById("inputEndNotifyTime").value = notificationSettingInfor.endNotifyTime;
+        document.getElementById("inputGapNotifyTime").value = notificationSettingInfor.gapNotifyTime;
+    }
     await loadOldCategoryData();
     await loadOldNotificationData();
     loadOldClassificationData();
@@ -555,6 +564,12 @@ function submitAllData(){
     let myFullName = document.getElementById("inputFullName").value;
     // get strategy
     let myStrategy = document.getElementById("inputMyStrategy").value;
+    // get notification setting
+    let notificationStartTime = document.getElementById("inputStartNotifyTime").value;
+    let notificationEndTime = document.getElementById("inputEndNotifyTime").value;
+    let notificationGapTime = document.getElementById("inputGapNotifyTime").value;
+    let notificationSettingInfor = new  NotificationSettingInfor(notificationStartTime, notificationEndTime, notificationGapTime);
+
     // handle category
     let listCategory = [];
     let numberOfRowCategorynUserAdded = bodyTableMyCategoryElement.getElementsByTagName("tr").length;
@@ -626,6 +641,7 @@ function submitAllData(){
     storeDataInLocalStorage(getConstantMyCategories(),listCategory);
     storeDataInLocalStorage(getConstantMyFullName(),myFullName);
     storeDataInLocalStorage(getConstantMyStrategy(),myStrategy);
+    storeDataInLocalStorage(getConstantNotificationSettingInfor(),notificationSettingInfor);
 }
 
 function bindEventViewChartByRow(element){
