@@ -54,10 +54,10 @@ function predictPriceOfStockOrBalancedCcq(ccqInfor, isGetOldData){
         // let previousWorkingDateInStringFormat = "2024-11-15";
         // console.log("Previous result: " + result);
         // console.log(previousWorkingDateInStringFormat);
-        console.log("Start: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
+        // console.log("Start: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
         while(ccqInfor.curNavDate <= previousWorkingDateInStringFormat){
             let previousDateInDateFormat = new Date(previousWorkingDateInStringFormat);
-            console.log("Process: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
+            // console.log("Process: " +ccqInfor.shortName +" - "+ previousWorkingDateInStringFormat);
             // if cur nav date is not previous date 
             // --> impact = current day impact + previous day impact
             predictImpactPercentList.push(getPreviousPredictValueByCcqShortName(ccqInfor.shortName, previousWorkingDateInStringFormat));

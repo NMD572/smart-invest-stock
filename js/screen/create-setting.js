@@ -139,6 +139,9 @@ function bindEvent(){
     document.getElementById("submitAllButton").addEventListener("click",function(){
         submitAllData();
     });
+    document.getElementById("reloadNotifyButton").addEventListener("click",function(){
+        reloadNotificationData();
+    });
     
     bindEventViewChartByRow(document.getElementsByClassName("button-view-chart")[0]);
     bindEventDeleteRow(document.getElementsByClassName("button-delete-classification")[0], TABLE_CLASSIFICATION);
@@ -418,13 +421,13 @@ function bindEventChangeWhenSelectCcqOrIndex(element){
 function predictForNotify(ccqDetailData, initValue){
     let currentNav = ccqDetailData.curNav;
     let predictImpactPercentResult = predictPriceOfStockOrBalancedCcq(ccqDetailData, true);
-    console.log(predictImpactPercentResult);
+    // console.log(predictImpactPercentResult);
 
-    console.log("Predict percent: "+ predictImpactPercentResult);
+    // console.log("Predict percent: "+ predictImpactPercentResult);
     let currentImpactValue = currentNav*(1 + predictImpactPercentResult);    
-    console.log(currentImpactValue+ " - "+initValue);    
+    // console.log(currentImpactValue+ " - "+initValue);    
     let impactPercentFromInitValue = Math.round((currentImpactValue/initValue - 1)*10000)/100;
-    console.log("Impact percent: "+ impactPercentFromInitValue);
+    // console.log("Impact percent: "+ impactPercentFromInitValue);
     return impactPercentFromInitValue;
 }
 
@@ -437,6 +440,18 @@ async function loadOldNotificationData(){
           await addRowForNotify(oldNotificationData);
       }
     }
+}
+
+async function reloadNotificationData(){
+    // Clear all row of notification table
+    $("#tableCqqNotification tbody tr").each(function(){
+        console.log($(this).data('ignore'));
+        if ($(this).data('ignore') !== true){
+            $(this).remove();
+        }
+    });
+    // reload data from
+    await loadOldNotificationData();
 }
 
 function bindEventChangeValue(element){
@@ -757,7 +772,7 @@ async function calculateImpactOfAllCcqAt15PM() {
 async function predictImpactCcqAndStoreToLocalStorage(){
     if(listCcqData && listCcqData!=null && !checkKeyIsExistInLocalStorage(getConstantInferLastedImpactOfPreviousDay()+formatDate(new Date()))){
         let mapImpactCcq = await calculateImpactOfAllStockCcq();
-        console.log(mapImpactCcq);
+        // console.log(mapImpactCcq);
         if(mapImpactCcq && mapImpactCcq!=null && mapImpactCcq.size>0){
             let currentDateStr = formatDate(new Date());
             storeDataInLocalStorage(CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY+currentDateStr,mapImpactCcq);
@@ -786,7 +801,7 @@ function bindEventUploadSettingFileToStoreLocalStorageData(element){
         reader.onload = function () {
             const content = reader.result;
             let mapLocalStorageData = JSON.parse(content, reviverJsonData);
-            console.log( mapLocalStorageData);
+            // console.log( mapLocalStorageData);
             storeMapDataToLocalStorage(mapLocalStorageData);
             // store data to local storage
             element.value = "";    // reset for user can upload same file
@@ -827,7 +842,7 @@ function bindEventExportAllLocalStorageInJsonFormat(element){
         let vBlob = new Blob([resultExportData], {type: "octet/stream"});
         vName = 'setting_data.json';
         vUrl = window.URL.createObjectURL(vBlob);
-        console.log(vLink);
+        // console.log(vLink);
 
         vLink.setAttribute('href', vUrl);
         vLink.setAttribute('download', vName );

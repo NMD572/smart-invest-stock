@@ -110,7 +110,7 @@ textarea {
 }
 
 /* Button Styling */
-button, #uploadSettingFileButtonLabel {
+button, #reloadNotifyButton, #uploadSettingFileButtonLabel {
   background-color: #007bff;
   color: white;
   border: none;
@@ -124,11 +124,11 @@ button, #uploadSettingFileButtonLabel {
   transition: background-color 0.3s ease;
 }
 
-button:hover, #uploadSettingFileButtonLabel:hover {
+button:hover, #reloadNotifyButton:hover, #uploadSettingFileButtonLabel:hover {
   background-color: #0056b3;
 }
 
-button i, #uploadSettingFileButtonLabel i {
+button i, #reloadNotifyButton, #uploadSettingFileButtonLabel i {
   margin-right: 5px;
 }
 
