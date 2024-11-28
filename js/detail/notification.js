@@ -1,33 +1,27 @@
-/*** Local Notification Solution - NOT WORK */
+/*** Local Notification Solution - work when you assign notification permission on browser and enable show notification of browser in system notification */
 // distinctTag for only 1 message with the same tag
 // icon for show down or up point of ccq
-async function sendLocalNotification(title, detailMessage, icon, externalInfor, distinctTag){
+function sendLocalNotification(title, detailMessage, icon, externalInfor, distinctTag){
   Notification.requestPermission().then(permissionResult => {
-    // permissionResult: ['granted', 'default', 'denied']
-    if(permissionResult === 'granted'){
-      console.log("vào"); 
-      const notification = new Notification(title, {
-        body: detailMessage,
-        data: externalInfor,
-        icon: icon,
-        tag: distinctTag
-      });
-      console.log(notification);
-      
-      notification.addEventListener("error", exception =>{
-        // exception contain data (externalInfor)
-        console.error(exception);
-      });
-      
-    }
+      // permissionResult: ['granted', 'default', 'denied']
+      console.log(permissionResult);
+      if(permissionResult === 'granted'){
+          console.log("vào"); 
+          const notification = new Notification(title, {
+              body: detailMessage,
+              data: externalInfor,
+              icon: icon,
+              tag: distinctTag
+          });
+          console.log(notification);
+          
+          notification.addEventListener("error", exception =>{
+              // exception contain data (externalInfor)
+              console.error(exception);
+          });
+      }
   })
 }
-
-
-
-
-
-
 
 
 /**** Another solution: Push notification  */
