@@ -1,7 +1,7 @@
 /*** Local Notification Solution - work when you assign notification permission on browser and enable show notification of browser in system notification */
 // distinctTag for only 1 message with the same tag
 // icon for show down or up point of ccq
-function sendLocalNotification(title, detailMessage, icon, externalInfor, distinctTag){
+function sendLocalNotification(title, detailMessage, externalInfor, distinctTag){
   Notification.requestPermission().then(permissionResult => {
       // permissionResult: ['granted', 'default', 'denied']
       console.log(permissionResult);
@@ -10,7 +10,7 @@ function sendLocalNotification(title, detailMessage, icon, externalInfor, distin
           const notification = new Notification(title, {
               body: detailMessage,
               data: externalInfor,
-              icon: icon,
+              icon: getSmartInvestIconUrl(),
               tag: distinctTag
           });
           console.log(notification);
@@ -21,6 +21,21 @@ function sendLocalNotification(title, detailMessage, icon, externalInfor, distin
           });
       }
   })
+}
+
+function genTitleNotifyCcqImpact(ccqShortName, impactPercent){
+    if(impactPercent<0){
+        // decrease
+        return ccqShortName + " has decreased "+ impactPercent + "%";
+    }else{
+        // increase
+        impactPercent = "+"+impactPercent;
+        return ccqShortName + " has increased "+ impactPercent + "%";
+    }
+}
+
+function genDetailMessage(){
+    return "This is predict value which is based on component report in previous month of CCQ's Company";
 }
 
 

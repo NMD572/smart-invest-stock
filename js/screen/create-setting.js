@@ -169,8 +169,8 @@ function bindEvent() {
     });
   document
     .getElementById("submitAllButton")
-    .addEventListener("click", function () {
-      submitAllData();
+    .addEventListener("click", async function () {
+      await submitAllData();
     });
   document
     .getElementById("reloadNotifyButton")
@@ -246,8 +246,10 @@ async function loadOldData() {
       notificationSettingInfor.gapNotifyTime;
   }
   await loadOldCategoryData();
-  await loadOldNotificationData();
+  let notificationDataInfor = await loadOldNotificationData();
   loadOldClassificationData();
+  // handle auto notification when reload page
+  await setupAutoNotify(notificationSettingInfor, notificationDataInfor);
 }
 
 /*** End Common */
@@ -336,7 +338,7 @@ async function loadOldCategoryData() {
     getConstantMyCategories()
   );
   //   console.log(listOldClassificationData);
-  if (listOldCategoryData && listOldCategoryData != null) {
+  if (listOldCategoryData && listOldCategoryData !== null) {
     for (let oldCategoryData of listOldCategoryData) {
       await addRowForCategory(oldCategoryData);
     }
@@ -401,7 +403,7 @@ async function addRowForCategory(rowData) {
   bodyTableMyCategoryElement.appendChild(newRow);
 
   // assign data
-  if (rowData && rowData != null) {
+  if (rowData && rowData !== null) {
     let categoryId = rowData.categoryId;
     let categoryName = categoryId;
     let purchaseCapital = rowData.purchaseCapital;
@@ -492,9 +494,9 @@ function calculateProfitAndIncome(currentRow) {
   let totalIncomeVal = 0;
   if (
     purchasePriceVal &&
-    purchasePriceVal != null &&
+    purchasePriceVal !== null &&
     currentPriceVal &&
-    currentPriceVal != null
+    currentPriceVal !== null
   ) {
     incomePercenet =
       Math.round((currentPriceVal / purchasePriceVal - 1) * 10000) / 100;
@@ -527,7 +529,7 @@ async function inferCategoryInfor(currentRow) {
     isSelectInDropDownList === true &&
     categoryValueInputHiddenValue != "Index-VNindex" &&
     purchaseDateData &&
-    purchaseDateData != null
+    purchaseDateData !== null
   ) {
     let purchasePrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
       categoryValueInputHiddenValue,
@@ -539,9 +541,9 @@ async function inferCategoryInfor(currentRow) {
     );
     if (
       currentPrice &&
-      currentPrice != null &&
+      currentPrice !== null &&
       purchasePrice &&
-      purchasePrice != null
+      purchasePrice !== null
     ) {
       incomePercenet =
         Math.round((currentPrice / purchasePrice - 1) * 10000) / 100;
@@ -620,11 +622,12 @@ async function loadOldNotificationData() {
     getConstantListCcqNotification()
   );
   //   console.log(listOldClassificationData);
-  if (listOldNotificationData && listOldNotificationData != null) {
+  if (listOldNotificationData && listOldNotificationData !== null) {
     for (let oldNotificationData of listOldNotificationData) {
       await addRowForNotify(oldNotificationData);
     }
   }
+  return listOldNotificationData;
 }
 
 async function reloadNotificationData() {
@@ -677,7 +680,7 @@ async function addRowForNotify(rowData) {
   let buttonDelete = newRow.getElementsByClassName("button-delete-notify")[0];
   // let linkAutoSetDefaultValue = newRow.getElementsByClassName("notify-set-default-init-value-to-lasted-value-link")[0];
 
-  if (rowData && rowData != null) {
+  if (rowData && rowData !== null) {
     let ccqId = rowData.ccqId;
     let ccqShortName;
     let initValueHidden = rowData.initValueHidden;
@@ -730,7 +733,7 @@ async function addRowForNotify(rowData) {
       }
     }
     // predict impact
-    if (ccqShortName != "VNindex") {
+    if (ccqShortName != "Index-VNindex") {
       await predictImpactOfCcq(ccqShortName, newRow, initValue);
     }
   }
@@ -767,14 +770,14 @@ function loadOldClassificationData() {
     getConstantListCcqClassification()
   );
   //   console.log(listOldClassificationData);
-  if (listOldClassificationData && listOldClassificationData != null) {
+  if (listOldClassificationData && listOldClassificationData !== null) {
     for (let oldClassificationData of listOldClassificationData) {
       addRowForClassification(oldClassificationData);
     }
   }
 }
 
-function submitAllData() {
+async function submitAllData() {
   // get name
   let myFullName = document.getElementById("inputFullName").value;
   // get strategy
@@ -933,6 +936,8 @@ function submitAllData() {
     getConstantNotificationSettingInfor(),
     notificationSettingInfor
   );
+  // handle auto notification
+  await setupAutoNotify(notificationSettingInfor, listNotification);
 }
 
 function bindEventViewChartByRow(element) {
@@ -983,9 +988,9 @@ function addRowForClassification(rowData) {
   )[0];
   let buttonViewChart = newRow.getElementsByClassName("button-view-chart")[0];
 
-  if (rowData && rowData != null) {
+  if (rowData && rowData !== null) {
     let listSelectedCcq = [];
-    if (rowData.listSelectedCcqStr && rowData.listSelectedCcqStr != null) {
+    if (rowData.listSelectedCcqStr && rowData.listSelectedCcqStr !== null) {
       listSelectedCcq = rowData.listSelectedCcqStr.split(",");
     }
     //
@@ -1023,57 +1028,104 @@ function addRowForClassification(rowData) {
 /** End Classification */
 
 /*** Auto function (run by system) */
-function setupAutoNotify(notificationSettingInfor) {
-  if (notificationSettingInfor && notificationSettingInfor != null) {
+async function setupAutoNotify(notificationSettingInfor, notificationDataInfor) {
+  if (notificationSettingInfor && notificationSettingInfor !== null && notificationDataInfor && notificationDataInfor!==null) {
     // get notification setting
     let startNotifyHour = notificationSettingInfor.startNotifyTime.substring(
       0,
       2
     );
     let startNotifyMinute = notificationSettingInfor.startNotifyTime.substring(
-      2,
-      4
+      3,
+      5
     );
     let endNotifyHour = notificationSettingInfor.endNotifyTime.substring(0, 2);
     let endNotifyMinute = notificationSettingInfor.endNotifyTime.substring(
-      2,
-      4
+      3,
+      5
     );
-    let gapTime = Number(notificationSettingInfor.gapNotifyTime);
+    let gapTime = Number(notificationSettingInfor.gapNotifyTime)*1000;
     // handle time start auto function
     let now = new Date();
     let start = new Date();
     let end = new Date();
     start.setHours(startNotifyHour);
     start.setMinutes(startNotifyMinute);
+    start.setSeconds(0);
     end.setHours(endNotifyHour);
     end.setMinutes(endNotifyMinute);
-    let waitMilisecond = now - start;
-    console.log("Wait time to run auto notify job : " + waitMilisecond);
+    end.setSeconds(0);
+    let waitMillisecond = start - now;
+    console.log("Start time: "+start + " with "+startNotifyHour + " and "+ startNotifyMinute);
+    console.log("End time: "+end + " with "+endNotifyHour + " and "+ endNotifyMinute);
+    console.log("Now: " + now);
+    console.log("Wait time to run auto notify job : " + waitMillisecond);
     timeOutAutoNotify = clearTimeoutObject(timeOutAutoNotify);
     intervalAutoNotify = clearIntervalObject(intervalAutoNotify);
-    if (waitMilisecond <= 0) {
+    if (waitMillisecond <= 0) {
+      await checkImpactAndShowNotify(notificationDataInfor, end);
       intervalAutoNotify = setInterval(async function () {
-        await checkImpactAndShowNotify(end);
+        await checkImpactAndShowNotify(notificationDataInfor, end);
       }, gapTime);
     } else {
       timeOutAutoNotify = setTimeout(async function () {
-        await checkImpactAndShowNotify(end);
+        await checkImpactAndShowNotify(notificationDataInfor, end);
         intervalAutoNotify = setInterval(async function () {
-          await checkImpactAndShowNotify(end);
+          await checkImpactAndShowNotify(notificationDataInfor, end);
         }, gapTime); //Every day
-      }, waitMilisecond);
+      }, waitMillisecond);
     }
   }
 }
 
-async function checkImpactAndShowNotify(endTime) {
+async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
+  
   if (new Date() > endTime) {
     // current date time > end time --> STOP
+    console.log("Time up! --> Remove interval and time out"); 
     intervalAutoNotify = clearIntervalObject(intervalAutoNotify);
+    timeOutAutoNotify = clearTimeout(timeOutAutoNotify);
   } else {
     // get all notify ccq data
-    console.log("Test ");
+    console.log("Test");
+    for(let singleNotificationData of notificationDataInfor){
+      let ccqId = singleNotificationData.ccqId;
+      let ccqShortName;
+      let initValueHidden = singleNotificationData.initValueHidden;
+      let dropdownCcq = document.getElementsByClassName(
+        "form-select-ccq-to-notify"
+      )[0];
+      // Selected CCQ
+      for (let option of dropdownCcq.options) {
+        // console.log("Value: " + option.value);
+        if (option.value == ccqId) {
+          ccqShortName = option.innerHTML;
+          if(initValueHidden === getConstantLastedValue()){
+            initValueHidden = option.dataset.price;
+          }
+          break;
+        }
+      }
+      if(ccqShortName && ccqShortName !== null){
+        let ccqDetailData = await handleDataDetailCcq(ccqShortName);
+        let lossPercentToSendNotification = Number(singleNotificationData.lossPointToSendNotify)*-1;
+        let profitPercentToSendNotification = Number(singleNotificationData.profitPointToSendNotify);
+        let predictImpactPercent = predictForNotify(ccqDetailData, initValueHidden);
+        if(predictImpactPercent <= lossPercentToSendNotification){
+          // If predict value <= loss config --> show notify decrease price ccq
+          console.log("Loss "+ ccqShortName);
+          sendLocalNotification(genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent), genDetailMessage(), null, ccqShortName);
+        }
+        if(predictImpactPercent >= profitPercentToSendNotification){
+          // If predict value >= profit config --> show notify increase price ccq
+          console.log("Profit "+ ccqShortName);
+          sendLocalNotification(genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent), genDetailMessage(), null, ccqShortName);
+        }
+      }else{
+        console.log("Not found ccqId: "+ ccqId + " in dropdown list.");
+      }
+    }
+
     // check impact and show notify
   }
 }
@@ -1113,6 +1165,7 @@ async function calculateImpactOfAllCcqAt15PM() {
   } else {
     // when pass <wait> millisecond from now it will do contain function
     setTimeout(async function () {
+      console.log("Calculate impact of all ccq");
       //Wait 15pm
       await predictImpactCcqAndStoreToLocalStorage();
       setInterval(async function () {
@@ -1125,14 +1178,14 @@ async function calculateImpactOfAllCcqAt15PM() {
 async function predictImpactCcqAndStoreToLocalStorage() {
   if (
     listCcqData &&
-    listCcqData != null &&
+    listCcqData !== null &&
     !checkKeyIsExistInLocalStorage(
       getConstantInferLastedImpactOfPreviousDay() + formatDate(new Date())
     )
   ) {
     let mapImpactCcq = await calculateImpactOfAllStockCcq();
     // console.log(mapImpactCcq);
-    if (mapImpactCcq && mapImpactCcq != null && mapImpactCcq.size > 0) {
+    if (mapImpactCcq && mapImpactCcq !== null && mapImpactCcq.size > 0) {
       let currentDateStr = formatDate(new Date());
       storeDataInLocalStorage(
         getConstantInferLastedImpactOfPreviousDay() + currentDateStr,
