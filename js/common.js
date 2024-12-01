@@ -22,7 +22,7 @@ const RATIO_FOR_BIG_STOCK_IMPACT = 2; // Interest rate with no risk
 const ASSET_TYPE_CASH = "CASH";
 // Constant data for screen
 const CONSTANT_LASTED_VALUE = "CONSTANT_LASTED_VALUE";
-const CONSTANT_SMART_INVEST_ICON_URL = "..\data\icon.png";
+const CONSTANT_SMART_INVEST_ICON_URL = "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
 
 function getSmartInvestIconUrl(){
   return CONSTANT_SMART_INVEST_ICON_URL;
