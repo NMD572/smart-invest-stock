@@ -79,33 +79,57 @@ async function fillComboboxData() {
     "groupComboboxBondCcqqForClassificationRowData"
   )[0];
 
+  addCcqToSelect2Combobox(
+    listCcqData,
+    groupComboboxStockCcqForClassification,
+    groupComboboxBalanceCcqForClassification,
+    groupComboboxBondCcqForClassification
+  );
+  addCcqToSelect2Combobox(
+    listCcqData,
+    groupComboboxStockCcqForNotify,
+    groupComboboxBalanceCcqForNotify,
+    groupComboboxBondCcqForNotify
+  );
   for (let i = 0, end = listCcqData.length; i < end; ++i) {
     addCCQToDatalist(datalistCcqForCategory, listCcqData[i]);
-    switch (listCcqData[i].fundAssetType) {
-      case getFundAssetTypeStock():
-        // add to stock ccq combobox group
-        addCCQToCombox(groupComboboxStockCcqForClassification, listCcqData[i]);
-        addCCQToCombox(groupComboboxStockCcqForNotify, listCcqData[i]);
-        break;
-      case getFundAssetTypeBalanced():
-        // add to balanced ccq combobox group
-        addCCQToCombox(
-          groupComboboxBalanceCcqForClassification,
-          listCcqData[i]
-        );
-        addCCQToCombox(groupComboboxBalanceCcqForNotify, listCcqData[i]);
-        break;
-      case getFundAssetTypeBond():
-        // add to bond ccq combobox group
-        addCCQToCombox(groupComboboxBondCcqForClassification, listCcqData[i]);
-        addCCQToCombox(groupComboboxBondCcqForNotify, listCcqData[i]);
-        break;
-      default:
-        // ignore
-        break;
+  }
+}
+function addCcqToSelect2Combobox(
+  listCcqData,
+  groupStockCcq,
+  groupBalanceCcq,
+  groupBondCcq
+) {
+  if (listCcqData && listCcqData !== null) {
+    for (let i = 0, end = listCcqData.length; i < end; ++i) {
+      switch (listCcqData[i].fundAssetType) {
+        case getFundAssetTypeStock():
+          // add to stock ccq combobox group
+          if (groupStockCcq != null) {
+            addCCQToCombox(groupStockCcq, listCcqData[i]);
+          }
+          break;
+        case getFundAssetTypeBalanced():
+          // add to balanced ccq combobox group
+          if (groupBalanceCcq != null) {
+            addCCQToCombox(groupBalanceCcq, listCcqData[i]);
+          }
+          break;
+        case getFundAssetTypeBond():
+          // add to bond ccq combobox group
+          if (groupBondCcq != null) {
+            addCCQToCombox(groupBondCcq, listCcqData[i]);
+          }
+          break;
+        default:
+          // ignore
+          break;
+      }
     }
   }
 }
+
 function addCCQToDatalist(datalistCcq, ccqInfor) {
   var newOpt = document.createElement("option");
   // newOpt.value = ccqInfor.id;
@@ -638,7 +662,27 @@ async function reloadNotificationData() {
       $(this).remove();
     }
   });
-  // reload data from
+  // reload notification data for combobox
+  listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
+  // group combobox for notify
+  let groupComboboxStockCcqForNotify = document.getElementsByClassName(
+    "groupComboboxStockCcqRowForNotifyRowData"
+  )[0];
+  let groupComboboxBalanceCcqForNotify = document.getElementsByClassName(
+    "groupComboboxBalancedCcqRowForNotifyRowData"
+  )[0];
+  let groupComboboxBondCcqForNotify = document.getElementsByClassName(
+    "groupComboboxBondCcqForNotifyRowData"
+  )[0];
+  groupComboboxStockCcqForNotify.innerHTML = "";
+  groupComboboxBalanceCcqForNotify.innerHTML = "";
+  groupComboboxBondCcqForNotify.innerHTML = "";
+  addCcqToSelect2Combobox(
+    listCcqData,
+    groupComboboxStockCcqForNotify,
+    groupComboboxBalanceCcqForNotify,
+    groupComboboxBondCcqForNotify
+  );
   await loadOldNotificationData();
 }
 
@@ -1028,8 +1072,19 @@ function addRowForClassification(rowData) {
 /** End Classification */
 
 /*** Auto function (run by system) */
-async function setupAutoNotify(notificationSettingInfor, notificationDataInfor) {
-  if (notificationSettingInfor && notificationSettingInfor !== null && notificationDataInfor && notificationDataInfor!==null) {
+async function setupAutoNotify(
+  notificationSettingInfor,
+  notificationDataInfor
+) {
+  timeOutAutoNotify = clearTimeoutObject(timeOutAutoNotify);
+  intervalAutoNotify = clearIntervalObject(intervalAutoNotify);
+  if (
+    isWorkingDay(new Date()) &&
+    notificationSettingInfor &&
+    notificationSettingInfor !== null &&
+    notificationDataInfor &&
+    notificationDataInfor !== null
+  ) {
     // get notification setting
     let startNotifyHour = notificationSettingInfor.startNotifyTime.substring(
       0,
@@ -1044,7 +1099,7 @@ async function setupAutoNotify(notificationSettingInfor, notificationDataInfor) 
       3,
       5
     );
-    let gapTime = Number(notificationSettingInfor.gapNotifyTime)*1000;
+    let gapTime = Number(notificationSettingInfor.gapNotifyTime) * 1000;
     // handle time start auto function
     let now = new Date();
     let start = new Date();
@@ -1056,12 +1111,19 @@ async function setupAutoNotify(notificationSettingInfor, notificationDataInfor) 
     end.setMinutes(endNotifyMinute);
     end.setSeconds(0);
     let waitMillisecond = start - now;
-    console.log("Start time: "+start + " with "+startNotifyHour + " and "+ startNotifyMinute);
-    console.log("End time: "+end + " with "+endNotifyHour + " and "+ endNotifyMinute);
+    console.log(
+      "Start time: " +
+        start +
+        " with " +
+        startNotifyHour +
+        " and " +
+        startNotifyMinute
+    );
+    console.log(
+      "End time: " + end + " with " + endNotifyHour + " and " + endNotifyMinute
+    );
     console.log("Now: " + now);
     console.log("Wait time to run auto notify job : " + waitMillisecond);
-    timeOutAutoNotify = clearTimeoutObject(timeOutAutoNotify);
-    intervalAutoNotify = clearIntervalObject(intervalAutoNotify);
     if (waitMillisecond <= 0) {
       await checkImpactAndShowNotify(notificationDataInfor, end);
       intervalAutoNotify = setInterval(async function () {
@@ -1079,16 +1141,15 @@ async function setupAutoNotify(notificationSettingInfor, notificationDataInfor) 
 }
 
 async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
-  
   if (new Date() > endTime) {
     // current date time > end time --> STOP
-    console.log("Time up! --> Remove interval and time out"); 
+    console.log("Time up! --> Remove interval and time out");
     intervalAutoNotify = clearIntervalObject(intervalAutoNotify);
     timeOutAutoNotify = clearTimeout(timeOutAutoNotify);
   } else {
     // get all notify ccq data
     console.log("Test");
-    for(let singleNotificationData of notificationDataInfor){
+    for (let singleNotificationData of notificationDataInfor) {
       let ccqId = singleNotificationData.ccqId;
       let ccqShortName;
       let initValueHidden = singleNotificationData.initValueHidden;
@@ -1100,29 +1161,45 @@ async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
         // console.log("Value: " + option.value);
         if (option.value == ccqId) {
           ccqShortName = option.innerHTML;
-          if(initValueHidden === getConstantLastedValue()){
+          if (initValueHidden === getConstantLastedValue()) {
             initValueHidden = option.dataset.price;
           }
           break;
         }
       }
-      if(ccqShortName && ccqShortName !== null){
+      if (ccqShortName && ccqShortName !== null) {
         let ccqDetailData = await handleDataDetailCcq(ccqShortName);
-        let lossPercentToSendNotification = Number(singleNotificationData.lossPointToSendNotify)*-1;
-        let profitPercentToSendNotification = Number(singleNotificationData.profitPointToSendNotify);
-        let predictImpactPercent = predictForNotify(ccqDetailData, initValueHidden);
-        if(predictImpactPercent <= lossPercentToSendNotification){
+        let lossPercentToSendNotification =
+          Number(singleNotificationData.lossPointToSendNotify) * -1;
+        let profitPercentToSendNotification = Number(
+          singleNotificationData.profitPointToSendNotify
+        );
+        let predictImpactPercent = predictForNotify(
+          ccqDetailData,
+          initValueHidden
+        );
+        if (predictImpactPercent <= lossPercentToSendNotification) {
           // If predict value <= loss config --> show notify decrease price ccq
-          console.log("Loss "+ ccqShortName);
-          sendLocalNotification(genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent), genDetailMessage(), null, ccqShortName);
+          console.log("Loss " + ccqShortName);
+          sendLocalNotification(
+            genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent),
+            genDetailMessage(),
+            null,
+            ccqShortName
+          );
         }
-        if(predictImpactPercent >= profitPercentToSendNotification){
+        if (predictImpactPercent >= profitPercentToSendNotification) {
           // If predict value >= profit config --> show notify increase price ccq
-          console.log("Profit "+ ccqShortName);
-          sendLocalNotification(genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent), genDetailMessage(), null, ccqShortName);
+          console.log("Profit " + ccqShortName);
+          sendLocalNotification(
+            genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent),
+            genDetailMessage(),
+            null,
+            ccqShortName
+          );
         }
-      }else{
-        console.log("Not found ccqId: "+ ccqId + " in dropdown list.");
+      } else {
+        console.log("Not found ccqId: " + ccqId + " in dropdown list.");
       }
     }
 
