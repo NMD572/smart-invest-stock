@@ -42,6 +42,8 @@ async function initInfor() {
   await fillComboboxData();
   bindEvent();
   await loadOldData();
+  // after load all data --> enable button save data (for prevent lost data in on-load)
+  document.getElementById("submitAllButton").disabled = false;
   await calculateImpactOfAllCcqAt15PM();
 }
 /*** Common */
