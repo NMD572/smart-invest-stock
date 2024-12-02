@@ -33,6 +33,7 @@ var currentRowClassificationId = 0;
 var listCcqData;
 var timeOutAutoNotify;
 var intervalAutoNotify;
+var listFundAssetTypeNeedToLoad = [];
 async function initScreen() {
   await initInfor();
 }
@@ -45,7 +46,6 @@ async function initInfor() {
 }
 /*** Common */
 async function fillComboboxData() {
-  let listFundAssetTypeNeedToLoad = [];
   listFundAssetTypeNeedToLoad.push(getFundAssetTypeStock());
   listFundAssetTypeNeedToLoad.push(getFundAssetTypeBalanced());
   listFundAssetTypeNeedToLoad.push(getFundAssetTypeBond());
