@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Predict And Result</title>
+
+    <!-- Styles for using font-awesome icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+</head>
+<body>
+    <table id="tableComparePredictResult">
+        <thead> 
+            <tr id="headerTableComparePredictResult">
+                <td>Code</td>
+                <td>Data Date</td>
+                <td>Previous Month Component</td>
+                <td>Predict Component</td>
+                <td>Predict Impact Value (Previous Component)</td>
+                <td>Predict Impact Value (Predict Component)</td>
+                <td>Real Impact Value</td>
+                <td>Note</td>
+                <td>Delete</td>
+            </tr>
+        </thead>
+        <tbody>
+            <!--  style="display: none;"  -->
+            <tr data-ignore=true data-row-id=0 >
+                <td><input type="number" class="object-code" ></td>
+                <td><input type="number" class="object-data-date" ></td>
+                <td><input type="date" class="object-previous-month-component"></td>
+                <td><input type="number" class="object-predict-component" ></td>
+                <td><input type="number" class="object-predit-impact-by-previous-component" ></td>
+                <td><input type="number" class="object-predit-impact-by-predict-component" ></td>
+                <td><input type="text" class="object-real-impact-value" ></td>
+                <td><input type="text" class="object-data-note" ></td>
+                <td>
+                    <button class="button-delete-category">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
