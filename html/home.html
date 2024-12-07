@@ -3,12 +3,80 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Invest</title>
+    <title>Homepage</title>
+
+    <!-- Styles for using font-awesome icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
   </head>
   <body>
-    <h1 class="main-title">Welcome to Smart Invest</h1>
-
-    <script src="../js/common.js"></script>
+    <div class="main-title">Welcome to Smart Invest</div>
+    <div id="tableListDataArea">
+      <div class="main-title">Table Of Invest Component</div>
+      <div id="searchData">
+        <label for="form-select-ccq-to-notify">Type: </label>
+        <select id="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
+          <optgroup label="Genral Index" class="groupComboboxINDEX">
+              <option value="INDEX-VNindex" title="Chỉ số VNindex">VNindex</option>
+          </optgroup>
+          <optgroup label="Stock" class="groupComboboxSTOCK">
+            <option value="STOCK-FPT">FPT</option>
+          </optgroup>
+          <optgroup label="CCQ" class="groupComboboxCCQ">
+              <option value="CCQ-STOCK">Quỹ cổ phiếu</option>
+              <option value="CCQ-BALANCE">Quỹ cân bằng</option>
+              <option value="CCQ-BOND">Quỹ trái phiếu</option>
+          </optgroup>
+          <optgroup label="GOLD" class="groupComboboxGOLD">
+            <option value="GOLD-STOCK">Quỹ cổ phiếu</option>
+            <option value="GOLD-BALANCED">Quỹ cân bằng</option>
+            <option value="GOLD-BOND">Quỹ trái phiếu</option>
+          </optgroup>
+          <optgroup label="COIN" class="groupComboboxCOIN">
+            <option value="COIN-BITCOIN">Bitcoin</option>
+          </optgroup>        
+        </select>
+        <label for="dataFromDate">From Date:</label>
+        <input type="date" id="dataFromDate">
+        <label for="dataToDate">To Date:</label>
+        <input type="date" id="dataToDate">
+      </div>
+      <table id="tableAllData">
+        <thead> 
+            <tr id="headerTableComparePredictResult">
+                <td>Code</td>
+                <td>Organization</td>
+                <td>Predict Impact</td>
+                <td>Latest Impact Value</td>
+                <td>Custom Period Value</td>
+                <td>1 Month</td>
+                <td>3 Month</td>
+                <td>6 Month</td>
+                <td>1 Year</td>
+                <td>3 Year</td>
+                <td>5 Year</td>
+                <td>From Established</td>
+            </tr>
+        </thead>
+        <tbody>
+            <!--  style="display: none;"  -->
+            <tr data-ignore=true data-row-id=0 >
+                <td>Code</td>
+                <td>Organization</td>
+                <td>Predict Impact</td>
+                <td>Latest Impact Value (12/07/2024)</td>
+                <td>Custom Period Value</td>
+                <td>1 Month</td>
+                <td>3 Month</td>
+                <td>6 Month</td>
+                <td>1 Year</td>
+                <td>3 Year</td>
+                <td>5 Year</td>
+                <td>From Established</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  <script src="../js/common.js"></script>
   </body>
 </html>
