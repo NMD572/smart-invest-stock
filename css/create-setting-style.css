@@ -110,7 +110,7 @@ textarea {
 }
 
 /* Button Styling */
-button, #reloadNotifyButton, #uploadSettingFileButtonLabel {
+button, #reloadNotifyButton, #uploadSettingFileButtonLabel, .action-column div {
   background-color: #007bff;
   color: white;
   border: none;

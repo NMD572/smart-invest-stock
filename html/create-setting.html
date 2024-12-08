@@ -49,11 +49,12 @@
                         <td>Capital</td>
                         <td>Purchase Date</td>
                         <td>Purchase Price (auto infer when is CCQ)</td>
-                        <td>Current Price (auto infer when is CCQ)</td>
+                        <td>Data Date (auto infer when is CCQ)</td>
+                        <td>Data Price (auto infer when is CCQ)</td>
                         <td>Profit Percent (auto infer)</td>
                         <td>Total Income Value (auto infer)</td>
                         <td>Note</td>
-                        <td>Delete</td>
+                        <td>Action</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,6 +65,7 @@
                             <input class="category-name" list="categoryComboboxDataStr0" />
                             <datalist  id="categoryComboboxDataStr0" class="datalist-for-category" data-placeholder="Choose CCQ For Category">
                                 <option data-value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
+                                <!-- <option data-value="MONEY-CapitalMoney" title="Capital Money">Capital Money</option> -->
                             </datalist>
                             <!-- Category value show for handle -->
                             <input  type="hidden" class="category-value-hidden">
@@ -71,11 +73,20 @@
                         <td><input type="number" class="category-purchase-capital" ></td>
                         <td><input type="date" class="category-purchase-date"></td>
                         <td><input type="number" class="category-purchase-price" ></td>
-                        <td><input type="number" class="category-current-price" ></td>
+                        <td><input type="date" class="category-data-date"></td>
+                        <td><input type="number" class="category-data-price" ></td>
                         <td><div class="category-profit-percent">0%</div></td>
                         <td><div class="category-income-value">0</div></td>
-                        <td><input type="text" class="catogory-note" ></td>
-                        <td>
+                        <td><input type="text" class="catogory-note"></td>
+                        <td class = "action-column">
+                            <div class="checkbox-disable-view-category" title="Flag to mark the category is disabled when show my category chart or not?">
+                                <!-- fa-solid fa-eye-slash  to disable view -->
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <div class="checkbox-selled-flag-category" title="Flag to mark the category is cutoff or not?">
+                                <!-- fa-solid fa-square-check to cutoff data -->
+                                <i class="fa-solid fa-square"></i>
+                            </div>
                             <button class="button-delete-category">
                                 <i class="fas fa-trash-alt"></i>
                             </button>

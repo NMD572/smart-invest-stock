@@ -109,6 +109,7 @@ async function getListCcqInfor(listFundAssetTypeNeedToCompare){
     return listCcqInforResult;
 }
 
+// get lasted nav of ccq
 async function getLastedNavOfCcqFromDataDateToPreviousDate(ccqId, dataDate){
     let isGetAll = false;
     let jsonDatas;
@@ -122,6 +123,7 @@ async function getLastedNavOfCcqFromDataDateToPreviousDate(ccqId, dataDate){
     }
 }
 
+// get list nav history
 async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
     let jsonDatas = await callApiGetListNavHistoryOfCcq(ccqId, convertDateInputToDateFormatOfFmarket(fromDate), convertDateInputToDateFormatOfFmarket(toDate), isGetAll);
     let listNavHistoryInfor = [];
@@ -134,7 +136,6 @@ async function getListNavHistory(ccqId, fromDate, toDate, isGetAll, chartType){
             listNavHistoryInfor.push(new NavCcqHistory(jsonDatas.data[i].nav,jsonDatas.data[i].navDate, growthFromPreviousDay));
         }
     }else{
-        console.log(ccqId);
         let firstDayPrice = jsonDatas.data[0].nav;
         for(let i=0,end=jsonDatas.data.length;i<end;++i){
             let growthFromPreviousDay = 0;

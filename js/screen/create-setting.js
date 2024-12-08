@@ -233,7 +233,7 @@ function bindEvent() {
     document.getElementsByClassName("category-purchase-price")[0]
   );
   bindEventReCaculateProfitAndIncome(
-    document.getElementsByClassName("category-current-price")[0]
+    document.getElementsByClassName("category-data-price")[0]
   );
   bindEventReCaculateProfitAndIncome(
     document.getElementsByClassName("category-purchase-capital")[0]
@@ -419,7 +419,7 @@ async function addRowForCategory(rowData) {
     newRow.getElementsByClassName("category-purchase-price")[0]
   );
   bindEventReCaculateProfitAndIncome(
-    newRow.getElementsByClassName("category-current-price")[0]
+    newRow.getElementsByClassName("category-data-price")[0]
   );
   bindEventReCaculateProfitAndIncome(
     newRow.getElementsByClassName("category-purchase-capital")[0]
@@ -435,7 +435,7 @@ async function addRowForCategory(rowData) {
     let purchaseCapital = rowData.purchaseCapital;
     let purchaseDate = rowData.purchaseDate;
     let purchasePrice = rowData.purchasePrice;
-    let currentPrice = rowData.currentPrice;
+    let dataPrice = rowData.dataPrice;
     let note = rowData.note;
     // infer category name
     for (let option of newRow.querySelectorAll(
@@ -457,8 +457,8 @@ async function addRowForCategory(rowData) {
       purchaseDate;
     newRow.getElementsByClassName("category-purchase-price")[0].value =
       purchasePrice;
-    newRow.getElementsByClassName("category-current-price")[0].value =
-      currentPrice;
+    newRow.getElementsByClassName("category-data-price")[0].value =
+      dataPrice;
     newRow.getElementsByClassName("catogory-note")[0].value = note;
 
     await inferCategoryInfor(newRow);
@@ -513,19 +513,19 @@ function calculateProfitAndIncome(currentRow) {
   let purchasePriceVal = currentRow.getElementsByClassName(
     "category-purchase-price"
   )[0].value;
-  let currentPriceVal = currentRow.getElementsByClassName(
-    "category-current-price"
+  let dataPriceVal = currentRow.getElementsByClassName(
+    "category-data-price"
   )[0].value;
   let incomePercenet = 0;
   let totalIncomeVal = 0;
   if (
     purchasePriceVal &&
     purchasePriceVal !== null &&
-    currentPriceVal &&
-    currentPriceVal !== null
+    dataPriceVal &&
+    dataPriceVal !== null
   ) {
     incomePercenet =
-      Math.round((currentPriceVal / purchasePriceVal - 1) * 10000) / 100;
+      Math.round((dataPriceVal / purchasePriceVal - 1) * 10000) / 100;
     totalIncomeVal =
       Math.round(
         (Number(purchaseCapitalValue) * 100 +
@@ -561,31 +561,31 @@ async function inferCategoryInfor(currentRow) {
       categoryValueInputHiddenValue,
       purchaseDateData
     );
-    let currentPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
+    let dataPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
       categoryValueInputHiddenValue,
       formatDate(new Date())
     );
     if (
-      currentPrice &&
-      currentPrice !== null &&
+      dataPrice &&
+      dataPrice !== null &&
       purchasePrice &&
       purchasePrice !== null
     ) {
       incomePercenet =
-        Math.round((currentPrice / purchasePrice - 1) * 10000) / 100;
+        Math.round((dataPrice / purchasePrice - 1) * 10000) / 100;
     }
     let purchasePriceElement = currentRow.getElementsByClassName(
       "category-purchase-price"
     )[0];
-    let currentPriceElement = currentRow.getElementsByClassName(
-      "category-current-price"
+    let dataPriceElement = currentRow.getElementsByClassName(
+      "category-data-price"
     )[0];
     purchasePriceElement.value = purchasePrice;
-    currentPriceElement.value = currentPrice;
+    dataPriceElement.value = dataPrice;
     calculateProfitAndIncome(currentRow);
-    // disable purchasePriceElement, currentPriceElement (user can not edit that field)
+    // disable purchasePriceElement, dataPriceElement (user can not edit that field)
     purchasePriceElement.disabled = true;
-    currentPriceElement.disabled = true;
+    dataPriceElement.disabled = true;
   }
 }
 /*** End Category */
@@ -824,6 +824,7 @@ function loadOldClassificationData() {
 }
 
 async function submitAllData() {
+  let isInList = false;
   // get name
   let myFullName = document.getElementById("inputFullName").value;
   // get strategy
@@ -849,6 +850,9 @@ async function submitAllData() {
     let categoryId = bodyTableMyCategoryElement.getElementsByClassName(
       "category-value-hidden"
     )[i].value;
+    let categoryNameInputValue =
+    bodyTableMyCategoryElement.getElementsByClassName("category-name")[i].value;
+    isInList = categoryId != categoryNameInputValue;
     let purchaseCapital = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-capital"
     )[i].value;
@@ -858,8 +862,11 @@ async function submitAllData() {
     let purchasePrice = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-price"
     )[i].value;
-    let currentPrice = bodyTableMyCategoryElement.getElementsByClassName(
-      "category-current-price"
+    let dateDate = bodyTableMyCategoryElement.getElementsByClassName(
+      "category-data-date"
+    )[i].value;
+    let dataPrice = bodyTableMyCategoryElement.getElementsByClassName(
+      "category-data-price"
     )[i].value;
     let note =
       bodyTableMyCategoryElement.getElementsByClassName("catogory-note")[i]
@@ -870,8 +877,11 @@ async function submitAllData() {
         purchaseCapital,
         purchaseDate,
         purchasePrice,
-        currentPrice,
-        note
+        dateDate,
+        dataPrice,
+        note,
+        isInList,
+        null
       )
     );
   }

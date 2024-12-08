@@ -224,6 +224,18 @@ function getWorkingDays(fromDate, toDate){
     return listAllWorkingDateInRange;
 }
 
+async function handleMyCategoryDataForChart(fromDate, toDate, isGetAll, chartType){
+    // Step 1: Get all viewable category
+
+    // Step 2: Group and get distinct ccq id
+
+    // Step 3: Calculate and return List<NavCcqHistory> of each category
+
+    // Step 4: Merge all into 1 List<NavCcqHistory>
+    
+    return 0;
+}
+
 async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGetAll, chartType){
     // final result
     let dataToDrawChart = [];
@@ -234,9 +246,12 @@ async function handleChartData(listSelectedBasicCcqInfor, fromDate, toDate, isGe
     let listAllDayForShowInChart = getWorkingDays(new Date(fromDate), new Date(toDate));
     // let indexMaxLength = 0;
     for(let i=0,end=listSelectedBasicCcqInfor.length;i<end;++i){
-        if(listSelectedBasicCcqInfor[i].id !='Index-VNindex'){
+        if(listSelectedBasicCcqInfor[i].id === 'MYCATEGORY'){
+            listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await handleMyCategoryDataForChart(fromDate, toDate, isGetAll, chartType)));
+        }else if(listSelectedBasicCcqInfor[i].id !== 'Index-VNindex'){
             listAllCcq.push(new ListNavHistory( listSelectedBasicCcqInfor[i].shortName,await getListNavHistory(listSelectedBasicCcqInfor[i].id, fromDate, toDate, isGetAll, chartType)));
         }
+        
     }
     // convert to data to draw chart
     
