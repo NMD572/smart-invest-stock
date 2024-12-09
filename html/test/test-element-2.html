@@ -10,32 +10,7 @@
     </style>
 </head>
 <body>
-    <button id="buttonTest">Show notification</button>
-    <script>
-        document.getElementById("buttonTest").addEventListener("click", function(){
-            sendLocalNotification('title','detail2',null,null,"testTag");
-        });
-        function sendLocalNotification(title, detailMessage, icon, externalInfor, distinctTag){
-            Notification.requestPermission().then(permissionResult => {
-                // permissionResult: ['granted', 'default', 'denied']
-                console.log(permissionResult);
-                if(permissionResult === 'granted'){
-                    console.log("vào"); 
-                    const notification = new Notification(title, {
-                        body: detailMessage,
-                        data: externalInfor,
-                        icon: icon,
-                        tag: distinctTag
-                    });
-                    console.log(notification);
-                    
-                    notification.addEventListener("error", exception =>{
-                        // exception contain data (externalInfor)
-                        console.error(exception);
-                    });
-                }
-            })
-        }
-    </script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/screen/test.js"></script>
 </body>
 </html>

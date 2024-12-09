@@ -16,7 +16,7 @@ async function getPriceOfStockComponent(stockCode, stockType) {
       "Content-type": "application/json; charset=UTF-8",
     },
   }).then((response) => response.json());
-  await sleep(getSleepTimeAfterCallIntegrateApi()); // sleep 0.5s for prevent spam api
+  await sleep(SLEEP_TIME_AFTER_CALL_INTEGRATE_API); // sleep 0.5s for prevent spam api
   // console.log(jsonDatas);
   return jsonDatas;
 }
@@ -31,7 +31,7 @@ async function getAllIndex() {
       "Content-type": "application/json; charset=UTF-8",
     },
   }).then((response) => response.json());
-  await sleep(getSleepTimeAfterCallIntegrateApi()); // sleep 0.5s for prevent spam api
+  await sleep(SLEEP_TIME_AFTER_CALL_INTEGRATE_API); // sleep 0.5s for prevent spam api
   // console.log(jsonDatas);
   return jsonDatas;
 }
@@ -46,7 +46,7 @@ async function getAllStock() {
       "Content-type": "application/json; charset=UTF-8",
     },
   }).then((response) => response.json());
-  await sleep(getSleepTimeAfterCallIntegrateApi()); // sleep 0.5s for prevent spam api
+  await sleep(SLEEP_TIME_AFTER_CALL_INTEGRATE_API); // sleep 0.5s for prevent spam api
   // console.log(jsonDatas);
   return jsonDatas;
 }

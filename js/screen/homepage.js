@@ -10,26 +10,24 @@ var listBalancedCcq;
 var listBondCcq;
 var mapCcqData = new Map();
 
-async function initScreen(){
-    await loadAllCcq();
+async function initScreen() {
+  await loadAllCcq();
 }
 
-async function loadAllCcq(){
-    let listStockAssetType = [];
-    listStockAssetType.push(getFundAssetTypeStock());
-    listStockCcq = await getListCcqInfor(listFundAssetTypeNeedToLoad);
-    let listBalancedAssetType = [];
-    listBalancedAssetType.push(getFundAssetTypeBalanced());
-    listBalancedCcq = await getListCcqInfor(listBalancedAssetType);
-    let listBondAssetType = [];
-    listBondAssetType.push(getFundAssetTypeBond());
-    listBondCcq = await getListCcqInfor(listBondAssetType);
-
-
+async function loadAllCcq() {
+  let listStockAssetType = [];
+  listStockAssetType.push(FUND_TYPE_STOCK);
+  listStockCcq = await getListCcqInfor(listFundAssetTypeNeedToLoad);
+  let listBalancedAssetType = [];
+  listBalancedAssetType.push(FUND_TYPE_BALANCED);
+  listBalancedCcq = await getListCcqInfor(listBalancedAssetType);
+  let listBondAssetType = [];
+  listBondAssetType.push(FUND_TYPE_BOND);
+  listBondCcq = await getListCcqInfor(listBondAssetType);
 }
 
-function convertToMapCcqData(listCcqData){
-    for(let ccqInfor of listCcqData){
-        mapCcqData.set(ccqInfor.shortName, ccqInfor);
-    }
+function convertToMapCcqData(listCcqData) {
+  for (let ccqInfor of listCcqData) {
+    mapCcqData.set(ccqInfor.shortName, ccqInfor);
+  }
 }

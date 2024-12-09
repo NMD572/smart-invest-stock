@@ -48,9 +48,9 @@ async function initInfor() {
 }
 /*** Common */
 async function fillComboboxData() {
-  listFundAssetTypeNeedToLoad.push(getFundAssetTypeStock());
-  listFundAssetTypeNeedToLoad.push(getFundAssetTypeBalanced());
-  listFundAssetTypeNeedToLoad.push(getFundAssetTypeBond());
+  listFundAssetTypeNeedToLoad.push(FUND_TYPE_STOCK);
+  listFundAssetTypeNeedToLoad.push(FUND_TYPE_BALANCED);
+  listFundAssetTypeNeedToLoad.push(FUND_TYPE_BOND);
   listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
 
   // dataset for category
@@ -106,19 +106,19 @@ function addCcqToSelect2Combobox(
   if (listCcqData && listCcqData !== null) {
     for (let i = 0, end = listCcqData.length; i < end; ++i) {
       switch (listCcqData[i].fundAssetType) {
-        case getFundAssetTypeStock():
+        case FUND_TYPE_STOCK:
           // add to stock ccq combobox group
           if (groupStockCcq != null) {
             addCCQToCombox(groupStockCcq, listCcqData[i]);
           }
           break;
-        case getFundAssetTypeBalanced():
+        case FUND_TYPE_BALANCED:
           // add to balanced ccq combobox group
           if (groupBalanceCcq != null) {
             addCCQToCombox(groupBalanceCcq, listCcqData[i]);
           }
           break;
-        case getFundAssetTypeBond():
+        case FUND_TYPE_BOND:
           // add to bond ccq combobox group
           if (groupBondCcq != null) {
             addCCQToCombox(groupBondCcq, listCcqData[i]);
@@ -253,15 +253,15 @@ function bindEvent() {
 async function loadOldData() {
   // load full name of current user
   // Retrieve old fullname of user
-  let userFullName = retrieveDataFromLocalStorage(getConstantMyFullName());
-  let userStrategy = retrieveDataFromLocalStorage(getConstantMyStrategy());
+  let userFullName = retrieveDataFromLocalStorage(CONSTANT_MY_FULL_NAME);
+  let userStrategy = retrieveDataFromLocalStorage(CONSTANT_MY_STRATEGY);
   document.getElementById("inputFullName").value = userFullName;
   document.getElementById("inputMyStrategy").value = userStrategy;
 
   // load old setting data
   // load notification setting infor
   let notificationSettingInfor = retrieveDataFromLocalStorage(
-    getConstantNotificationSettingInfor()
+    CONSTANT_NOTIFICATION_SETTING_INFOR
   );
   if (notificationSettingInfor && notificationSettingInfor !== null) {
     document.getElementById("inputStartNotifyTime").value =
@@ -361,7 +361,7 @@ function reloadMyCategoryPieChart() {
 async function loadOldCategoryData() {
   // Retrieve old category data
   let listOldCategoryData = retrieveDataFromLocalStorage(
-    getConstantMyCategories()
+    CONSTANT_MY_CATEGORIES
   );
   //   console.log(listOldClassificationData);
   if (listOldCategoryData && listOldCategoryData !== null) {
@@ -457,8 +457,7 @@ async function addRowForCategory(rowData) {
       purchaseDate;
     newRow.getElementsByClassName("category-purchase-price")[0].value =
       purchasePrice;
-    newRow.getElementsByClassName("category-data-price")[0].value =
-      dataPrice;
+    newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
     newRow.getElementsByClassName("catogory-note")[0].value = note;
 
     await inferCategoryInfor(newRow);
@@ -513,9 +512,8 @@ function calculateProfitAndIncome(currentRow) {
   let purchasePriceVal = currentRow.getElementsByClassName(
     "category-purchase-price"
   )[0].value;
-  let dataPriceVal = currentRow.getElementsByClassName(
-    "category-data-price"
-  )[0].value;
+  let dataPriceVal = currentRow.getElementsByClassName("category-data-price")[0]
+    .value;
   let incomePercenet = 0;
   let totalIncomeVal = 0;
   if (
@@ -617,7 +615,7 @@ function bindEventChangeWhenSelectCcqOrIndex(element) {
       "notify-init-value"
     )[0].dataset.lastedValue = currentCcqPrice;
     currentRow.getElementsByClassName("notify-init-value-hidden")[0].value =
-      getConstantLastedValue();
+      CONSTANT_LASTED_VALUE;
 
     if (currentCcqShortName !== "Index-VNindex") {
       await predictImpactOfCcq(currentCcqShortName, currentRow, initValue);
@@ -645,7 +643,7 @@ function predictForNotify(ccqDetailData, initValue) {
 async function loadOldNotificationData() {
   // Retrieve old notification data
   let listOldNotificationData = retrieveDataFromLocalStorage(
-    getConstantListCcqNotification()
+    CONSTANT_LIST_CCQ_NOTIFICATION
   );
   //   console.log(listOldClassificationData);
   if (listOldNotificationData && listOldNotificationData !== null) {
@@ -751,7 +749,7 @@ async function addRowForNotify(rowData) {
     // set init value
     // if initValueHidden = CONSTANT_LASTED_VALUE --> initValue = get lasted price
     // else initValue = initValueHidden (the value that user input)
-    if (initValueHidden != getConstantLastedValue()) {
+    if (initValueHidden != CONSTANT_LASTED_VALUE) {
       initValue = initValueHidden;
     }
     newRow.getElementsByClassName("notify-init-value")[0].value = initValue;
@@ -813,7 +811,7 @@ async function predictImpactOfCcq(ccqShortName, currentRow, initValue) {
 function loadOldClassificationData() {
   // Retrieve old classification data
   let listOldClassificationData = retrieveDataFromLocalStorage(
-    getConstantListCcqClassification()
+    CONSTANT_LIST_CCQ_CLASSIFICATION
   );
   //   console.log(listOldClassificationData);
   if (listOldClassificationData && listOldClassificationData !== null) {
@@ -851,7 +849,8 @@ async function submitAllData() {
       "category-value-hidden"
     )[i].value;
     let categoryNameInputValue =
-    bodyTableMyCategoryElement.getElementsByClassName("category-name")[i].value;
+      bodyTableMyCategoryElement.getElementsByClassName("category-name")[i]
+        .value;
     isInList = categoryId != categoryNameInputValue;
     let purchaseCapital = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-capital"
@@ -862,9 +861,9 @@ async function submitAllData() {
     let purchasePrice = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-price"
     )[i].value;
-    let dateDate = bodyTableMyCategoryElement.getElementsByClassName(
-      "category-data-date"
-    )[i].value;
+    let dateDate =
+      bodyTableMyCategoryElement.getElementsByClassName("category-data-date")[i]
+        .value;
     let dataPrice = bodyTableMyCategoryElement.getElementsByClassName(
       "category-data-price"
     )[i].value;
@@ -980,16 +979,13 @@ async function submitAllData() {
     );
   }
   // console.log(listClassification);
+  storeDataInLocalStorage(CONSTANT_LIST_CCQ_CLASSIFICATION, listClassification);
+  storeDataInLocalStorage(CONSTANT_LIST_CCQ_NOTIFICATION, listNotification);
+  storeDataInLocalStorage(CONSTANT_MY_CATEGORIES, listCategory);
+  storeDataInLocalStorage(CONSTANT_MY_FULL_NAME, myFullName);
+  storeDataInLocalStorage(CONSTANT_MY_STRATEGY, myStrategy);
   storeDataInLocalStorage(
-    getConstantListCcqClassification(),
-    listClassification
-  );
-  storeDataInLocalStorage(getConstantListCcqNotification(), listNotification);
-  storeDataInLocalStorage(getConstantMyCategories(), listCategory);
-  storeDataInLocalStorage(getConstantMyFullName(), myFullName);
-  storeDataInLocalStorage(getConstantMyStrategy(), myStrategy);
-  storeDataInLocalStorage(
-    getConstantNotificationSettingInfor(),
+    CONSTANT_NOTIFICATION_SETTING_INFOR,
     notificationSettingInfor
   );
   // handle auto notification
@@ -1173,7 +1169,7 @@ async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
         // console.log("Value: " + option.value);
         if (option.value == ccqId) {
           ccqShortName = option.innerHTML;
-          if (initValueHidden === getConstantLastedValue()) {
+          if (initValueHidden === CONSTANT_LASTED_VALUE) {
             initValueHidden = option.dataset.price;
           }
           break;
@@ -1246,7 +1242,7 @@ async function calculateImpactOfAllCcqAt15PM() {
     );
     if (
       !checkKeyIsExistInLocalStorage(
-        getConstantInferLastedImpactOfPreviousDay() + formatDate(new Date())
+        CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY + formatDate(new Date())
       )
     ) {
       await predictImpactCcqAndStoreToLocalStorage();
@@ -1269,7 +1265,7 @@ async function predictImpactCcqAndStoreToLocalStorage() {
     listCcqData &&
     listCcqData !== null &&
     !checkKeyIsExistInLocalStorage(
-      getConstantInferLastedImpactOfPreviousDay() + formatDate(new Date())
+      CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY + formatDate(new Date())
     )
   ) {
     let mapImpactCcq = await calculateImpactOfAllStockCcq();
@@ -1277,7 +1273,7 @@ async function predictImpactCcqAndStoreToLocalStorage() {
     if (mapImpactCcq && mapImpactCcq !== null && mapImpactCcq.size > 0) {
       let currentDateStr = formatDate(new Date());
       storeDataInLocalStorage(
-        getConstantInferLastedImpactOfPreviousDay() + currentDateStr,
+        CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY + currentDateStr,
         mapImpactCcq
       );
     }

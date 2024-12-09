@@ -1,43 +1,47 @@
 /*** Local Notification Solution - work when you assign notification permission on browser and enable show notification of browser in system notification */
 // distinctTag for only 1 message with the same tag
 // icon for show down or up point of ccq
-function sendLocalNotification(title, detailMessage, externalInfor, distinctTag){
-  Notification.requestPermission().then(permissionResult => {
-      // permissionResult: ['granted', 'default', 'denied']
-      console.log(permissionResult);
-      if(permissionResult === 'granted'){
-          console.log("vào"); 
-          const notification = new Notification(title, {
-              body: detailMessage,
-              data: externalInfor,
-              icon: getSmartInvestIconUrl(),
-              tag: distinctTag
-          });
-          console.log(notification);
-          
-          notification.addEventListener("error", exception =>{
-              // exception contain data (externalInfor)
-              console.error(exception);
-          });
-      }
-  })
-}
+function sendLocalNotification(
+  title,
+  detailMessage,
+  externalInfor,
+  distinctTag
+) {
+  Notification.requestPermission().then((permissionResult) => {
+    // permissionResult: ['granted', 'default', 'denied']
+    console.log(permissionResult);
+    if (permissionResult === "granted") {
+      console.log("vào");
+      const notification = new Notification(title, {
+        body: detailMessage,
+        data: externalInfor,
+        icon: CONSTANT_SMART_INVEST_ICON_URL,
+        tag: distinctTag,
+      });
+      console.log(notification);
 
-function genTitleNotifyCcqImpact(ccqShortName, impactPercent){
-    if(impactPercent<0){
-        // decrease
-        return ccqShortName + " has decreased "+ impactPercent + "%";
-    }else{
-        // increase
-        impactPercent = "+"+impactPercent;
-        return ccqShortName + " has increased "+ impactPercent + "%";
+      notification.addEventListener("error", (exception) => {
+        // exception contain data (externalInfor)
+        console.error(exception);
+      });
     }
+  });
 }
 
-function genDetailMessage(){
-    return "This is predict value which is based on component report in previous month of CCQ's Company";
+function genTitleNotifyCcqImpact(ccqShortName, impactPercent) {
+  if (impactPercent < 0) {
+    // decrease
+    return ccqShortName + " has decreased " + impactPercent + "%";
+  } else {
+    // increase
+    impactPercent = "+" + impactPercent;
+    return ccqShortName + " has increased " + impactPercent + "%";
+  }
 }
 
+function genDetailMessage() {
+  return "This is predict value which is based on component report in previous month of CCQ's Company";
+}
 
 /**** Another solution: Push notification  */
 // function pushNotification(message){
@@ -46,7 +50,7 @@ function genDetailMessage(){
 //         console.error("Service Worker isn't supported on this browser");
 //         return;
 //     }
-    
+
 //     if (!('PushManager' in window)) {
 //         // Push isn't supported on this browser, disable or hide UI.
 //         console.error("Push isn't supported on this browser");
@@ -60,7 +64,7 @@ function genDetailMessage(){
 //       const permissionResult = Notification.requestPermission(function (result) {
 //         resolve(result);
 //       });
-  
+
 //       if (permissionResult) {
 //         permissionResult.then(resolve, reject);
 //       }
@@ -97,7 +101,7 @@ function genDetailMessage(){
 //             publicKey,
 //           ),
 //         };
-  
+
 //         return registration.pushManager.subscribe(subscribeOptions);
 //       })
 //       .then(function (pushSubscription) {

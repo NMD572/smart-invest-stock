@@ -26,14 +26,6 @@ const CONSTANT_SMART_INVEST_ICON_URL =
   "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
 const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
 
-function getSleepTimeAfterCallIntegrateApi() {
-  return SLEEP_TIME_AFTER_CALL_INTEGRATE_API;
-}
-
-function getSmartInvestIconUrl() {
-  return CONSTANT_SMART_INVEST_ICON_URL;
-}
-
 function clearIntervalObject(intervalObject) {
   if (intervalObject && intervalObject != null) {
     clearInterval(intervalObject);
@@ -48,71 +40,6 @@ function clearTimeoutObject(timeoutObject) {
     timeoutObject = null;
   }
   return timeoutObject;
-}
-
-function getConstantNotificationSettingInfor() {
-  return CONSTANT_NOTIFICATION_SETTING_INFOR;
-}
-
-function getConstantMyStrategy() {
-  return CONSTANT_MY_STRATEGY;
-}
-
-function getConstantInferLastedImpactOfPreviousDay() {
-  return CONSTANT_INFER_LASTED_IMPACT_OF_PREVIOUS_DAY;
-}
-
-function getConstantLastedValue() {
-  return CONSTANT_LASTED_VALUE;
-}
-
-function getDetailAssetTypeStock() {
-  return FUND_TYPE_STOCK;
-}
-
-function getDetailAssetTypeCash() {
-  return ASSET_TYPE_CASH;
-}
-
-function getDetailAssetTypeBond() {
-  return FUND_TYPE_BOND;
-}
-//
-
-function getComponentTypeStock() {
-  return FUND_TYPE_STOCK;
-}
-
-function getComponentTypeBond() {
-  return FUND_TYPE_BOND;
-}
-
-function getConstantPriceMovementForTop3Stock() {
-  return PRICE_MOVEMENT_FOR_TOP_3_STOCK_COMPONENT;
-}
-
-function getConstantPriceMovementForTop4ToNStock() {
-  return PRICE_MOVEMENT_FOR_TOP_4_TO_N_STOCK_COMPONENT;
-}
-
-function getRatioForBigStockImpact() {
-  return RATIO_FOR_BIG_STOCK_IMPACT;
-}
-
-function getConstantMyFullName() {
-  return CONSTANT_MY_FULL_NAME;
-}
-
-function getConstantListCcqClassification() {
-  return CONSTANT_LIST_CCQ_CLASSIFICATION;
-}
-
-function getConstantListCcqNotification() {
-  return CONSTANT_LIST_CCQ_NOTIFICATION;
-}
-
-function getConstantMyCategories() {
-  return CONSTANT_MY_CATEGORIES;
 }
 
 // Store data in local storage
@@ -153,26 +80,6 @@ function reviverJsonData(key, value) {
     }
   }
   return value;
-}
-
-function getNumberOfTransactionDateInYear() {
-  return NUMBER_TRANSACTION_DATE_IN_YEAR;
-}
-
-function getInterestRateWithNoRisk() {
-  return INTEREST_RATE_NO_RISK;
-}
-
-function getFundAssetTypeStock() {
-  return FUND_TYPE_STOCK;
-}
-
-function getFundAssetTypeBalanced() {
-  return FUND_TYPE_BALANCED;
-}
-
-function getFundAssetTypeBond() {
-  return FUND_TYPE_BOND;
 }
 
 function includeJs(jsFilePath) {
