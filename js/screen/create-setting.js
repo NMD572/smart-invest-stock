@@ -435,6 +435,7 @@ async function addRowForCategory(rowData) {
     let purchaseCapital = rowData.purchaseCapital;
     let purchaseDate = rowData.purchaseDate;
     let purchasePrice = rowData.purchasePrice;
+    let dataDate = rowData.dataDate;
     let dataPrice = rowData.dataPrice;
     let note = rowData.note;
     // infer category name
@@ -457,6 +458,7 @@ async function addRowForCategory(rowData) {
       purchaseDate;
     newRow.getElementsByClassName("category-purchase-price")[0].value =
       purchasePrice;
+    newRow.getElementsByClassName("category-data-date")[0].value = dataDate;
     newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
     newRow.getElementsByClassName("catogory-note")[0].value = note;
 
@@ -861,7 +863,7 @@ async function submitAllData() {
     let purchasePrice = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-price"
     )[i].value;
-    let dateDate =
+    let dataDate =
       bodyTableMyCategoryElement.getElementsByClassName("category-data-date")[i]
         .value;
     let dataPrice = bodyTableMyCategoryElement.getElementsByClassName(
@@ -876,11 +878,12 @@ async function submitAllData() {
         purchaseCapital,
         purchaseDate,
         purchasePrice,
-        dateDate,
+        dataDate,
         dataPrice,
         note,
         isInList,
-        null
+        false,
+        isInList
       )
     );
   }

@@ -7,6 +7,7 @@ includeJs("../js/dto/CCQInfor.js");
 includeJs("../js/dto/BasicCCQInfor.js");
 includeJs("../js/dto/ListNavHistory.js");
 includeJs("../js/dto/DataToWriteChart.js");
+includeJs("../js/dto/NavCcqHistory.js");
 
 var currentCcqId;
 var currentCcqShortName;
@@ -285,16 +286,216 @@ async function handleMyCategoryDataForChart(
   isGetAll,
   chartType
 ) {
-  // Step 1: Get all viewable category
-  let myCategoryData = retrieveDataFromLocalStorage(CONSTANT_MY_CATEGORIES);
-  // Step 2: Group and get distinct ccq id
-
+  let listResult = [];
+  let listCcqId = new Set();
+  let mapNavHistoryFullTime = new Map();
+  let listCalculateAllCategoryRow = [];
+  let totalInitAmount = 0;
+  let spilitValue = 1;
+  // assign opposite date to force change data
+  let minStartDate = toDate,
+    maxEndDate = fromDate;
+  // Step 1: Get all category
+  let listOldCategoryData = retrieveDataFromLocalStorage(
+    CONSTANT_MY_CATEGORIES
+  );
+  // Step 2: Group by ccq id and calculate real from date to date for each ccq id
+  if (listOldCategoryData && listOldCategoryData !== null) {
+    for (let oldCategoryData of listOldCategoryData) {
+      if (oldCategoryData.viewable === true) {
+        // check is viewable
+        // calculateConfigCcq(mapCcqConfigData, oldCategoryData, fromDate, toDate);
+        listCcqId.add(oldCategoryData.categoryId);
+      }
+    }
+  }
   // Step 3: Calculate and return List<NavCcqHistory> of each category
+  // Step 3.1: get nav history of each ccq
+  for (let ccqId of listCcqId) {
+    mapNavHistoryFullTime.set(
+      ccqId,
+      await getListNavHistory(
+        ccqId,
+        fromDate,
+        toDate,
+        isGetAll,
+        getChartTypeCurrencyVND()
+      )
+    );
+  }
+  // Step 3.2: calculate impact data for each category
+  for (let oldCategoryData of listOldCategoryData) {
+    if (oldCategoryData.viewable === true) {
+      // check is viewable
+      listCalculateAllCategoryRow.push(
+        calculateImpactPerCategoryRow(
+          oldCategoryData,
+          fromDate,
+          toDate,
+          mapNavHistoryFullTime.get(oldCategoryData.categoryId)
+        )
+      );
+    }
+  }
 
+  // Step 3.3: calculate total init amount of invest
+  for (let listImpactOfSingleCcq of listCalculateAllCategoryRow) {
+    if (listImpactOfSingleCcq[0].navDate < minStartDate) {
+      minStartDate = listImpactOfSingleCcq[0].navDate;
+    }
+    if (
+      listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate >
+      maxEndDate
+    ) {
+      maxEndDate =
+        listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate;
+    }
+    totalInitAmount += listImpactOfSingleCcq[0].navValue;
+  }
+  console.log("Total init amount: " + totalInitAmount);
   // Step 4: Merge all into 1 List<NavCcqHistory>
+  let listAllWorkingDateInRange = getWorkingDays(
+    new Date(minStartDate),
+    new Date(maxEndDate)
+  );
+  if (chartType === getChartTypeGrowthRatio()) {
+    // if type = growth ratio --> spilit value = total init amount (to calculate growth percent from init value)
+    spilitValue = totalInitAmount;
+  }
+  // calculate by sum all money of that day/ spilit value
+  let listUsedIndexAllCcq = Array(listCalculateAllCategoryRow.length).fill(0);
+  for (let i = 0; i < listAllWorkingDateInRange.length; ++i) {
+    let currentDay = listAllWorkingDateInRange[i];
+    let totalMoneyOfCurrentDay = 0;
+    let growthFromPreviousDay = 0;
 
-  return 0;
+    for (let j = 0; j < listCalculateAllCategoryRow.length; ++j) {
+      let listImpactOfSingleCategoryRow = listCalculateAllCategoryRow[j];
+      let currentCategoryStartIndex = listUsedIndexAllCcq[j];
+      for (
+        ;
+        currentCategoryStartIndex < listImpactOfSingleCategoryRow.length;
+
+      ) {
+        // manual increase listUsedIndexAllCcq[j]
+        while (
+          currentCategoryStartIndex <
+            listImpactOfSingleCategoryRow.length - 1 &&
+          listImpactOfSingleCategoryRow[currentCategoryStartIndex].navDate <
+            currentDay &&
+          listImpactOfSingleCategoryRow[currentCategoryStartIndex + 1]
+            .navDate <= currentDay
+        ) {
+          ++currentCategoryStartIndex;
+        }
+        totalMoneyOfCurrentDay +=
+          listImpactOfSingleCategoryRow[currentCategoryStartIndex].navValue;
+        break;
+      }
+    }
+    totalMoneyOfCurrentDay /= spilitValue;
+
+    if (chartType === getChartTypeGrowthRatio()) {
+      totalMoneyOfCurrentDay -= 1;
+      totalMoneyOfCurrentDay = Math.round(totalMoneyOfCurrentDay * 10000) / 100;
+    } else {
+      totalMoneyOfCurrentDay = Math.round(totalMoneyOfCurrentDay * 100) / 100;
+    }
+    if (i > 0) {
+      growthFromPreviousDay = calculateGrowthRatioFromPreviousDay(
+        listResult[listResult.length - 1].navValue,
+        totalMoneyOfCurrentDay
+      );
+    }
+    listResult.push(
+      new NavCcqHistory(
+        totalMoneyOfCurrentDay,
+        currentDay,
+        growthFromPreviousDay
+      )
+    );
+  }
+  console.log(listResult);
+  return listResult;
 }
+
+function calculateImpactPerCategoryRow(
+  oldCategoryData,
+  fromDate,
+  toDate,
+  impactCurrencyVndArray
+) {
+  let listResult = [];
+  let purchasePrice = oldCategoryData.purchasePrice;
+  let purchaseCapital = oldCategoryData.purchaseCapital;
+  let ccqAmount = purchaseCapital / purchasePrice;
+  if (fromDate < oldCategoryData.purchaseDate) {
+    fromDate = oldCategoryData.purchaseDate;
+  }
+  if (
+    oldCategoryData.cutoffFlag === true &&
+    toDate > oldCategoryData.dataDate
+  ) {
+    toDate = oldCategoryData.dataDate;
+  }
+  // calculate impact
+  for (
+    let startIndex = 0;
+    startIndex < impactCurrencyVndArray.length;
+    ++startIndex
+  ) {
+    if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
+      continue;
+    } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
+      // xem lại khúc này đang bị tính lại ngày quá khứ (khi chưa đầu tư)
+      listResult.push(
+        new NavCcqHistory(
+          ccqAmount * impactCurrencyVndArray[startIndex].navValue,
+          impactCurrencyVndArray[startIndex].navDate,
+          null
+        )
+      );
+    }
+  }
+  return listResult;
+}
+
+// function calculateConfigCcq(
+//   mapCcqConfigData,
+//   oldCategoryData,
+//   fromDate,
+//   toDate
+// ) {
+//   let timeConfig = mapCcqConfigData.get(oldCategoryData.categoryId);
+//   if (timeConfig && timeConfig !== null) {
+//     if (timeConfig[0] < oldCategoryData.purchaseDate) {
+//       timeConfig[0] = oldCategoryData.purchaseDate;
+//     }
+//     if (
+//       oldCategoryData.cutoffFlag === true &&
+//       timeConfig[1] < oldCategoryData.dataDate
+//     ) {
+//       timeConfig[1] = oldCategoryData.dataDate;
+//     }
+//   } else {
+//     timeConfig = [];
+//     let fromDateResult = fromDate,
+//       toDateResult = toDate;
+//     if (fromDateResult > oldCategoryData.purchaseDate) {
+//       fromDateResult = oldCategoryData.purchaseDate;
+//     }
+//     if (
+//       oldCategoryData.cutoffFlag === true &&
+//       toDateResult > oldCategoryData.dataDate
+//     ) {
+//       toDateResult = oldCategoryData.dataDate;
+//     }
+//     timeConfig.push(fromDateResult);
+//     timeConfig.push(toDateResult);
+//   }
+
+//   mapCcqConfigData.set(oldCategoryData.categoryId, timeConfig);
+// }
 
 async function handleChartData(
   listSelectedBasicCcqInfor,
