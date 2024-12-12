@@ -415,7 +415,7 @@ async function handleMyCategoryDataForChart(
       )
     );
   }
-  console.log(listResult);
+  // console.log(listResult);
   return listResult;
 }
 
