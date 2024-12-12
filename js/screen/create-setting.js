@@ -437,6 +437,8 @@ async function addRowForCategory(rowData) {
     let purchasePrice = rowData.purchasePrice;
     let dataDate = rowData.dataDate;
     let dataPrice = rowData.dataPrice;
+    let viewableFlag = rowData.viewable;
+    let cutoffFlag = rowData.cutoffFlag;
     let note = rowData.note;
     // infer category name
     for (let option of newRow.querySelectorAll(
@@ -461,9 +463,44 @@ async function addRowForCategory(rowData) {
     newRow.getElementsByClassName("category-data-date")[0].value = dataDate;
     newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
     newRow.getElementsByClassName("catogory-note")[0].value = note;
-
+    newRow.getElementsByClassName("category-setting-view-checkbox")[0].checked =
+      viewableFlag;
+    newRow.getElementsByClassName("category-cutoff-flag-checkbox")[0].checked =
+      cutoffFlag;
+    reloadCategoryViewableIcon(newRow, viewableFlag);
+    reloadCategoryCutoffFlagIcon(newRow, cutoffFlag);
     await inferCategoryInfor(newRow);
     calculateProfitAndIncome(newRow);
+  }
+}
+
+function reloadCategoryViewableIcon(currentRow, viewableFlag) {
+  let categorySettingViewIcon = currentRow.getElementsByClassName(
+    "category-setting-view-icon"
+  )[0];
+  if (categorySettingViewIcon && categorySettingViewIcon !== null) {
+    categorySettingViewIcon.classList.remove("fa-eye");
+    categorySettingViewIcon.classList.remove("fa-eye-slash");
+    if (viewableFlag) {
+      categorySettingViewIcon.classList.add("fa-eye");
+    } else {
+      categorySettingViewIcon.classList.add("fa-eye-slash");
+    }
+  }
+}
+
+function reloadCategoryCutoffFlagIcon(currentRow, isViewable) {
+  let categoryCutoffFlagIcon = currentRow.getElementsByClassName(
+    "category-cutoff-flag-icon"
+  )[0];
+  if (categoryCutoffFlagIcon && categoryCutoffFlagIcon !== null) {
+    categoryCutoffFlagIcon.classList.remove("fa-money-bill-trend-up");
+    categoryCutoffFlagIcon.classList.remove("fa-hand-holding-dollar");
+    if (isViewable) {
+      categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
+    } else {
+      categoryCutoffFlagIcon.classList.add("fa-money-bill-trend-up");
+    }
   }
 }
 
