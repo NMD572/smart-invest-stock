@@ -424,6 +424,14 @@ async function addRowForCategory(rowData) {
   bindEventReCaculateProfitAndIncome(
     newRow.getElementsByClassName("category-purchase-capital")[0]
   );
+  bindEventChangeCategorySettingIcon(
+    newRow.getElementsByClassName("category-setting-view-div")[0],
+    true
+  );
+  bindEventChangeCategorySettingIcon(
+    newRow.getElementsByClassName("category-cutoff-flag-div")[0],
+    false
+  );
 
   // Append the new row to the table
   bodyTableMyCategoryElement.appendChild(newRow);
@@ -489,14 +497,14 @@ function reloadCategoryViewableIcon(currentRow, viewableFlag) {
   }
 }
 
-function reloadCategoryCutoffFlagIcon(currentRow, isViewable) {
+function reloadCategoryCutoffFlagIcon(currentRow, cutoffFlag) {
   let categoryCutoffFlagIcon = currentRow.getElementsByClassName(
     "category-cutoff-flag-icon"
   )[0];
   if (categoryCutoffFlagIcon && categoryCutoffFlagIcon !== null) {
     categoryCutoffFlagIcon.classList.remove("fa-money-bill-trend-up");
     categoryCutoffFlagIcon.classList.remove("fa-hand-holding-dollar");
-    if (isViewable) {
+    if (cutoffFlag) {
       categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
     } else {
       categoryCutoffFlagIcon.classList.add("fa-money-bill-trend-up");
@@ -528,6 +536,29 @@ function bindEventFocusOutWhenInputCategoryName(element) {
     }
 
     await inferCategoryInfor(currentRow);
+  });
+}
+
+function bindEventChangeCategorySettingIcon(element, isViewableIcon) {
+  element.addEventListener("click", function () {
+    let currentRow = element.parentElement.parentElement; // get tr element of current selected row
+    if (isViewableIcon) {
+      // if change viewable setting --> change viewable icon
+      let checkBoxElement = currentRow.getElementsByClassName(
+        "category-setting-view-checkbox"
+      )[0];
+      checkBoxElement.checked = !checkBoxElement.checked;
+
+      reloadCategoryViewableIcon(currentRow, checkBoxElement.checked);
+    } else {
+      // if change cutoff setting --> change cutoff icon
+      let checkBoxElement = currentRow.getElementsByClassName(
+        "category-cutoff-flag-checkbox"
+      )[0];
+      checkBoxElement.checked = !checkBoxElement.checked;
+
+      reloadCategoryCutoffFlagIcon(currentRow, checkBoxElement.checked);
+    }
   });
 }
 
@@ -906,6 +937,13 @@ async function submitAllData() {
     let dataPrice = bodyTableMyCategoryElement.getElementsByClassName(
       "category-data-price"
     )[i].value;
+    let viewableFlag = bodyTableMyCategoryElement.getElementsByClassName(
+      "category-setting-view-checkbox"
+    )[i].checked;
+    let cutoffFlag = bodyTableMyCategoryElement.getElementsByClassName(
+      "category-cutoff-flag-checkbox"
+    )[i].checked;
+
     let note =
       bodyTableMyCategoryElement.getElementsByClassName("catogory-note")[i]
         .value;
@@ -918,8 +956,8 @@ async function submitAllData() {
         dataDate,
         dataPrice,
         note,
-        isInList,
-        false,
+        viewableFlag,
+        cutoffFlag,
         isInList
       )
     );
