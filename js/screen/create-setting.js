@@ -105,7 +105,7 @@ function handleDataForDataList(datalistCcqForCategory, listCcqData){
   newOptCapitalMoney.dataset.price = null;
   newOptCapitalMoney.dataset.type = CategoryTypeEnum.CAPITAL_MONEY.type;
   datalistCcqForCategory.appendChild(newOptCapitalMoney);
-  // add savings deposits to category datalist
+  // add saving deposit to category datalist
   var newOptSavingDeposit = document.createElement("option");
   newOptSavingDeposit.innerHTML = CategoryTypeEnum.SAVING_DEPOSIT.name;
   newOptSavingDeposit.title = CategoryTypeEnum.SAVING_DEPOSIT.name;

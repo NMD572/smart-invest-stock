@@ -30,7 +30,7 @@ const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
 // Category type enum
 const CategoryTypeEnum = Object.freeze({
   CAPITAL_MONEY:   { name: "Capital Money", type : "0" },
-  SAVING_DEPOSIT:  { name: "Savings Deposits", type : "1" },
+  SAVING_DEPOSIT:  { name: "Saving Deposit", type : "1" },
   CCQ: { name: "CCQ", type : "2" },
   OTHER: { name: "Other Category", type : "99" }
 });
