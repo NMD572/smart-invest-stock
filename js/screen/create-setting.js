@@ -651,18 +651,19 @@ async function inferCategoryInfor(currentRow) {
     purchaseDateData &&
     purchaseDateData !== null
   ) {
-    let purchasePrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
+    let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
       categoryValueInputHidden.value,
       purchaseDateData
     );
-    let dataPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
+    let purchasePrice = purchaseData!=null?purchaseData.nav:null;
+    let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
       categoryValueInputHidden.value,
       formatDate(new Date())
     );
+    let dataPrice = dataPriceData!=null?dataPriceData.nav:null;
+    let dataDate = dataPriceData!=null?dataPriceData.navDate:null;
     if (
-      dataPrice &&
       dataPrice !== null &&
-      purchasePrice &&
       purchasePrice !== null
     ) {
       incomePercenet =
@@ -674,8 +675,12 @@ async function inferCategoryInfor(currentRow) {
     let dataPriceElement = currentRow.getElementsByClassName(
       "category-data-price"
     )[0];
+    let dataDateElement = currentRow.getElementsByClassName(
+      "category-data-date"
+    )[0];
     purchasePriceElement.value = purchasePrice;
     dataPriceElement.value = dataPrice;
+    dataDateElement.value = dataDate;
     calculateProfitAndIncome(currentRow);
     // disable purchasePriceElement, dataPriceElement (user can not edit that field)
     purchasePriceElement.disabled = true;

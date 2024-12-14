@@ -198,7 +198,7 @@ async function getLastedNavOfCcqFromDataDateToPreviousDate(ccqId, dataDate) {
     isGetAll
   );
   if (jsonDatas.data.length > 0) {
-    return jsonDatas.data[jsonDatas.data.length - 1].nav;
+    return jsonDatas.data[jsonDatas.data.length - 1];
   } else {
     return null;
   }
