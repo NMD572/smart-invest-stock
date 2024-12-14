@@ -1,4 +1,4 @@
-// CONSTANT DATA TO API INTERAGE
+// CONSTANT DATA TO API INTEGRATE
 const FUND_TYPE_STOCK = "STOCK"; // list stock ccq (all in ccq)
 const FUND_TYPE_BALANCED = "BALANCED"; // list balanced ccq (invest in both stock and bonds)
 const FUND_TYPE_BOND = "BOND"; // list bond ccq (all in bond and money)
@@ -25,6 +25,15 @@ const CONSTANT_LASTED_VALUE = "CONSTANT_LASTED_VALUE";
 const CONSTANT_SMART_INVEST_ICON_URL =
   "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
 const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
+
+
+// Category type enum
+const CategoryTypeEnum = Object.freeze({
+  CAPITAL_MONEY:   { name: "Capital Money", type : "0" },
+  SAVING_DEPOSIT:  { name: "Savings Deposits", type : "1" },
+  CCQ: { name: "CCQ", type : "2" },
+  OTHER: { name: "Other Category", type : "99" }
+});
 
 function clearIntervalObject(intervalObject) {
   if (intervalObject && intervalObject != null) {

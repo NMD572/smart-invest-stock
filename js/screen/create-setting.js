@@ -75,10 +75,10 @@ async function fillComboboxData() {
   )[0];
   let groupComboboxBalanceCcqForClassification =
     document.getElementsByClassName(
-      "groupComboboxBalancedCcqqForClassificationRowData"
+      "groupComboboxBalancedCqqForClassificationRowData"
     )[0];
   let groupComboboxBondCcqForClassification = document.getElementsByClassName(
-    "groupComboboxBondCcqqForClassificationRowData"
+    "groupComboboxBondCqqForClassificationRowData"
   )[0];
 
   addCcqToSelect2Combobox(
@@ -93,10 +93,32 @@ async function fillComboboxData() {
     groupComboboxBalanceCcqForNotify,
     groupComboboxBondCcqForNotify
   );
+  handleDataForDataList(datalistCcqForCategory, listCcqData);
+}
+
+function handleDataForDataList(datalistCcqForCategory, listCcqData){
+  // add capital money to category datalist
+  var newOptCapitalMoney = document.createElement("option");
+  newOptCapitalMoney.innerHTML = CategoryTypeEnum.CAPITAL_MONEY.name;
+  newOptCapitalMoney.title = CategoryTypeEnum.CAPITAL_MONEY.name;
+  newOptCapitalMoney.dataset.value = CategoryTypeEnum.CAPITAL_MONEY.name;
+  newOptCapitalMoney.dataset.price = null;
+  newOptCapitalMoney.dataset.type = CategoryTypeEnum.CAPITAL_MONEY.type;
+  datalistCcqForCategory.appendChild(newOptCapitalMoney);
+  // add savings deposits to category datalist
+  var newOptSavingDeposit = document.createElement("option");
+  newOptSavingDeposit.innerHTML = CategoryTypeEnum.SAVING_DEPOSIT.name;
+  newOptSavingDeposit.title = CategoryTypeEnum.SAVING_DEPOSIT.name;
+  newOptSavingDeposit.dataset.value = CategoryTypeEnum.SAVING_DEPOSIT.name;
+  newOptSavingDeposit.dataset.price = null;
+  newOptSavingDeposit.dataset.type = CategoryTypeEnum.SAVING_DEPOSIT.type;
+  datalistCcqForCategory.appendChild(newOptSavingDeposit);
+
   for (let i = 0, end = listCcqData.length; i < end; ++i) {
     addCCQToDatalist(datalistCcqForCategory, listCcqData[i]);
   }
 }
+
 function addCcqToSelect2Combobox(
   listCcqData,
   groupStockCcq,
@@ -135,10 +157,11 @@ function addCcqToSelect2Combobox(
 function addCCQToDatalist(datalistCcq, ccqInfor) {
   var newOpt = document.createElement("option");
   // newOpt.value = ccqInfor.id;
-  newOpt.innerHTML = ccqInfor.shortName;
+  newOpt.innerHTML = CategoryTypeEnum.CCQ.name + " - " + ccqInfor.shortName;
   newOpt.title = ccqInfor.getExternalInfor;
   newOpt.dataset.value = ccqInfor.id;
   newOpt.dataset.price = ccqInfor.currentNav;
+  newOpt.dataset.type = CategoryTypeEnum.CCQ.type;
   datalistCcq.appendChild(newOpt);
 }
 
@@ -440,6 +463,7 @@ async function addRowForCategory(rowData) {
   if (rowData && rowData !== null) {
     let categoryId = rowData.categoryId;
     let categoryName = categoryId;
+    let categoryType = CategoryTypeEnum.OTHER.type;
     let purchaseCapital = rowData.purchaseCapital;
     let purchaseDate = rowData.purchaseDate;
     let purchasePrice = rowData.purchasePrice;
@@ -455,12 +479,14 @@ async function addRowForCategory(rowData) {
       // console.log("Value: " + option.value);
       if (option.dataset.value == categoryId) {
         categoryName = option.innerHTML;
+        categoryType = option.dataset.type;
         break;
       }
     }
     newRow.getElementsByClassName("category-name")[0].value = categoryName;
     newRow.getElementsByClassName("category-value-hidden")[0].value =
       categoryId;
+    newRow.getElementsByClassName("category-value-hidden")[0].dataset.type = categoryType;
 
     newRow.getElementsByClassName("category-purchase-capital")[0].value =
       purchaseCapital;
@@ -516,21 +542,21 @@ function bindEventFocusOutWhenInputCategoryName(element) {
   element.addEventListener("focusout", async function () {
     // assign id of option to input tag
     let currentRow = element.parentElement.parentElement; // get row id in tr element
-    let listId = element.getAttribute("list"),
-      options = bodyTableMyCategoryElement.querySelectorAll(
+    let listId = element.getAttribute("list");
+    let options = bodyTableMyCategoryElement.querySelectorAll(
         "#" + listId + " option"
-      ),
-      hiddenInput = currentRow.getElementsByClassName(
+    );
+    let hiddenInput = currentRow.getElementsByClassName(
         "category-value-hidden"
-      )[0],
-      inputValue = element.value;
-
+     )[0];
+    let inputValue = element.value;
     hiddenInput.value = inputValue;
+    hiddenInput.dataset.type = CategoryTypeEnum.OTHER.value;
 
     for (var i = 0; i < options.length; i++) {
       if (options[i].innerText === inputValue) {
         hiddenInput.value = options[i].dataset.value;
-        isSelectInDropDownList = true;
+        hiddenInput.dataset.type = options[i].dataset.type;
         break;
       }
     }
@@ -608,29 +634,29 @@ function calculateProfitAndIncome(currentRow) {
 async function inferCategoryInfor(currentRow) {
   // bind event infer purchase price, current price and profit percent
   // if have purchase date data and selected data in select box
-  let categoryValueInputHiddenValue = currentRow.getElementsByClassName(
+  let categoryValueInputHidden = currentRow.getElementsByClassName(
     "category-value-hidden"
-  )[0].value;
-  let categoryNameInputValue =
-    currentRow.getElementsByClassName("category-name")[0].value;
+  )[0];
   let purchaseDateData = currentRow.getElementsByClassName(
     "category-purchase-date"
   )[0].value;
-  let isSelectInDropDownList =
-    categoryValueInputHiddenValue != categoryNameInputValue;
+  // let categoryNameInputValue =
+  //   currentRow.getElementsByClassName("category-name")[0].value;
+  // let isInList = categoryValueInputHidden.value === categoryNameInputValue;
+  let isCcq =
+  categoryValueInputHidden.dataset.type === CategoryTypeEnum.CCQ.type;
   // console.log(isSelectInDropDownList + categoryValueInputHiddenValue+ purchaseDateData);
   if (
-    isSelectInDropDownList === true &&
-    categoryValueInputHiddenValue != "Index-VNindex" &&
+    isCcq === true &&
     purchaseDateData &&
     purchaseDateData !== null
   ) {
     let purchasePrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
-      categoryValueInputHiddenValue,
+      categoryValueInputHidden.value,
       purchaseDateData
     );
     let dataPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
-      categoryValueInputHiddenValue,
+      categoryValueInputHidden.value,
       formatDate(new Date())
     );
     if (
@@ -892,7 +918,6 @@ function loadOldClassificationData() {
 }
 
 async function submitAllData() {
-  let isInList = false;
   // get name
   let myFullName = document.getElementById("inputFullName").value;
   // get strategy
@@ -911,17 +936,20 @@ async function submitAllData() {
 
   // handle category
   let listCategory = [];
-  let numberOfRowCategorynUserAdded =
+  let isCcq = false;
+  let numberOfRowCategoryUserAdded =
     bodyTableMyCategoryElement.getElementsByTagName("tr").length;
-  // start 1 to numberOfRowCategorynUserAdded - 1
-  for (let i = 1; i < numberOfRowCategorynUserAdded; ++i) {
-    let categoryId = bodyTableMyCategoryElement.getElementsByClassName(
+    
+  // start 1 to numberOfRowCategoryUserAdded - 1
+  for (let i = 1; i < numberOfRowCategoryUserAdded; ++i) {
+    let categoryValueHiddenElement = bodyTableMyCategoryElement.getElementsByClassName(
       "category-value-hidden"
-    )[i].value;
-    let categoryNameInputValue =
-      bodyTableMyCategoryElement.getElementsByClassName("category-name")[i]
-        .value;
-    isInList = categoryId != categoryNameInputValue;
+    )[i];
+    let categoryId = categoryValueHiddenElement.value;
+    // let categoryNameInputValue =
+    //   bodyTableMyCategoryElement.getElementsByClassName("category-name")[i]
+    //     .value;
+    isCcq = categoryValueHiddenElement.dataset.type === CategoryTypeEnum.CCQ.type;
     let purchaseCapital = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-capital"
     )[i].value;
@@ -958,7 +986,7 @@ async function submitAllData() {
         note,
         viewableFlag,
         cutoffFlag,
-        isInList
+        isCcq
       )
     );
   }
