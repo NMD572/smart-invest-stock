@@ -534,6 +534,7 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
   let dataDateElement = currentRow.getElementsByClassName(
     "category-data-date"
   )[0];
+  let categoryValueHiddenElement  = currentRow.getElementsByClassName("category-value-hidden")[0];
   
   if (categoryCutoffFlagIcon && categoryCutoffFlagIcon !== null) {
     categoryCutoffFlagIcon.classList.remove("fa-money-bill-trend-up");
@@ -541,7 +542,7 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
     if (cutoffFlag) {
       categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
       dataDateElement.disabled = false;
-      if(!isLoadOldData){
+      if(!isLoadOldData && categoryValueHiddenElement.dataset.type !== CategoryTypeEnum.CAPITAL_MONEY.type){
         // add capital money row by total income of invest category
         let totalIncomeValue = Number(currentRow.getElementsByClassName(
           "category-income-value"
@@ -549,7 +550,6 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
         let cutoffCategoryName = currentRow.getElementsByClassName(
           "category-name"
         )[0].value;
-        console.log(totalIncomeValue);
         addRowForCategory(new MyCategoryInfor(CategoryTypeEnum.CAPITAL_MONEY.name, totalIncomeValue, dataDateElement.value, CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice, formatDate(new Date()), CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice, "Cutoff invest "+ cutoffCategoryName + " on " + dataDateElement.value));
       }
     } else {
