@@ -102,7 +102,7 @@ function handleDataForDataList(datalistCcqForCategory, listCcqData){
   newOptCapitalMoney.innerHTML = CategoryTypeEnum.CAPITAL_MONEY.name;
   newOptCapitalMoney.title = CategoryTypeEnum.CAPITAL_MONEY.name;
   newOptCapitalMoney.dataset.value = CategoryTypeEnum.CAPITAL_MONEY.name;
-  newOptCapitalMoney.dataset.price = null;
+  newOptCapitalMoney.dataset.price = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
   newOptCapitalMoney.dataset.type = CategoryTypeEnum.CAPITAL_MONEY.type;
   datalistCcqForCategory.appendChild(newOptCapitalMoney);
   // add saving deposit to category datalist
@@ -110,7 +110,7 @@ function handleDataForDataList(datalistCcqForCategory, listCcqData){
   newOptSavingDeposit.innerHTML = CategoryTypeEnum.SAVING_DEPOSIT.name;
   newOptSavingDeposit.title = CategoryTypeEnum.SAVING_DEPOSIT.name;
   newOptSavingDeposit.dataset.value = CategoryTypeEnum.SAVING_DEPOSIT.name;
-  newOptSavingDeposit.dataset.price = null;
+  newOptSavingDeposit.dataset.price = CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
   newOptSavingDeposit.dataset.type = CategoryTypeEnum.SAVING_DEPOSIT.type;
   datalistCcqForCategory.appendChild(newOptSavingDeposit);
 
@@ -507,7 +507,7 @@ async function addRowForCategory(rowData) {
       cutoffFlag;
     await inferCategoryInfor(newRow);
     reloadCategoryViewableSetting(newRow, viewableFlag);
-    reloadCategoryCutoffSetting(newRow, cutoffFlag);
+    reloadCategoryCutoffSetting(newRow, cutoffFlag, true);
     // calculateProfitAndIncome(newRow); // already handled in function inferCategoryInfor
   }
 }
@@ -527,19 +527,31 @@ function reloadCategoryViewableSetting(currentRow, viewableFlag) {
   }
 }
 
-function reloadCategoryCutoffSetting(currentRow, cutoffFlag) {
+function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
   let categoryCutoffFlagIcon = currentRow.getElementsByClassName(
     "category-cutoff-flag-icon"
   )[0];
   let dataDateElement = currentRow.getElementsByClassName(
     "category-data-date"
   )[0];
+  
   if (categoryCutoffFlagIcon && categoryCutoffFlagIcon !== null) {
     categoryCutoffFlagIcon.classList.remove("fa-money-bill-trend-up");
     categoryCutoffFlagIcon.classList.remove("fa-hand-holding-dollar");
     if (cutoffFlag) {
       categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
       dataDateElement.disabled = false;
+      if(!isLoadOldData){
+        // add capital money row by total income of invest category
+        let totalIncomeValue = Number(currentRow.getElementsByClassName(
+          "category-income-value"
+        )[0].innerText);
+        let cutoffCategoryName = currentRow.getElementsByClassName(
+          "category-name"
+        )[0].value;
+        console.log(totalIncomeValue);
+        addRowForCategory(new MyCategoryInfor(CategoryTypeEnum.CAPITAL_MONEY.name, totalIncomeValue, dataDateElement.value, CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice, formatDate(new Date()), CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice, "Cutoff invest "+ cutoffCategoryName + " on " + dataDateElement.value));
+      }
     } else {
       categoryCutoffFlagIcon.classList.add("fa-money-bill-trend-up");
       dataDateElement.disabled = true;
@@ -590,7 +602,7 @@ function bindEventChangeCategorySetting(element, isViewableIcon) {
         "category-cutoff-flag-checkbox"
       )[0];
       checkBoxElement.checked = !checkBoxElement.checked;
-      reloadCategoryCutoffSetting(currentRow, checkBoxElement.checked);
+      reloadCategoryCutoffSetting(currentRow, checkBoxElement.checked, false);
       
     }
   });
@@ -604,7 +616,7 @@ function bindEventReCaculateProfitAndIncome(element) {
 }
 
 function calculateProfitAndIncome(currentRow) {
-  let profitPercenetElement = currentRow.getElementsByClassName(
+  let profitPercentElement = currentRow.getElementsByClassName(
     "category-profit-percent"
   )[0];
   let incomeValueElement = currentRow.getElementsByClassName(
@@ -618,7 +630,7 @@ function calculateProfitAndIncome(currentRow) {
   )[0].value;
   let dataPriceVal = currentRow.getElementsByClassName("category-data-price")[0]
     .value;
-  let incomePercenet = 0;
+  let incomePercent = 0;
   let totalIncomeVal = 0;
   if (
     purchasePriceVal &&
@@ -626,16 +638,16 @@ function calculateProfitAndIncome(currentRow) {
     dataPriceVal &&
     dataPriceVal !== null
   ) {
-    incomePercenet =
+    incomePercent =
       Math.round((dataPriceVal / purchasePriceVal - 1) * 10000) / 100;
     totalIncomeVal =
       Math.round(
         (Number(purchaseCapitalValue) * 100 +
-          incomePercenet * purchaseCapitalValue) *
+        incomePercent * purchaseCapitalValue) *
           100
       ) / 10000;
   }
-  profitPercenetElement.innerHTML = incomePercenet + "%";
+  profitPercentElement.innerHTML = incomePercent + "%";
   incomeValueElement.innerHTML = totalIncomeVal;
 }
 
@@ -648,7 +660,18 @@ async function inferCategoryInfor(currentRow) {
   let purchaseDateData = currentRow.getElementsByClassName(
     "category-purchase-date"
   )[0].value;
+  let purchasePriceElement = currentRow.getElementsByClassName(
+    "category-purchase-price"
+  )[0];
+  let dataPriceElement = currentRow.getElementsByClassName(
+    "category-data-price"
+  )[0];
+  let dataDateElement = currentRow.getElementsByClassName(
+    "category-data-date"
+  )[0];
+  let purchasePrice;
   let dataDate;
+  let dataPrice;
   let cutoffFlag = currentRow.getElementsByClassName("category-cutoff-flag-checkbox")[0].checked;
 
   if(cutoffFlag){
@@ -666,49 +689,49 @@ async function inferCategoryInfor(currentRow) {
   // let categoryNameInputValue =
   //   currentRow.getElementsByClassName("category-name")[0].value;
   // let isInList = categoryValueInputHidden.value === categoryNameInputValue;
-  let isCcq =
-  categoryValueInputHidden.dataset.type === CategoryTypeEnum.CCQ.type;
   // console.log(isSelectInDropDownList + categoryValueInputHiddenValue+ purchaseDateData);
-  if (
-    isCcq === true &&
-    purchaseDateData &&
-    purchaseDateData !== null
-  ) {
-    let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
-      categoryValueInputHidden.value,
-      purchaseDateData
-    );
-    let purchasePrice = purchaseData!=null?purchaseData.nav:null;
-    let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
-      categoryValueInputHidden.value,
-      formatDate(dataDate)
-    );
-    let dataPrice = dataPriceData!=null?dataPriceData.nav:null;
-    dataDate = dataPriceData!=null?dataPriceData.navDate:null;
-    if (
-      dataPrice !== null &&
-      purchasePrice !== null
-    ) {
-      incomePercenet =
-        Math.round((dataPrice / purchasePrice - 1) * 10000) / 100;
-    }
-    let purchasePriceElement = currentRow.getElementsByClassName(
-      "category-purchase-price"
-    )[0];
-    let dataPriceElement = currentRow.getElementsByClassName(
-      "category-data-price"
-    )[0];
-    let dataDateElement = currentRow.getElementsByClassName(
-      "category-data-date"
-    )[0];
-    purchasePriceElement.value = purchasePrice;
-    dataPriceElement.value = dataPrice;
-    dataDateElement.value = dataDate;
-    calculateProfitAndIncome(currentRow);
-    // disable purchasePriceElement, dataPriceElement (user can not edit that field)
-    purchasePriceElement.disabled = true;
-    dataPriceElement.disabled = true;
+  if(purchaseDateData &&
+    purchaseDateData !== null)
+  {
+    switch (categoryValueInputHidden.dataset.type){
+    case CategoryTypeEnum.CCQ.type:
+      let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
+        categoryValueInputHidden.value,
+        purchaseDateData
+      );
+      purchasePrice = purchaseData!=null?purchaseData.nav:null;
+      let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
+        categoryValueInputHidden.value,
+        formatDate(dataDate)
+      );
+      dataPrice = dataPriceData!=null?dataPriceData.nav:null;
+      dataDate = dataPriceData!=null?dataPriceData.navDate:null;
+      // disable purchasePriceElement, dataPriceElement (user can not edit that field)
+      purchasePriceElement.disabled = true;
+      dataPriceElement.disabled = true;
+      break;
+    case CategoryTypeEnum.CAPITAL_MONEY.type:
+      purchasePrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
+      dataPrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
+      dataDate = formatDate(new Date());
+      // disable purchasePriceElement, dataPriceElement (user can not edit that field)
+      purchasePriceElement.disabled = true;
+      dataPriceElement.disabled = true;
+      break;
+    case CategoryTypeEnum.SAVING_DEPOSIT.type: 
+      purchasePrice = CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
+      dataPrice = dataPriceElement.value;
+      dataDate = formatDate(new Date());
+      break;
+    default:
+      break;
+    };
   }
+  purchasePriceElement.value = purchasePrice;
+  dataPriceElement.value = dataPrice;
+  dataDateElement.value = dataDate;
+
+  calculateProfitAndIncome(currentRow);
 }
 /*** End Category */
 /** Notification */
