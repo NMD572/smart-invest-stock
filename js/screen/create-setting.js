@@ -422,6 +422,9 @@ async function addRowForCategory(rowData) {
   let datalistForCategory = newRow.getElementsByClassName(
     "datalist-for-category"
   )[0];
+  let dataDateElement = newRow.getElementsByClassName(
+    "category-data-date"
+  )[0];
   datalistForCategory.setAttribute(
     "id",
     CONSTANT_PREFIX_ID_OF_DATA_LIST_CATEGORY + currentRowCategoryId
@@ -438,6 +441,7 @@ async function addRowForCategory(rowData) {
   bindEventFocusOutWhenInputCategoryName(inputCategoryName);
   bindEventReloadCategoryInforInChart(inputPurchaseDate);
   bindEventReloadCategoryInforInChart(inputPurchaseCapital);
+  bindEventReloadCategoryInforInChart(dataDateElement);
   bindEventReCaculateProfitAndIncome(
     newRow.getElementsByClassName("category-purchase-price")[0]
   );
@@ -447,11 +451,11 @@ async function addRowForCategory(rowData) {
   bindEventReCaculateProfitAndIncome(
     newRow.getElementsByClassName("category-purchase-capital")[0]
   );
-  bindEventChangeCategorySettingIcon(
+  bindEventChangeCategorySetting(
     newRow.getElementsByClassName("category-setting-view-div")[0],
     true
   );
-  bindEventChangeCategorySettingIcon(
+  bindEventChangeCategorySetting(
     newRow.getElementsByClassName("category-cutoff-flag-div")[0],
     false
   );
@@ -501,14 +505,14 @@ async function addRowForCategory(rowData) {
       viewableFlag;
     newRow.getElementsByClassName("category-cutoff-flag-checkbox")[0].checked =
       cutoffFlag;
-    reloadCategoryViewableIcon(newRow, viewableFlag);
-    reloadCategoryCutoffFlagIcon(newRow, cutoffFlag);
     await inferCategoryInfor(newRow);
-    calculateProfitAndIncome(newRow);
+    reloadCategoryViewableSetting(newRow, viewableFlag);
+    reloadCategoryCutoffSetting(newRow, cutoffFlag);
+    // calculateProfitAndIncome(newRow); // already handled in function inferCategoryInfor
   }
 }
 
-function reloadCategoryViewableIcon(currentRow, viewableFlag) {
+function reloadCategoryViewableSetting(currentRow, viewableFlag) {
   let categorySettingViewIcon = currentRow.getElementsByClassName(
     "category-setting-view-icon"
   )[0];
@@ -523,17 +527,22 @@ function reloadCategoryViewableIcon(currentRow, viewableFlag) {
   }
 }
 
-function reloadCategoryCutoffFlagIcon(currentRow, cutoffFlag) {
+function reloadCategoryCutoffSetting(currentRow, cutoffFlag) {
   let categoryCutoffFlagIcon = currentRow.getElementsByClassName(
     "category-cutoff-flag-icon"
+  )[0];
+  let dataDateElement = currentRow.getElementsByClassName(
+    "category-data-date"
   )[0];
   if (categoryCutoffFlagIcon && categoryCutoffFlagIcon !== null) {
     categoryCutoffFlagIcon.classList.remove("fa-money-bill-trend-up");
     categoryCutoffFlagIcon.classList.remove("fa-hand-holding-dollar");
     if (cutoffFlag) {
       categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
+      dataDateElement.disabled = false;
     } else {
       categoryCutoffFlagIcon.classList.add("fa-money-bill-trend-up");
+      dataDateElement.disabled = true;
     }
   }
 }
@@ -560,12 +569,11 @@ function bindEventFocusOutWhenInputCategoryName(element) {
         break;
       }
     }
-
     await inferCategoryInfor(currentRow);
   });
 }
 
-function bindEventChangeCategorySettingIcon(element, isViewableIcon) {
+function bindEventChangeCategorySetting(element, isViewableIcon) {
   element.addEventListener("click", function () {
     let currentRow = element.parentElement.parentElement; // get tr element of current selected row
     if (isViewableIcon) {
@@ -575,15 +583,15 @@ function bindEventChangeCategorySettingIcon(element, isViewableIcon) {
       )[0];
       checkBoxElement.checked = !checkBoxElement.checked;
 
-      reloadCategoryViewableIcon(currentRow, checkBoxElement.checked);
+      reloadCategoryViewableSetting(currentRow, checkBoxElement.checked);
     } else {
       // if change cutoff setting --> change cutoff icon
       let checkBoxElement = currentRow.getElementsByClassName(
         "category-cutoff-flag-checkbox"
       )[0];
       checkBoxElement.checked = !checkBoxElement.checked;
-
-      reloadCategoryCutoffFlagIcon(currentRow, checkBoxElement.checked);
+      reloadCategoryCutoffSetting(currentRow, checkBoxElement.checked);
+      
     }
   });
 }
@@ -640,6 +648,21 @@ async function inferCategoryInfor(currentRow) {
   let purchaseDateData = currentRow.getElementsByClassName(
     "category-purchase-date"
   )[0].value;
+  let dataDate;
+  let cutoffFlag = currentRow.getElementsByClassName("category-cutoff-flag-checkbox")[0].checked;
+
+  if(cutoffFlag){
+    dataDate = currentRow.getElementsByClassName("category-data-date")[0].value;
+    if(dataDate === null){
+      dataDate = new Date();
+    }else{
+      dataDate = new Date(dataDate);
+    }
+  }else{
+    dataDate = new Date();
+  }
+  
+
   // let categoryNameInputValue =
   //   currentRow.getElementsByClassName("category-name")[0].value;
   // let isInList = categoryValueInputHidden.value === categoryNameInputValue;
@@ -658,10 +681,10 @@ async function inferCategoryInfor(currentRow) {
     let purchasePrice = purchaseData!=null?purchaseData.nav:null;
     let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
       categoryValueInputHidden.value,
-      formatDate(new Date())
+      formatDate(dataDate)
     );
     let dataPrice = dataPriceData!=null?dataPriceData.nav:null;
-    let dataDate = dataPriceData!=null?dataPriceData.navDate:null;
+    dataDate = dataPriceData!=null?dataPriceData.navDate:null;
     if (
       dataPrice !== null &&
       purchasePrice !== null
