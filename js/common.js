@@ -24,15 +24,22 @@ const ASSET_TYPE_CASH = "CASH";
 const CONSTANT_LASTED_VALUE = "CONSTANT_LASTED_VALUE";
 const CONSTANT_SMART_INVEST_ICON_URL =
   "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
-const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 0; // 0.5s
-
+const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
 
 // Category type enum
 const CategoryTypeEnum = Object.freeze({
-  CAPITAL_MONEY:   { name: "Capital Money", type : "0", defaultPurchasePrice: 1 },
-  SAVING_DEPOSIT:  { name: "Saving Deposit", type : "1", defaultPurchasePrice: 1 },
-  CCQ: { name: "CCQ", type : "2", defaultPurchasePrice: null },
-  OTHER: { name: "Other Category", type : "99", defaultPurchasePrice: null }
+  CAPITAL_MONEY: {
+    name: "Capital Money",
+    type: "0",
+    defaultPurchasePrice: 100,
+  },
+  SAVING_DEPOSIT: {
+    name: "Saving Deposit",
+    type: "1",
+    defaultPurchasePrice: 100,
+  },
+  CCQ: { name: "CCQ", type: "2", defaultPurchasePrice: null },
+  OTHER: { name: "Other Category", type: "99", defaultPurchasePrice: null },
 });
 
 function clearIntervalObject(intervalObject) {

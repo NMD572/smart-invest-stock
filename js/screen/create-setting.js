@@ -96,13 +96,14 @@ async function fillComboboxData() {
   handleDataForDataList(datalistCcqForCategory, listCcqData);
 }
 
-function handleDataForDataList(datalistCcqForCategory, listCcqData){
+function handleDataForDataList(datalistCcqForCategory, listCcqData) {
   // add capital money to category datalist
   var newOptCapitalMoney = document.createElement("option");
   newOptCapitalMoney.innerHTML = CategoryTypeEnum.CAPITAL_MONEY.name;
   newOptCapitalMoney.title = CategoryTypeEnum.CAPITAL_MONEY.name;
   newOptCapitalMoney.dataset.value = CategoryTypeEnum.CAPITAL_MONEY.name;
-  newOptCapitalMoney.dataset.price = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
+  newOptCapitalMoney.dataset.price =
+    CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
   newOptCapitalMoney.dataset.type = CategoryTypeEnum.CAPITAL_MONEY.type;
   datalistCcqForCategory.appendChild(newOptCapitalMoney);
   // add saving deposit to category datalist
@@ -110,7 +111,8 @@ function handleDataForDataList(datalistCcqForCategory, listCcqData){
   newOptSavingDeposit.innerHTML = CategoryTypeEnum.SAVING_DEPOSIT.name;
   newOptSavingDeposit.title = CategoryTypeEnum.SAVING_DEPOSIT.name;
   newOptSavingDeposit.dataset.value = CategoryTypeEnum.SAVING_DEPOSIT.name;
-  newOptSavingDeposit.dataset.price = CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
+  newOptSavingDeposit.dataset.price =
+    CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
   newOptSavingDeposit.dataset.type = CategoryTypeEnum.SAVING_DEPOSIT.type;
   datalistCcqForCategory.appendChild(newOptSavingDeposit);
 
@@ -422,9 +424,7 @@ async function addRowForCategory(rowData) {
   let datalistForCategory = newRow.getElementsByClassName(
     "datalist-for-category"
   )[0];
-  let dataDateElement = newRow.getElementsByClassName(
-    "category-data-date"
-  )[0];
+  let dataDateElement = newRow.getElementsByClassName("category-data-date")[0];
   datalistForCategory.setAttribute(
     "id",
     CONSTANT_PREFIX_ID_OF_DATA_LIST_CATEGORY + currentRowCategoryId
@@ -490,7 +490,8 @@ async function addRowForCategory(rowData) {
     newRow.getElementsByClassName("category-name")[0].value = categoryName;
     newRow.getElementsByClassName("category-value-hidden")[0].value =
       categoryId;
-    newRow.getElementsByClassName("category-value-hidden")[0].dataset.type = categoryType;
+    newRow.getElementsByClassName("category-value-hidden")[0].dataset.type =
+      categoryType;
 
     newRow.getElementsByClassName("category-purchase-capital")[0].value =
       purchaseCapital;
@@ -509,6 +510,15 @@ async function addRowForCategory(rowData) {
     reloadCategoryViewableSetting(newRow, viewableFlag);
     reloadCategoryCutoffSetting(newRow, cutoffFlag, true);
     // calculateProfitAndIncome(newRow); // already handled in function inferCategoryInfor
+  } else {
+    let defaultCutoffFlag = false;
+    let defaultViewableSetting = true;
+    newRow.getElementsByClassName("category-cutoff-flag-checkbox")[0].checked =
+      defaultCutoffFlag;
+    newRow.getElementsByClassName("category-setting-view-checkbox")[0].checked =
+      defaultViewableSetting;
+    reloadCategoryViewableSetting(newRow, defaultViewableSetting);
+    reloadCategoryCutoffSetting(newRow, defaultCutoffFlag, false);
   }
 }
 
@@ -531,26 +541,44 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
   let categoryCutoffFlagIcon = currentRow.getElementsByClassName(
     "category-cutoff-flag-icon"
   )[0];
-  let dataDateElement = currentRow.getElementsByClassName(
-    "category-data-date"
+  let dataDateElement =
+    currentRow.getElementsByClassName("category-data-date")[0];
+  let categoryValueHiddenElement = currentRow.getElementsByClassName(
+    "category-value-hidden"
   )[0];
-  let categoryValueHiddenElement  = currentRow.getElementsByClassName("category-value-hidden")[0];
-  
+
   if (categoryCutoffFlagIcon && categoryCutoffFlagIcon !== null) {
     categoryCutoffFlagIcon.classList.remove("fa-money-bill-trend-up");
     categoryCutoffFlagIcon.classList.remove("fa-hand-holding-dollar");
     if (cutoffFlag) {
       categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
       dataDateElement.disabled = false;
-      if(!isLoadOldData && categoryValueHiddenElement.dataset.type !== CategoryTypeEnum.CAPITAL_MONEY.type){
+      if (
+        !isLoadOldData &&
+        categoryValueHiddenElement.dataset.type !==
+          CategoryTypeEnum.CAPITAL_MONEY.type
+      ) {
         // add capital money row by total income of invest category
-        let totalIncomeValue = Number(currentRow.getElementsByClassName(
-          "category-income-value"
-        )[0].innerText);
-        let cutoffCategoryName = currentRow.getElementsByClassName(
-          "category-name"
-        )[0].value;
-        addRowForCategory(new MyCategoryInfor(CategoryTypeEnum.CAPITAL_MONEY.name, totalIncomeValue, dataDateElement.value, CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice, formatDate(new Date()), CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice, "Cutoff invest "+ cutoffCategoryName + " on " + dataDateElement.value));
+        let totalIncomeValue = Number(
+          currentRow.getElementsByClassName("category-income-value")[0]
+            .innerText
+        );
+        let cutoffCategoryName =
+          currentRow.getElementsByClassName("category-name")[0].value;
+        addRowForCategory(
+          new MyCategoryInfor(
+            CategoryTypeEnum.CAPITAL_MONEY.name,
+            totalIncomeValue,
+            dataDateElement.value,
+            CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice,
+            formatDate(new Date()),
+            CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice,
+            "Cutoff invest " +
+              cutoffCategoryName +
+              " on " +
+              dataDateElement.value
+          )
+        );
       }
     } else {
       categoryCutoffFlagIcon.classList.add("fa-money-bill-trend-up");
@@ -565,11 +593,11 @@ function bindEventFocusOutWhenInputCategoryName(element) {
     let currentRow = element.parentElement.parentElement; // get row id in tr element
     let listId = element.getAttribute("list");
     let options = bodyTableMyCategoryElement.querySelectorAll(
-        "#" + listId + " option"
+      "#" + listId + " option"
     );
     let hiddenInput = currentRow.getElementsByClassName(
-        "category-value-hidden"
-     )[0];
+      "category-value-hidden"
+    )[0];
     let inputValue = element.value;
     hiddenInput.value = inputValue;
     hiddenInput.dataset.type = CategoryTypeEnum.OTHER.value;
@@ -603,7 +631,6 @@ function bindEventChangeCategorySetting(element, isViewableIcon) {
       )[0];
       checkBoxElement.checked = !checkBoxElement.checked;
       reloadCategoryCutoffSetting(currentRow, checkBoxElement.checked, false);
-      
     }
   });
 }
@@ -643,7 +670,7 @@ function calculateProfitAndIncome(currentRow) {
     totalIncomeVal =
       Math.round(
         (Number(purchaseCapitalValue) * 100 +
-        incomePercent * purchaseCapitalValue) *
+          incomePercent * purchaseCapitalValue) *
           100
       ) / 10000;
   }
@@ -666,66 +693,70 @@ async function inferCategoryInfor(currentRow) {
   let dataPriceElement = currentRow.getElementsByClassName(
     "category-data-price"
   )[0];
-  let dataDateElement = currentRow.getElementsByClassName(
-    "category-data-date"
-  )[0];
+  let dataDateElement =
+    currentRow.getElementsByClassName("category-data-date")[0];
   let purchasePrice;
   let dataDate;
   let dataPrice;
-  let cutoffFlag = currentRow.getElementsByClassName("category-cutoff-flag-checkbox")[0].checked;
-
-  if(cutoffFlag){
+  let cutoffFlag = currentRow.getElementsByClassName(
+    "category-cutoff-flag-checkbox"
+  )[0].checked;
+  console.log(
+    currentRow.getElementsByClassName("category-cutoff-flag-checkbox")[0]
+  );
+  if (cutoffFlag) {
     dataDate = currentRow.getElementsByClassName("category-data-date")[0].value;
-    if(dataDate === null){
+    if (dataDate === null || dataDate === "") {
       dataDate = new Date();
-    }else{
+    } else {
       dataDate = new Date(dataDate);
     }
-  }else{
+  } else {
     dataDate = new Date();
   }
-  
 
   // let categoryNameInputValue =
   //   currentRow.getElementsByClassName("category-name")[0].value;
   // let isInList = categoryValueInputHidden.value === categoryNameInputValue;
   // console.log(isSelectInDropDownList + categoryValueInputHiddenValue+ purchaseDateData);
-  if(purchaseDateData &&
-    purchaseDateData !== null)
-  {
-    switch (categoryValueInputHidden.dataset.type){
-    case CategoryTypeEnum.CCQ.type:
-      let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
-        categoryValueInputHidden.value,
-        purchaseDateData
-      );
-      purchasePrice = purchaseData!=null?purchaseData.nav:null;
-      let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
-        categoryValueInputHidden.value,
-        formatDate(dataDate)
-      );
-      dataPrice = dataPriceData!=null?dataPriceData.nav:null;
-      dataDate = dataPriceData!=null?dataPriceData.navDate:null;
-      // disable purchasePriceElement, dataPriceElement (user can not edit that field)
-      purchasePriceElement.disabled = true;
-      dataPriceElement.disabled = true;
-      break;
-    case CategoryTypeEnum.CAPITAL_MONEY.type:
-      purchasePrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
-      dataPrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
-      dataDate = formatDate(new Date());
-      // disable purchasePriceElement, dataPriceElement (user can not edit that field)
-      purchasePriceElement.disabled = true;
-      dataPriceElement.disabled = true;
-      break;
-    case CategoryTypeEnum.SAVING_DEPOSIT.type: 
-      purchasePrice = CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
-      dataPrice = dataPriceElement.value;
-      dataDate = formatDate(new Date());
-      break;
-    default:
-      break;
-    };
+  if (purchaseDateData && purchaseDateData !== null) {
+    switch (categoryValueInputHidden.dataset.type) {
+      case CategoryTypeEnum.CCQ.type:
+        let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
+          categoryValueInputHidden.value,
+          purchaseDateData
+        );
+        purchasePrice = purchaseData != null ? purchaseData.nav : null;
+        if (!dataDate || dataDate === null) {
+          dataDate = new Date();
+        }
+        let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
+          categoryValueInputHidden.value,
+          formatDate(dataDate)
+        );
+        dataPrice = dataPriceData != null ? dataPriceData.nav : null;
+        dataDate = dataPriceData != null ? dataPriceData.navDate : null;
+
+        // disable purchasePriceElement, dataPriceElement (user can not edit that field)
+        purchasePriceElement.disabled = true;
+        dataPriceElement.disabled = true;
+        break;
+      case CategoryTypeEnum.CAPITAL_MONEY.type:
+        purchasePrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
+        dataPrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
+        dataDate = formatDate(new Date());
+        // disable purchasePriceElement, dataPriceElement (user can not edit that field)
+        purchasePriceElement.disabled = true;
+        dataPriceElement.disabled = true;
+        break;
+      case CategoryTypeEnum.SAVING_DEPOSIT.type:
+        purchasePrice = CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
+        dataPrice = dataPriceElement.value;
+        dataDate = formatDate(new Date());
+        break;
+      default:
+        break;
+    }
   }
   purchasePriceElement.value = purchasePrice;
   dataPriceElement.value = dataPrice;
@@ -990,17 +1021,19 @@ async function submitAllData() {
   let isCcq = false;
   let numberOfRowCategoryUserAdded =
     bodyTableMyCategoryElement.getElementsByTagName("tr").length;
-    
+
   // start 1 to numberOfRowCategoryUserAdded - 1
   for (let i = 1; i < numberOfRowCategoryUserAdded; ++i) {
-    let categoryValueHiddenElement = bodyTableMyCategoryElement.getElementsByClassName(
-      "category-value-hidden"
-    )[i];
+    let categoryValueHiddenElement =
+      bodyTableMyCategoryElement.getElementsByClassName(
+        "category-value-hidden"
+      )[i];
     let categoryId = categoryValueHiddenElement.value;
     // let categoryNameInputValue =
     //   bodyTableMyCategoryElement.getElementsByClassName("category-name")[i]
     //     .value;
-    isCcq = categoryValueHiddenElement.dataset.type === CategoryTypeEnum.CCQ.type;
+    isCcq =
+      categoryValueHiddenElement.dataset.type === CategoryTypeEnum.CCQ.type;
     let purchaseCapital = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-capital"
     )[i].value;
