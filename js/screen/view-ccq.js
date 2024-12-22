@@ -8,6 +8,7 @@ includeJs("../js/dto/BasicCCQInfor.js");
 includeJs("../js/dto/ListNavHistory.js");
 includeJs("../js/dto/DataToWriteChart.js");
 includeJs("../js/dto/NavCcqHistory.js");
+includeJs("../js/dto/BasicKeyValueOfObject.js");
 
 var currentCcqId;
 var currentCcqShortName;
@@ -290,8 +291,9 @@ async function handleMyCategoryDataForChart(
   let listCcqId = new Set();
   let mapNavHistoryFullTime = new Map();
   let listCalculateAllCategoryRow = [];
+  let listCutoffMoney = [];
   let totalInitAmount = 0;
-  let spilitValue = 1;
+  let splitValue = 1;
   // assign opposite date to force change data
   let minStartDate = toDate,
     maxEndDate = fromDate;
@@ -323,7 +325,16 @@ async function handleMyCategoryDataForChart(
       )
     );
   }
-  // Step 3.2: calculate impact data for each category
+  // Step 3.2: get all of cutoff category
+  for (let oldCategoryData of listOldCategoryData) {
+    if (oldCategoryData.viewable === true && oldCategoryData.cutoffFlag === true) {
+        listCutoffMoney.add(new BasicKeyValueOfObject(oldCategoryData.dataDate, calculateTotalIncome(oldCategoryData)));
+      }
+  } 
+  
+  // sorted cutoff money array by data date ASC
+  listCutoffMoney.sort(function(firstCutoffData, secondCutoffData){return firstCutoffData.value < secondCutoffData.value});
+  // Step 3.3: calculate impact data for each category
   for (let oldCategoryData of listOldCategoryData) {
     if (oldCategoryData.viewable === true) {
       // check is viewable
@@ -332,7 +343,8 @@ async function handleMyCategoryDataForChart(
           oldCategoryData,
           fromDate,
           toDate,
-          mapNavHistoryFullTime.get(oldCategoryData.categoryId)
+          mapNavHistoryFullTime.get(oldCategoryData.categoryId),
+          listCutoffMoney
         )
       );
     }
@@ -359,10 +371,10 @@ async function handleMyCategoryDataForChart(
     new Date(maxEndDate)
   );
   if (chartType === getChartTypeGrowthRatio()) {
-    // if type = growth ratio --> spilit value = total init amount (to calculate growth percent from init value)
-    spilitValue = totalInitAmount;
+    // if type = growth ratio --> split value = total init amount (to calculate growth percent from init value)
+    splitValue = totalInitAmount;
   }
-  // calculate by sum all money of that day/ spilit value
+  // calculate by sum all money of that day/ split value
   let listUsedIndexAllCcq = Array(listCalculateAllCategoryRow.length).fill(0);
   for (let i = 0; i < listAllWorkingDateInRange.length; ++i) {
     let currentDay = listAllWorkingDateInRange[i];
@@ -393,7 +405,7 @@ async function handleMyCategoryDataForChart(
         break;
       }
     }
-    totalMoneyOfCurrentDay /= spilitValue;
+    totalMoneyOfCurrentDay /= splitValue;
 
     if (chartType === getChartTypeGrowthRatio()) {
       totalMoneyOfCurrentDay -= 1;
@@ -423,20 +435,38 @@ function calculateImpactPerCategoryRow(
   oldCategoryData,
   fromDate,
   toDate,
-  impactCurrencyVndArray
+  impactCurrencyVndArray,
+  listCutoffMoney
 ) {
   let listResult = [];
   let purchasePrice = oldCategoryData.purchasePrice;
   let purchaseCapital = oldCategoryData.purchaseCapital;
   let ccqAmount = purchaseCapital / purchasePrice;
+  let firstPrice = purchaseCapital;
   if (fromDate < oldCategoryData.purchaseDate) {
     fromDate = oldCategoryData.purchaseDate;
   }
-  if (
-    oldCategoryData.cutoffFlag === true &&
-    toDate > oldCategoryData.dataDate
-  ) {
-    toDate = oldCategoryData.dataDate;
+  if(oldCategoryData.cutoffFlag === true && toDate > oldCategoryData.dataDate) {
+      toDate = oldCategoryData.dataDate;
+  }
+  
+  // calculate init price
+  for (
+    let startIndex = 0;
+    startIndex < listCutoffMoney.length;
+    ++startIndex
+  ){
+    if(fromDate < listCutoffMoney[startIndex].key || firstPrice === 0){
+      break;
+    }else{
+      if(listCutoffMoney[startIndex].value > firstPrice){
+        listCutoffMoney[startIndex].value -= firstPrice;
+        firstPrice = 0;
+      }else{
+        firstPrice -= listCutoffMoney[startIndex].value;
+        listCutoffMoney[startIndex].value = 0;
+      }
+    }
   }
   // calculate impact
   for (
@@ -448,16 +478,40 @@ function calculateImpactPerCategoryRow(
       continue;
     } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
       // xem lại khúc này đang bị tính lại ngày quá khứ (khi chưa đầu tư)
-      listResult.push(
-        new NavCcqHistory(
-          ccqAmount * impactCurrencyVndArray[startIndex].navValue,
-          impactCurrencyVndArray[startIndex].navDate,
-          null
-        )
-      );
+      if( listResult.length == 0 ){
+        listResult.push(
+          new NavCcqHistory(
+            firstPrice,
+            impactCurrencyVndArray[startIndex].navDate,
+            null
+          )
+        );
+      }else{
+        listResult.push(
+          new NavCcqHistory(
+            ccqAmount * impactCurrencyVndArray[startIndex].navValue,
+            impactCurrencyVndArray[startIndex].navDate,
+            null
+          )
+        );
+      }
     }
   }
   return listResult;
+}
+
+function calculateTotalIncome(categoryData){
+  // calculate total income of ccq category
+  let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
+    Number(categoryData.categoryId),
+    formatDate(categoryData.purchaseDate)
+  );
+  let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
+    Number(categoryData.categoryId),
+    formatDate(categoryData.dataDate)
+  );
+  let incomePercent = dataPriceData / purchaseData;
+  return Math.round(Number(oldCategoryData.purchaseCapital)*incomePercent*100)/100;
 }
 
 // function calculateConfigCcq(
