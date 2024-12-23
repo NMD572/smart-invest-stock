@@ -75,7 +75,7 @@ function genDetailMessage() {
 //     });
 // }
 
-// // TODO: create service worker file and modify path in this function
+// // create service worker file and modify path in this function
 // // serviceWorkerJsFilePath: /service-worker.js
 // async function registerServiceWorker(serviceWorkerJsFilePath) {
 //     return await navigator.serviceWorker
@@ -89,7 +89,7 @@ function genDetailMessage() {
 //       });
 // }
 
-// // TODO: create service worker file and modify path in this function
+// // create service worker file and modify path in this function
 // // publicKey: 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U'
 // async function subscribeUserToPush(serviceWorkerJsFilePath, publicKey) {
 //     return await navigator.serviceWorker

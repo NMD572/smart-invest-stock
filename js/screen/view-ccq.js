@@ -304,7 +304,10 @@ async function handleMyCategoryDataForChart(
   // Step 2: Group by ccq id and calculate real from date to date for each ccq id
   if (listOldCategoryData && listOldCategoryData !== null) {
     for (let oldCategoryData of listOldCategoryData) {
-      if (oldCategoryData.viewable === true) {
+      if (
+        oldCategoryData.viewable === true &&
+        oldCategoryData.ccqFlag === true
+      ) {
         // check is viewable
         // calculateConfigCcq(mapCcqConfigData, oldCategoryData, fromDate, toDate);
         listCcqId.add(oldCategoryData.categoryId);
@@ -436,9 +439,9 @@ async function calculateImpactPerCategoryRow(
 ) {
   let listResult = [];
   let purchasePrice = oldCategoryData.purchasePrice;
-  let purchaseCapital = oldCategoryData.purchaseCapital;
+  let purchaseCapital = Number(oldCategoryData.purchaseCapital);
   let ccqAmount = purchaseCapital / purchasePrice;
-  let firstPrice = Number(purchaseCapital);
+  let firstPrice = purchaseCapital; // TODO: recalculate first day price (because not any of all ccq are started at first buy time)
   if (fromDate < oldCategoryData.purchaseDate) {
     fromDate = oldCategoryData.purchaseDate;
   }
@@ -464,31 +467,49 @@ async function calculateImpactPerCategoryRow(
     }
   }
   // calculate impact
-  for (
-    let startIndex = 0;
-    startIndex < impactCurrencyVndArray.length;
-    ++startIndex
-  ) {
-    if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
-      continue;
-    } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
-      // xem lại khúc này đang bị tính lại ngày quá khứ (khi chưa đầu tư)
-      if (listResult.length === 0) {
-        listResult.push(
-          new NavCcqHistory(
-            firstPrice,
-            impactCurrencyVndArray[startIndex].navDate,
-            null
-          )
-        );
-      } else {
-        listResult.push(
-          new NavCcqHistory(
-            ccqAmount * impactCurrencyVndArray[startIndex].navValue,
-            impactCurrencyVndArray[startIndex].navDate,
-            null
-          )
-        );
+  if (oldCategoryData.ccqFlag === true) {
+    for (
+      let startIndex = 0;
+      startIndex < impactCurrencyVndArray.length;
+      ++startIndex
+    ) {
+      if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
+        continue;
+      } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
+        if (listResult.length === 0) {
+          // TODO: xem lại khúc này đang bị tính lại ngày quá khứ (khi chưa đầu tư)
+          listResult.push(
+            new NavCcqHistory(
+              firstPrice,
+              impactCurrencyVndArray[startIndex].navDate,
+              null
+            )
+          );
+        } else {
+          listResult.push(
+            new NavCcqHistory(
+              ccqAmount * impactCurrencyVndArray[startIndex].navValue,
+              impactCurrencyVndArray[startIndex].navDate,
+              null
+            )
+          );
+        }
+      }
+    }
+  } else {
+    // handle not ccq data
+    let listAllWorkingDateInRange = getWorkingDays(
+      new Date(fromDate),
+      new Date(toDate)
+    );
+    if (listAllWorkingDateInRange.length > 0) {
+      let purchaseDate = oldCategoryData.purchaseDate;
+      let dataDate = oldCategoryData.dataDate;
+      let fixedIncomePercentPerDay =
+        oldCategoryData.dataPrice /
+        oldCategoryData.purchasePrice /
+        calculateGapDay(dataDate, purchaseDate);
+      for (let workingDate of listAllWorkingDateInRange) {
       }
     }
   }

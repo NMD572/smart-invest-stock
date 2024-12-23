@@ -25,6 +25,7 @@ const CONSTANT_LASTED_VALUE = "CONSTANT_LASTED_VALUE";
 const CONSTANT_SMART_INVEST_ICON_URL =
   "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
 const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
+const CONSTANT_1_DAY_IN_MILISECOND = 86400000;
 
 // Category type enum
 const CategoryTypeEnum = Object.freeze({
@@ -201,4 +202,11 @@ function isWorkingDay(inputDate) {
 function calculateAverage(array) {
   const sum = array.reduce((acc, val) => acc + val, 0);
   return array.length ? sum / array.length : 0;
+}
+
+// format date input: 'yyyy-MM-dd'
+function calculateGapDay(initDate, minusDate) {
+  let d1 = new Date(initDate);
+  let d2 = new Date(minusDate);
+  return (d1 - d2) / CONSTANT_1_DAY_IN_MILISECOND; // difference in day
 }
