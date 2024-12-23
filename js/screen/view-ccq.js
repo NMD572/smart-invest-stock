@@ -395,6 +395,7 @@ async function handleMyCategoryDataForChart(
         ) {
           ++currentCategoryStartIndex;
         }
+        listUsedIndexAllCcq[j] = currentCategoryStartIndex;
         totalMoneyOfCurrentDay +=
           listImpactOfSingleCategoryRow[currentCategoryStartIndex].navValue;
         break;
@@ -510,7 +511,9 @@ async function calculateImpactPerCategoryRow(
       listResult.push(
         new NavCcqHistory(
           0,
-          getNextDayFromDateStr(listResult[listResult.length - 1].navDate),
+          getNextWorkingDayFromDate(
+            new Date(listResult[listResult.length - 1].navDate)
+          ),
           null
         )
       );

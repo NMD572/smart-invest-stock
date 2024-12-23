@@ -144,20 +144,37 @@ function nullToNA(data) {
 }
 
 function getPreviousWorkingDay(selectedDate) {
-  let currentDate = selectedDate;
-  currentDate = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    currentDate.getDate() - 1
+  let previousDate = selectedDate;
+  previousDate = new Date(
+    previousDate.getFullYear(),
+    previousDate.getMonth(),
+    previousDate.getDate() - 1
   );
-  while (!isWorkingDay(currentDate)) {
-    currentDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate() - 1
+  while (!isWorkingDay(previousDate)) {
+    previousDate = new Date(
+      previousDate.getFullYear(),
+      previousDate.getMonth(),
+      previousDate.getDate() - 1
     );
   }
-  return currentDate;
+  return previousDate;
+}
+
+function getNextWorkingDayFromDate(inputDate) {
+  let nextDay = inputDate;
+  nextDay = new Date(
+    nextDay.getFullYear(),
+    nextDay.getMonth(),
+    nextDay.getDate() + 1
+  );
+  while (!isWorkingDay(nextDay)) {
+    nextDay = new Date(
+      nextDay.getFullYear(),
+      nextDay.getMonth(),
+      nextDay.getDate() + 1
+    );
+  }
+  return formatDate(nextDay);
 }
 
 // Format the date as 'yyyy-MM-dd'
@@ -179,17 +196,6 @@ function isWorkingDay(inputDate) {
   // console.log("Day: "+ inputDate + " Weekday:" + weekDay);
   // saturday (6) and sunday (0) (because it is not working)
   return inputDate.getDay() != 0 && inputDate.getDay() != 6;
-}
-
-// input date format: 'yyyy-MM-dd'
-function getNextDayFromDateStr(inputDateStr) {
-  let nextDay = new Date(inputDateStr);
-  nextDay = new Date(
-    nextDay.getFullYear(),
-    nextDay.getMonth(),
-    nextDay.getDate() + 1
-  );
-  return formatDate(nextDay);
 }
 
 function calculateAverage(array) {
