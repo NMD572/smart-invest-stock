@@ -181,6 +181,17 @@ function isWorkingDay(inputDate) {
   return inputDate.getDay() != 0 && inputDate.getDay() != 6;
 }
 
+// input date format: 'yyyy-MM-dd'
+function getNextDayFromDateStr(inputDateStr) {
+  let nextDay = new Date(inputDateStr);
+  nextDay = new Date(
+    nextDay.getFullYear(),
+    nextDay.getMonth(),
+    nextDay.getDate() + 1
+  );
+  return formatDate(nextDay);
+}
+
 function calculateAverage(array) {
   const sum = array.reduce((acc, val) => acc + val, 0);
   return array.length ? sum / array.length : 0;

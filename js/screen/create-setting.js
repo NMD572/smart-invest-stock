@@ -669,10 +669,8 @@ function calculateProfitAndIncome(currentRow) {
       Math.round((dataPriceVal / purchasePriceVal - 1) * 10000) / 100;
     totalIncomeVal =
       Math.round(
-        (Number(purchaseCapitalValue) * 100 +
-          incomePercent * purchaseCapitalValue) *
-          100
-      ) / 10000;
+        Number(purchaseCapitalValue) * (1 + incomePercent / 100) * 100
+      ) / 100;
   }
   profitPercentElement.innerHTML = incomePercent + "%";
   incomeValueElement.innerHTML = totalIncomeVal;
@@ -701,9 +699,6 @@ async function inferCategoryInfor(currentRow) {
   let cutoffFlag = currentRow.getElementsByClassName(
     "category-cutoff-flag-checkbox"
   )[0].checked;
-  console.log(
-    currentRow.getElementsByClassName("category-cutoff-flag-checkbox")[0]
-  );
   if (cutoffFlag) {
     dataDate = currentRow.getElementsByClassName("category-data-date")[0].value;
     if (dataDate === null || dataDate === "") {
@@ -779,7 +774,6 @@ function bindEventChangeWhenSelectCcqOrIndex(element) {
         select2-removing is now select2:unselecting
      */
   $(element).on("select2:close", async function (e) {
-    console.log("Change CCQ");
     // assign id of option to input tag
     let currentRow = element.parentElement.parentElement; // get row id in tr element
     // console.log($(element).find(':selected').data('price'));
@@ -835,7 +829,6 @@ async function loadOldNotificationData() {
 async function reloadNotificationData() {
   // Clear all row of notification table
   $("#tableCqqNotification tbody tr").each(function () {
-    console.log($(this).data("ignore"));
     if ($(this).data("ignore") !== true) {
       $(this).remove();
     }
@@ -1168,7 +1161,12 @@ async function submitAllData() {
       )
     );
   }
-  // console.log(listClassification);
+  // sorted data
+  listCategory.sort(function (firstCategory, secondCategory) {
+    return firstCategory.purchaseDate < secondCategory.purchaseDate;
+  });
+
+  // Store data to local storage
   storeDataInLocalStorage(CONSTANT_LIST_CCQ_CLASSIFICATION, listClassification);
   storeDataInLocalStorage(CONSTANT_LIST_CCQ_NOTIFICATION, listNotification);
   storeDataInLocalStorage(CONSTANT_MY_CATEGORIES, listCategory);
@@ -1346,7 +1344,6 @@ async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
     timeOutAutoNotify = clearTimeout(timeOutAutoNotify);
   } else {
     // get all notify ccq data
-    console.log("Test");
     for (let singleNotificationData of notificationDataInfor) {
       let ccqId = singleNotificationData.ccqId;
       let ccqShortName;
@@ -1378,7 +1375,7 @@ async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
         );
         if (predictImpactPercent <= lossPercentToSendNotification) {
           // If predict value <= loss config --> show notify decrease price ccq
-          console.log("Loss " + ccqShortName);
+          // console.log("Loss " + ccqShortName);
           sendLocalNotification(
             genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent),
             genDetailMessage(),
@@ -1388,7 +1385,7 @@ async function checkImpactAndShowNotify(notificationDataInfor, endTime) {
         }
         if (predictImpactPercent >= profitPercentToSendNotification) {
           // If predict value >= profit config --> show notify increase price ccq
-          console.log("Profit " + ccqShortName);
+          // console.log("Profit " + ccqShortName);
           sendLocalNotification(
             genTitleNotifyCcqImpact(ccqShortName, predictImpactPercent),
             genDetailMessage(),

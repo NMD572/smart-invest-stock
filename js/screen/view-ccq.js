@@ -313,33 +313,26 @@ async function handleMyCategoryDataForChart(
   }
   // Step 3: Calculate and return List<NavCcqHistory> of each category
   // Step 3.1: get nav history of each ccq
-  for (let ccqId of listCcqId) {
-    mapNavHistoryFullTime.set(
-      ccqId,
-      await getListNavHistory(
+  if (listCcqId.size > 0) {
+    for (let ccqId of listCcqId) {
+      mapNavHistoryFullTime.set(
         ccqId,
-        fromDate,
-        toDate,
-        isGetAll,
-        getChartTypeCurrencyVND()
-      )
-    );
+        await getListNavHistory(
+          ccqId,
+          fromDate,
+          toDate,
+          isGetAll,
+          getChartTypeCurrencyVND()
+        )
+      );
+    }
   }
-  // Step 3.2: get all of cutoff category
-  for (let oldCategoryData of listOldCategoryData) {
-    if (oldCategoryData.viewable === true && oldCategoryData.cutoffFlag === true) {
-        listCutoffMoney.add(new BasicKeyValueOfObject(oldCategoryData.dataDate, calculateTotalIncome(oldCategoryData)));
-      }
-  } 
-  
-  // sorted cutoff money array by data date ASC
-  listCutoffMoney.sort(function(firstCutoffData, secondCutoffData){return firstCutoffData.value < secondCutoffData.value});
-  // Step 3.3: calculate impact data for each category
+  // Step 3.2: calculate impact data for each category
   for (let oldCategoryData of listOldCategoryData) {
     if (oldCategoryData.viewable === true) {
       // check is viewable
       listCalculateAllCategoryRow.push(
-        calculateImpactPerCategoryRow(
+        await calculateImpactPerCategoryRow(
           oldCategoryData,
           fromDate,
           toDate,
@@ -349,20 +342,22 @@ async function handleMyCategoryDataForChart(
       );
     }
   }
-
+  console.log(listCalculateAllCategoryRow);
   // Step 3.3: calculate total init amount of invest
-  for (let listImpactOfSingleCcq of listCalculateAllCategoryRow) {
-    if (listImpactOfSingleCcq[0].navDate < minStartDate) {
-      minStartDate = listImpactOfSingleCcq[0].navDate;
+  if (listCalculateAllCategoryRow.length > 0) {
+    for (let listImpactOfSingleCcq of listCalculateAllCategoryRow) {
+      if (listImpactOfSingleCcq[0].navDate < minStartDate) {
+        minStartDate = listImpactOfSingleCcq[0].navDate;
+      }
+      if (
+        listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate >
+        maxEndDate
+      ) {
+        maxEndDate =
+          listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate;
+      }
+      totalInitAmount += listImpactOfSingleCcq[0].navValue;
     }
-    if (
-      listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate >
-      maxEndDate
-    ) {
-      maxEndDate =
-        listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate;
-    }
-    totalInitAmount += listImpactOfSingleCcq[0].navValue;
   }
   console.log("Total init amount: " + totalInitAmount);
   // Step 4: Merge all into 1 List<NavCcqHistory>
@@ -427,11 +422,11 @@ async function handleMyCategoryDataForChart(
       )
     );
   }
-  // console.log(listResult);
+  console.log(listResult);
   return listResult;
 }
 
-function calculateImpactPerCategoryRow(
+async function calculateImpactPerCategoryRow(
   oldCategoryData,
   fromDate,
   toDate,
@@ -442,27 +437,26 @@ function calculateImpactPerCategoryRow(
   let purchasePrice = oldCategoryData.purchasePrice;
   let purchaseCapital = oldCategoryData.purchaseCapital;
   let ccqAmount = purchaseCapital / purchasePrice;
-  let firstPrice = purchaseCapital;
+  let firstPrice = Number(purchaseCapital);
   if (fromDate < oldCategoryData.purchaseDate) {
     fromDate = oldCategoryData.purchaseDate;
   }
-  if(oldCategoryData.cutoffFlag === true && toDate > oldCategoryData.dataDate) {
-      toDate = oldCategoryData.dataDate;
+  if (
+    oldCategoryData.cutoffFlag === true &&
+    toDate > oldCategoryData.dataDate
+  ) {
+    toDate = oldCategoryData.dataDate;
   }
-  
+
   // calculate init price
-  for (
-    let startIndex = 0;
-    startIndex < listCutoffMoney.length;
-    ++startIndex
-  ){
-    if(fromDate < listCutoffMoney[startIndex].key || firstPrice === 0){
+  for (let startIndex = 0; startIndex < listCutoffMoney.length; ++startIndex) {
+    if (fromDate < listCutoffMoney[startIndex].key || firstPrice === 0) {
       break;
-    }else{
-      if(listCutoffMoney[startIndex].value > firstPrice){
+    } else {
+      if (listCutoffMoney[startIndex].value > firstPrice) {
         listCutoffMoney[startIndex].value -= firstPrice;
         firstPrice = 0;
-      }else{
+      } else {
         firstPrice -= listCutoffMoney[startIndex].value;
         listCutoffMoney[startIndex].value = 0;
       }
@@ -478,7 +472,7 @@ function calculateImpactPerCategoryRow(
       continue;
     } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
       // xem lại khúc này đang bị tính lại ngày quá khứ (khi chưa đầu tư)
-      if( listResult.length == 0 ){
+      if (listResult.length === 0) {
         listResult.push(
           new NavCcqHistory(
             firstPrice,
@@ -486,7 +480,7 @@ function calculateImpactPerCategoryRow(
             null
           )
         );
-      }else{
+      } else {
         listResult.push(
           new NavCcqHistory(
             ccqAmount * impactCurrencyVndArray[startIndex].navValue,
@@ -497,21 +491,54 @@ function calculateImpactPerCategoryRow(
       }
     }
   }
+  // add category cutoff data to list cutoff money
+  if (oldCategoryData.cutoffFlag === true) {
+    listCutoffMoney.push(
+      new BasicKeyValueOfObject(
+        oldCategoryData.dataDate,
+        await calculateTotalIncome(oldCategoryData)
+      )
+    );
+    // sorted cutoff money array by data date ASC
+    listCutoffMoney.sort(function (firstCutoffData, secondCutoffData) {
+      return firstCutoffData.value < secondCutoffData.value;
+    });
+    console.log(listCutoffMoney);
+
+    // add cutoff data to list result
+    if (listResult.length > 0) {
+      listResult.push(
+        new NavCcqHistory(
+          0,
+          getNextDayFromDateStr(listResult[listResult.length - 1].navDate),
+          null
+        )
+      );
+    }
+  }
   return listResult;
 }
 
-function calculateTotalIncome(categoryData){
+async function calculateTotalIncome(categoryData) {
   // calculate total income of ccq category
   let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
     Number(categoryData.categoryId),
-    formatDate(categoryData.purchaseDate)
+    categoryData.purchaseDate
   );
   let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
     Number(categoryData.categoryId),
-    formatDate(categoryData.dataDate)
+    categoryData.dataDate
   );
-  let incomePercent = dataPriceData / purchaseData;
-  return Math.round(Number(oldCategoryData.purchaseCapital)*incomePercent*100)/100;
+  let incomePercent = dataPriceData.nav / purchaseData.nav;
+  console.log(
+    "Capital: " +
+      categoryData.purchaseCapital +
+      ", Income Percent: " +
+      incomePercent
+  );
+  return (
+    Math.round(Number(categoryData.purchaseCapital) * incomePercent * 100) / 100
+  );
 }
 
 // function calculateConfigCcq(
