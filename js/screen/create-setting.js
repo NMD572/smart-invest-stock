@@ -565,11 +565,16 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
         );
         let cutoffCategoryName =
           currentRow.getElementsByClassName("category-name")[0].value;
+        let nextDataDate = new Date(dataDateElement.value);
+        nextDataDate = new Date(
+          nextDataDate.getFullYear(),
+          nextDataDate.getMonth(),
+          nextDataDate.getDate() + 1);
         addRowForCategory(
           new MyCategoryInfor(
             CategoryTypeEnum.CAPITAL_MONEY.name,
             totalIncomeValue,
-            dataDateElement.value,
+            formatDate(nextDataDate),
             CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice,
             formatDate(new Date()),
             CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice,
@@ -739,7 +744,7 @@ async function inferCategoryInfor(currentRow) {
       case CategoryTypeEnum.CAPITAL_MONEY.type:
         purchasePrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
         dataPrice = CategoryTypeEnum.CAPITAL_MONEY.defaultPurchasePrice;
-        dataDate = formatDate(new Date());
+        dataDate = formatDate(dataDate);
         // disable purchasePriceElement, dataPriceElement (user can not edit that field)
         purchasePriceElement.disabled = true;
         dataPriceElement.disabled = true;
@@ -747,7 +752,7 @@ async function inferCategoryInfor(currentRow) {
       case CategoryTypeEnum.SAVING_DEPOSIT.type:
         purchasePrice = CategoryTypeEnum.SAVING_DEPOSIT.defaultPurchasePrice;
         dataPrice = dataPriceElement.value;
-        dataDate = formatDate(new Date());
+        dataDate = formatDate(dataDate);
         break;
       default:
         break;
