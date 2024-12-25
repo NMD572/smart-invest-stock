@@ -434,6 +434,24 @@ async function handleMyCategoryDataForChart(
   return listResult;
 }
 
+function calculateCutoffMoney(listCutoffMoney, firstPrice, fromDate){
+  for (let cutoffMoneyStartIndex = 0; cutoffMoneyStartIndex < listCutoffMoney.length; ++cutoffMoneyStartIndex) {
+    if (fromDate < listCutoffMoney[cutoffMoneyStartIndex].key || firstPrice === 0) {
+      break;
+    } else {
+      if (listCutoffMoney[cutoffMoneyStartIndex].value > firstPrice) {
+        listCutoffMoney[cutoffMoneyStartIndex].value -= firstPrice;
+        firstPrice = 0;
+      } else {
+        firstPrice -= listCutoffMoney[cutoffMoneyStartIndex].value;
+        listCutoffMoney.splice(cutoffMoneyStartIndex, 1);
+        --cutoffMoneyStartIndex;      // remove used all money cutoff
+      }
+    }
+  }
+  return firstPrice;
+}
+
 async function calculateImpactPerCategoryRow(
   oldCategoryData,
   fromDate,
@@ -472,20 +490,16 @@ async function calculateImpactPerCategoryRow(
         break;
       }
     }
-    // calculate init price
-    for (let cutoffMoneyStartIndex = 0; cutoffMoneyStartIndex < listCutoffMoney.length; ++cutoffMoneyStartIndex) {
-      if (fromDate < listCutoffMoney[cutoffMoneyStartIndex].key || firstPrice === 0) {
-        break;
-      } else {
-        if (listCutoffMoney[cutoffMoneyStartIndex].value > firstPrice) {
-          listCutoffMoney[cutoffMoneyStartIndex].value -= firstPrice;
-          firstPrice = 0;
-        } else {
-          firstPrice -= listCutoffMoney[cutoffMoneyStartIndex].value;
-          listCutoffMoney[cutoffMoneyStartIndex].value = 0;
-        }
-      }
-    }
+    // calculate init price (minus cutoff money)
+    firstPrice = calculateCutoffMoney(listCutoffMoney,firstPrice, fromDate);
+    listResult.push(
+      new NavCcqHistory(
+        firstPrice,
+        formatDate(getPreviousWorkingDay(new Date(impactCurrencyVndArray[startIndex].navDate))),
+        null
+      )
+    );
+    // Start from first value to end value
     for (
       ;
       startIndex < impactCurrencyVndArray.length;
@@ -494,39 +508,49 @@ async function calculateImpactPerCategoryRow(
       if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
         continue;
       } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
-        if (listResult.length === 0) {
-          listResult.push(
-            new NavCcqHistory(
-              firstPrice,
-              impactCurrencyVndArray[startIndex].navDate,
-              null
-            )
-          );
-        } else {
-          listResult.push(
-            new NavCcqHistory(
-              ccqAmount * impactCurrencyVndArray[startIndex].navValue,
-              impactCurrencyVndArray[startIndex].navDate,
-              null
-            )
-          );
-        }
+        listResult.push(
+          new NavCcqHistory(
+            ccqAmount * impactCurrencyVndArray[startIndex].navValue,
+            impactCurrencyVndArray[startIndex].navDate,
+            null
+          )
+        );
       }
     }
   } else {
-    // TODO: handle not ccq data (capital money, bank)
+    // TODO: handle not ccq data (capital money, bank): DONE
     let listAllWorkingDateInRange = getWorkingDays(
       new Date(fromDate),
       new Date(toDate)
     );
+
     if (listAllWorkingDateInRange.length > 0) {
       let purchaseDate = oldCategoryData.purchaseDate;
       let dataDate = oldCategoryData.dataDate;
       let fixedIncomePercentPerDay =
-        oldCategoryData.dataPrice /
-        oldCategoryData.purchasePrice /
+        ((oldCategoryData.dataPrice /
+        oldCategoryData.purchasePrice) - 1 ) /
         calculateGapDay(dataDate, purchaseDate);
-      for (let workingDate of listAllWorkingDateInRange) {
+      let firstPrice = calculateFixedIncomePercentProfit(purchaseCapital, fixedIncomePercentPerDay, purchaseDate, listAllWorkingDateInRange[0]);
+      // calculate init price (minus cutoff money)
+      firstPrice = calculateCutoffMoney(listCutoffMoney,firstPrice, fromDate);
+      listResult.push(
+        new NavCcqHistory(
+          firstPrice,
+          formatDate(getPreviousWorkingDay(new Date(listAllWorkingDateInRange[0]))),
+          null
+        )
+      );
+      // Start from second working date
+      for (let workingDateStartIndex = 0;  workingDateStartIndex < listAllWorkingDateInRange.length; ++workingDateStartIndex) {
+        let workingDate = listAllWorkingDateInRange[workingDateStartIndex];
+        listResult.push(
+          new NavCcqHistory(
+            calculateFixedIncomePercentProfit(purchaseCapital, fixedIncomePercentPerDay, purchaseDate, workingDate),
+            workingDate,
+            null
+          )
+        );
       }
     }
   }
@@ -549,9 +573,7 @@ async function calculateImpactPerCategoryRow(
     listResult.push(
       new NavCcqHistory(
         0,
-        getNextWorkingDayFromDate(
-          new Date(listResult[listResult.length - 1].navDate)
-        ),
+        formatDate(getNextWorkingDayFromDate(new Date(listResult[listResult.length - 1].navDate))),
         null
       )
     );
@@ -559,17 +581,25 @@ async function calculateImpactPerCategoryRow(
   return listResult;
 }
 
+function calculateFixedIncomePercentProfit(initCapital, fixedIncomePercentPerDay, initDateStr, currentDateStr){
+  return initCapital*(1 + fixedIncomePercentPerDay*calculateGapDay(currentDateStr,initDateStr));
+}
+
 async function calculateTotalIncome(categoryData) {
   // calculate total income of ccq category
-  let purchaseData = await getLastedNavOfCcqFromDataDateToPreviousDate(
-    Number(categoryData.categoryId),
-    categoryData.purchaseDate
-  );
-  let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
-    Number(categoryData.categoryId),
-    categoryData.dataDate
-  );
-  let incomePercent = dataPriceData.nav / purchaseData.nav;
+  let purchasePrice = categoryData.purchasePrice;
+  let dataPrice = categoryData.dataPrice;
+  if(categoryData.ccqFlag === true){
+    purchasePrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
+      Number(categoryData.categoryId),
+      categoryData.purchaseDate
+    ).nav;
+    dataPrice = await getLastedNavOfCcqFromDataDateToPreviousDate(
+      Number(categoryData.categoryId),
+      categoryData.dataDate
+    ).nav;
+  }
+  let incomePercent = dataPrice / purchasePrice;
   console.log(
     "Capital: " +
       categoryData.purchaseCapital +

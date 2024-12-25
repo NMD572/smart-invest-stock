@@ -175,7 +175,7 @@ function getNextWorkingDayFromDate(inputDate) {
       nextDay.getDate() + 1
     );
   }
-  return formatDate(nextDay);
+  return nextDay;
 }
 
 // Format the date as 'yyyy-MM-dd'
