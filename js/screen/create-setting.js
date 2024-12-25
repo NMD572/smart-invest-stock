@@ -565,6 +565,7 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
         );
         let cutoffCategoryName =
           currentRow.getElementsByClassName("category-name")[0].value;
+        // assign purchase date = previous cutoff date + 1
         let nextDataDate = new Date(dataDateElement.value);
         nextDataDate = new Date(
           nextDataDate.getFullYear(),
