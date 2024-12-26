@@ -307,7 +307,9 @@ async function loadOldData() {
 
 /*** Category */
 function reloadMyCategoryPieChart() {
+  // reset chart data
   document.getElementById("chartOfMyCategoryData").innerHTML = "";
+  // get number of category row (default have 1 template row)
   let numberOfRowCategorynUserAdded =
     bodyTableMyCategoryElement.getElementsByTagName("tr").length;
   if (numberOfRowCategorynUserAdded > 1) {
@@ -322,27 +324,33 @@ function reloadMyCategoryPieChart() {
       let categoryName =
         bodyTableMyCategoryElement.getElementsByClassName("category-name")[i]
           .value;
-      let purchaseCapital = nullTo0(
-        bodyTableMyCategoryElement.getElementsByClassName(
-          "category-purchase-capital"
-        )[i].value
-      );
-      let incomeValue = nullTo0(
-        bodyTableMyCategoryElement.getElementsByClassName(
-          "category-income-value"
-        )[i].innerHTML
-      );
+      let cutoffFlag = bodyTableMyCategoryElement.getElementsByClassName(
+        "category-cutoff-flag-checkbox"
+      )[i].checked;
+      // Ignore cutoff data from curent category pie chart
+      if (cutoffFlag !== true) {
+        let purchaseCapital = nullTo0(
+          bodyTableMyCategoryElement.getElementsByClassName(
+            "category-purchase-capital"
+          )[i].value
+        );
+        let incomeValue = nullTo0(
+          bodyTableMyCategoryElement.getElementsByClassName(
+            "category-income-value"
+          )[i].innerHTML
+        );
 
-      let previousCapitalVal = 0;
-      let previousIncomeVal = 0;
-      if (mapCategoryCapitalData[categoryName]) {
-        previousCapitalVal = mapCategoryCapitalData[categoryName];
-        previousIncomeVal = mapCategoryIncomeData[categoryName];
+        let previousCapitalVal = 0;
+        let previousIncomeVal = 0;
+        if (mapCategoryCapitalData[categoryName]) {
+          previousCapitalVal = mapCategoryCapitalData[categoryName];
+          previousIncomeVal = mapCategoryIncomeData[categoryName];
+        }
+        mapCategoryCapitalData[categoryName] =
+          previousCapitalVal + Number(purchaseCapital);
+        mapCategoryIncomeData[categoryName] =
+          previousIncomeVal + Number(incomeValue);
       }
-      mapCategoryCapitalData[categoryName] =
-        previousCapitalVal + Number(purchaseCapital);
-      mapCategoryIncomeData[categoryName] =
-        previousIncomeVal + Number(incomeValue);
     }
     // console.log(mapCategoryCapitalData);
     // console.log(mapCategoryIncomeData);
@@ -499,8 +507,10 @@ async function addRowForCategory(rowData) {
       purchaseDate;
     newRow.getElementsByClassName("category-purchase-price")[0].value =
       purchasePrice;
-    newRow.getElementsByClassName("category-data-date")[0].value = dataDate;
-    newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
+    if (cutoffFlag === true) {
+      newRow.getElementsByClassName("category-data-date")[0].value = dataDate;
+      newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
+    }
     newRow.getElementsByClassName("catogory-note")[0].value = note;
     newRow.getElementsByClassName("category-setting-view-checkbox")[0].checked =
       viewableFlag;
@@ -553,11 +563,7 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
     if (cutoffFlag) {
       categoryCutoffFlagIcon.classList.add("fa-hand-holding-dollar");
       dataDateElement.disabled = false;
-      if (
-        !isLoadOldData &&
-        categoryValueHiddenElement.dataset.type !==
-          CategoryTypeEnum.CAPITAL_MONEY.type
-      ) {
+      if (!isLoadOldData) {
         // add capital money row by total income of invest category
         let totalIncomeValue = Number(
           currentRow.getElementsByClassName("category-income-value")[0]
@@ -570,7 +576,8 @@ function reloadCategoryCutoffSetting(currentRow, cutoffFlag, isLoadOldData) {
         nextDataDate = new Date(
           nextDataDate.getFullYear(),
           nextDataDate.getMonth(),
-          nextDataDate.getDate() + 1);
+          nextDataDate.getDate() + 1
+        );
         addRowForCategory(
           new MyCategoryInfor(
             CategoryTypeEnum.CAPITAL_MONEY.name,
@@ -715,6 +722,9 @@ async function inferCategoryInfor(currentRow) {
   } else {
     dataDate = new Date();
   }
+  if (!dataDate || dataDate === null) {
+    dataDate = new Date();
+  }
 
   // let categoryNameInputValue =
   //   currentRow.getElementsByClassName("category-name")[0].value;
@@ -728,9 +738,6 @@ async function inferCategoryInfor(currentRow) {
           purchaseDateData
         );
         purchasePrice = purchaseData != null ? purchaseData.nav : null;
-        if (!dataDate || dataDate === null) {
-          dataDate = new Date();
-        }
         let dataPriceData = await getLastedNavOfCcqFromDataDateToPreviousDate(
           categoryValueInputHidden.value,
           formatDate(dataDate)
