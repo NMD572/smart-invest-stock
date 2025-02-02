@@ -4,21 +4,24 @@ const bodyTableAllDataElement = document
   .getElementById("tableAllData")
   .getElementsByTagName("tbody")[0];
 
-
-var selectedType = "CCQ-STOCK";
-
 async function initScreen() {
+    // init list data
     await searchData();
+    // bind event
+    bindEvent();
 
-    // Get table data
-   
+}
 
+function bindEvent(){
+    document.getElementById("reload-button").addEventListener("click", function () {
+        searchData();
+    });
 }
 
 async function searchData() {
     let typeCombobox = document.getElementById("form-select-type-to-filter");
     let selectedTypeData = $(typeCombobox).find(":selected").val();
-    console.log("Selected Type: " + selectedType);
+    console.log("Selected Type: " + selectedTypeData);
     const typeInformationArray = selectedTypeData.split(DASH);
     let kind = typeInformationArray[0];
     let detail = typeInformationArray[1];
