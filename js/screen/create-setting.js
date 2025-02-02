@@ -3,7 +3,7 @@ includeJs("../js/handler/fmarket-handler.js");
 includeJs("../js/detail/load-chart.js");
 includeJs("../js/detail/notification.js");
 includeJs("../js/handler/predict-handler.js");
-// inclue dto class
+// include dto class
 includeJs("../js/dto/CcqClassificationData.js");
 includeJs("../js/dto/CcqNotificationData.js");
 includeJs("../js/dto/MyCategoryInfor.js");
@@ -52,7 +52,7 @@ async function fillComboboxData() {
   listFundAssetTypeNeedToLoad.push(FUND_TYPE_BALANCED);
   listFundAssetTypeNeedToLoad.push(FUND_TYPE_BOND);
   listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
-
+  
   // dataset for category
   let datalistCcqForCategory = document.getElementById(
     "categoryComboboxDataStr0"

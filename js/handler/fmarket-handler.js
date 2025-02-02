@@ -174,7 +174,17 @@ async function getListCcqInfor(listFundAssetTypeNeedToCompare) {
           listCcq.data.rows[i].name,
           listCcq.data.rows[i].owner.shortName,
           listCcq.data.rows[i].dataFundAssetType.code,
-          listCcq.data.rows[i].nav
+          listCcq.data.rows[i].nav,
+          convertLongToDateFormat(listCcq.data.rows[i].extra.lastNAVDate),
+          listCcq.data.rows[i].productNavChange.navToPrevious,
+          listCcq.data.rows[i].productNavChange.navTo1Months,
+          listCcq.data.rows[i].productNavChange.navTo3Months,
+          listCcq.data.rows[i].productNavChange.navTo6Months,
+          listCcq.data.rows[i].productNavChange.navToLastYear,
+          listCcq.data.rows[i].productNavChange.navTo12Months,
+          listCcq.data.rows[i].productNavChange.navTo36Months,
+          listCcq.data.rows[i].productNavChange.navTo60Months,
+          listCcq.data.rows[i].productNavChange.navToBeginning
         );
         listCcqInforResult.push(ccq);
       }

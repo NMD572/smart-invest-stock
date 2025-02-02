@@ -238,6 +238,7 @@ async function getDataAndDrawChart() {
   // get from date, to date
   let fromDate = document.getElementById("chartFromDate").value;
   let toDate = document.getElementById("chartToDate").value;
+  // Khi không chọn/chọn không đủ --> null 
   // console.log("From date selected: "+ fromDate +" ;To date selected: "+toDate );
   // get format
   let checkboxChartTypeElement = document.getElementById("checkboxChartType");

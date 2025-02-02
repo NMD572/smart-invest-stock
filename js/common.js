@@ -26,6 +26,8 @@ const CONSTANT_SMART_INVEST_ICON_URL =
   "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
 const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
 const CONSTANT_1_DAY_IN_MILISECOND = 86400000;
+const DASH = "-";
+const CCQ_TYPE = "CCQ";
 
 // Category type enum
 const CategoryTypeEnum = Object.freeze({
@@ -141,6 +143,14 @@ function nullToNA(data) {
     return "N/A";
   } else {
     return data;
+  }
+}
+
+function addPercentCharIfNotNull(data){
+  if (data && data != null) {
+    return data + "%";
+  } else {
+    return null;
   }
 }
 

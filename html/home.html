@@ -5,17 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homepage</title>
 
+    <!-- Library for using select2 combobox -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Styles for using font-awesome icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
   </head>
-  <body>
+  <body onload="initScreen()">
     <div class="main-title">Welcome to Smart Invest</div>
     <div id="tableListDataArea">
       <div class="main-title">Table Of Invest Component</div>
       <div id="searchData">
-        <label for="form-select-ccq-to-notify">Type: </label>
-        <select id="form-select-ccq-to-notify" data-placeholder="Choose CCQ To Receive Notify">
+        <label for="form-select-type-to-filter">Type: </label>
+        <select id="form-select-type-to-filter" data-placeholder="Choose CCQ To Receive Notify">
           <optgroup label="Genral Index" class="groupComboboxINDEX">
               <option value="INDEX-VNindex" title="Chỉ số VNindex">VNindex</option>
           </optgroup>
@@ -23,14 +27,13 @@
             <option value="STOCK-FPT">FPT</option>
           </optgroup>
           <optgroup label="CCQ" class="groupComboboxCCQ">
-              <option value="CCQ-STOCK">Quỹ cổ phiếu</option>
+              <option value="CCQ-STOCK" selected="true">Quỹ cổ phiếu</option>
               <option value="CCQ-BALANCE">Quỹ cân bằng</option>
               <option value="CCQ-BOND">Quỹ trái phiếu</option>
           </optgroup>
           <optgroup label="GOLD" class="groupComboboxGOLD">
-            <option value="GOLD-STOCK">Quỹ cổ phiếu</option>
-            <option value="GOLD-BALANCED">Quỹ cân bằng</option>
-            <option value="GOLD-BOND">Quỹ trái phiếu</option>
+            <option value="GOLD-SCJ">SCJ</option>
+            <option value="GOLD-DOJI">Doji</option> 
           </optgroup>
           <optgroup label="COIN" class="groupComboboxCOIN">
             <option value="COIN-BITCOIN">Bitcoin</option>
@@ -40,18 +43,24 @@
         <input type="date" id="dataFromDate">
         <label for="dataToDate">To Date:</label>
         <input type="date" id="dataToDate">
+        <div class="button-row">
+          <button>Reload</button>
+        </div>
       </div>
+      
       <table id="tableAllData">
         <thead> 
-            <tr id="headerTableComparePredictResult">
+            <tr id="headerTableAllData">
                 <td>Code</td>
                 <td>Organization</td>
+                <td>Current Nav</td>
                 <td>Predict Impact</td>
-                <td>Latest Impact Value</td>
+                <td>Lasted Impact</td>
                 <td>Custom Period Value</td>
                 <td>1 Month</td>
                 <td>3 Month</td>
                 <td>6 Month</td>
+                <td>YTD</td>
                 <td>1 Year</td>
                 <td>3 Year</td>
                 <td>5 Year</td>
@@ -60,23 +69,26 @@
         </thead>
         <tbody>
             <!--  style="display: none;"  -->
-            <tr data-ignore=true data-row-id=0 >
-                <td>Code</td>
-                <td>Organization</td>
-                <td>Predict Impact</td>
-                <td>Latest Impact Value (12/07/2024)</td>
-                <td>Custom Period Value</td>
-                <td>1 Month</td>
-                <td>3 Month</td>
-                <td>6 Month</td>
-                <td>1 Year</td>
-                <td>3 Year</td>
-                <td>5 Year</td>
-                <td>From Established</td>
+            <tr data-ignore=true style="display: none;" data-code="IGNORE">
+                <td class ="code">DCDS</td>
+                <td class ="owner">DCVFM</td>
+                <td class ="lasted-nav">80,461.81 (24/01/2025)</td> <!-- lasted nav -->
+                <td class ="predict-value">0 %</td>  <!-- predict -->
+                <td class ="lasted-impact">1.01 %</td> <!-- lasted impact -->
+                <td class ="period-impact-value">Custom Period Value</td> <!-- period impact value -->
+                <td class ="impact-1-month">1 Month</td>
+                <td class ="impact-3-month">3 Month</td>
+                <td class ="impact-6-month">6 Month</td>
+                <td class ="impact-ytd">Year To Date</td>
+                <td class ="impact-1-year">1 Year</td>
+                <td class ="impact-3-year">3 Year</td>
+                <td class ="impact-5-year">5 Year</td>
+                <td class ="impact-from-established">From Established</td>
             </tr>
         </tbody>
     </table>
   </div>
   <script src="../js/common.js"></script>
+  <script src="../js/screen/home.js"></script>
   </body>
 </html>
