@@ -18,8 +18,8 @@ class CCQInfor{
         this.impact5Year = addPercentCharIfNotNull(impact5Year);
         this.impactFromEstablished = addPercentCharIfNotNull(impactFromEstablished);
 
-        this.customPeriodValue = 0;
-        this.predictImpactValue = 0;
+        this.customPeriodValue = addPercentCharIfNotNull(null);
+        this.predictImpactValue = addPercentCharIfNotNull(null);
     }
     // Getter
     get getExternalInfor() {
