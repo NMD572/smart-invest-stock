@@ -146,8 +146,8 @@ function nullToNA(data) {
   }
 }
 
-function addPercentCharIfNotNull(data){
-  if (data && data != null) {
+function addPercentCharIfNotNull(data) {
+  if ((data || data === 0) && data != null) {
     return data + "%";
   } else {
     return null;
