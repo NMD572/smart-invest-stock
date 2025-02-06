@@ -110,32 +110,31 @@ function addRowToTableAllData(rowData) {
   newRow.innerHTML = firstRowHTML;
   newRow.style.display = "table-row";
   if (rowData !== null) {
-    newRow.getElementsByClassName("code")[0].innerText = rowData.shortName;
-    newRow.getElementsByClassName("owner")[0].innerText =
+    newRow.getElementsByClassName("shortName")[0].innerText = rowData.shortName;
+    newRow.getElementsByClassName("ownerShortName")[0].innerText =
       rowData.ownerShortName;
-    newRow.getElementsByClassName("lasted-nav")[0].innerText =
+    newRow.getElementsByClassName("currentNav")[0].innerText =
       rowData.getCurrentNavInfor;
-    newRow.getElementsByClassName("predict-value")[0].innerText =
+    newRow.getElementsByClassName("predictImpactValue")[0].innerText =
       rowData.predictImpactValue;
-    newRow.getElementsByClassName("lasted-impact")[0].innerText =
+    newRow.getElementsByClassName("lastedImpact")[0].innerText =
       rowData.lastedImpact;
-    newRow.getElementsByClassName("period-impact-value")[0].innerText =
+    newRow.getElementsByClassName("customPeriodValue")[0].innerText =
       rowData.customPeriodValue;
-    newRow.getElementsByClassName("impact-1-month")[0].innerText =
+    newRow.getElementsByClassName("impact1Month")[0].innerText =
       rowData.impact1Month;
-    newRow.getElementsByClassName("impact-3-month")[0].innerText =
+    newRow.getElementsByClassName("impact3Month")[0].innerText =
       rowData.impact3Month;
-    newRow.getElementsByClassName("impact-6-month")[0].innerText =
+    newRow.getElementsByClassName("impact6Month")[0].innerText =
       rowData.impact6Month;
-    newRow.getElementsByClassName("impact-ytd")[0].innerText =
-      rowData.impactYtd;
-    newRow.getElementsByClassName("impact-1-year")[0].innerText =
+    newRow.getElementsByClassName("impactYtd")[0].innerText = rowData.impactYtd;
+    newRow.getElementsByClassName("impact1Year")[0].innerText =
       rowData.impact1Year;
-    newRow.getElementsByClassName("impact-3-year")[0].innerText =
+    newRow.getElementsByClassName("impact3Year")[0].innerText =
       rowData.impact3Year;
-    newRow.getElementsByClassName("impact-5-year")[0].innerText =
+    newRow.getElementsByClassName("impact5Year")[0].innerText =
       rowData.impact5Year;
-    newRow.getElementsByClassName("impact-from-established")[0].innerText =
+    newRow.getElementsByClassName("impactFromEstablished")[0].innerText =
       rowData.impactFromEstablished;
 
     // set dataset data
