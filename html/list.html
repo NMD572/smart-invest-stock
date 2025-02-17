@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Homepage</title>
+    <title>List Data</title>
 
     <!-- Library for using select2 combobox -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
@@ -12,6 +12,8 @@
     <!-- Styles for using font-awesome icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="../css/list.css" />
   </head>
   <body onload="initScreen()">
     <div class="main-title">Welcome to Smart Invest</div>
@@ -73,17 +75,17 @@
                 <td class ="shortName" data-value="DCDS">DCDS</td>
                 <td class ="ownerShortName" data-value="DCVFM">DCVFM</td>
                 <td class ="currentNav" data-value="80461.81">80,461.81 (24/01/2025)</td> <!-- lasted nav -->
-                <td class ="predictImpactValue" data-value="0">0%</td>  <!-- predict -->
-                <td class ="lastedImpact" data-value="1.01">1.01%</td> <!-- lasted impact -->
-                <td class ="customPeriodValue" data-value="0">Custom Period Value</td> <!-- period impact value -->
-                <td class ="impact1Month" data-value="1">1 Month</td>
-                <td class ="impact3Month" data-value="3">3 Month</td>
-                <td class ="impact6Month" data-value="6">6 Month</td>
-                <td class ="impactYtd" data-value="1">Year To Date</td>
-                <td class ="impact1Year" data-value="1">1 Year</td>
-                <td class ="impact3Year" data-value="3">3 Year</td>
-                <td class ="impact5Year" data-value="5">5 Year</td>
-                <td class ="impactFromEstablished" data-value="1">From Established</td>
+                <td class ="predictImpactValue data-color" data-value="0">0%</td>  <!-- predict -->
+                <td class ="lastedImpact data-color" data-value="1.01">1.01%</td> <!-- lasted impact -->
+                <td class ="customPeriodValue data-color" data-value="0">Custom Period Value</td> <!-- period impact value -->
+                <td class ="impact1Month data-color" data-value="1">1 Month</td>
+                <td class ="impact3Month data-color" data-value="3">3 Month</td>
+                <td class ="impact6Month data-color" data-value="6">6 Month</td>
+                <td class ="impactYtd data-color" data-value="1">Year To Date</td>
+                <td class ="impact1Year data-color" data-value="1">1 Year</td>
+                <td class ="impact3Year data-color" data-value="3">3 Year</td>
+                <td class ="impact5Year data-color" data-value="5">5 Year</td>
+                <td class ="impactFromEstablished data-color" data-value="1">From Established</td>
             </tr>
         </tbody>
     </table>

@@ -174,7 +174,7 @@ async function getCcqData(ccqType, periodFromDate, periodToDate) {
         let lastNavValue = listNavHistory[listNavHistory.length - 1].navValue;
         let periodImpactPercent =
           Math.round((lastNavValue / firstNavValue - 1) * 10000) / 100;
-        singleCcqData.customPeriodValue = periodImpactPercent + "%";
+        singleCcqData.customPeriodValue = periodImpactPercent;
       }
     }
   }

@@ -1,0 +1,181 @@
+@import "root.css";
+
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f8fa;
+    margin: 0;
+    padding: 20px;
+    padding-bottom: 60px; /* Add padding equal to the height of #buttonRow */
+    color: #333;
+}
+
+/* Main Title Styling */
+.main-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+    color: #007bff; /* Highlighted color */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid #007bff;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    table-layout: fixed; /* Key for consistent column widths */
+}
+
+thead {
+    background-color: #007bff;
+    color: white;
+    text-align: left;
+}
+
+th,
+td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    text-overflow: ellipsis; /* Add ellipsis for long text */
+    overflow: hidden; /* Hide any overflowing content */
+    word-break: break-word; /* Allow long words to break */
+}
+
+th {
+    white-space: normal; /* Allow header text to wrap */
+}
+
+td {
+    white-space: normal; /* Allow data cell text to wrap */
+    vertical-align: middle;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #e3f2fd;
+}
+
+/* Input Styling */
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Button Styling */
+button{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+button:hover{
+    background-color: #0056b3;
+}
+
+button i {
+    margin-right: 5px;
+}
+
+/* Form Labels */
+label {
+    font-weight: bold;
+    margin-top: 15px;
+    display: block;
+}
+
+/* Search Data Area */
+#searchData {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Spacing between items */
+    margin-bottom: 20px;
+}
+
+#searchData > div { /* Target direct children of #searchData for better control */
+    display: flex; /* Make each label/input pair a flexbox item */
+    align-items: center; /* Align label and input within each pair */
+    flex: 1 0 auto; /* Allow items to grow/shrink equally */
+    min-width: 200px; /* Set a minimum width to prevent collapsing too much */
+}
+
+#searchData label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#searchData input[type="date"],
+#searchData select {
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    flex: 1; /* Allow input/select to expand to fill available space */
+}
+
+#searchData .button-row {
+    flex: 1 1 100%; /* Make button row take full width on its own row */
+    text-align: right; /* Align button to the right */
+    margin-top: 10px; /* Adjust as needed */
+    display: flex; /* Enable flexbox for alignment */
+    justify-content: flex-end; /* Align button to the right */
+}
+
+#reload-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    margin-left: auto; /* Push the button to the right */
+}
+
+/* "Table Of Invest Component" Title */
+#tableListDataArea .main-title { /* More specific selector */
+    text-align: center; /* Center the title */
+    width: 100%; /* Ensure title takes full width */
+    margin-bottom: 20px; /* Add some space below */
+    display: block; /* Make sure it's a block element for centering */
+}

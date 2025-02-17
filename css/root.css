@@ -1,0 +1,11 @@
+
+/* Style for positive and negative impact values */
+.data-color[data-value^="-"] /* Negative values */
+{
+    color: red !important;
+}
+
+.data-color:not([data-value^="-"]) /* Positive values */
+{
+    color: green !important;
+}
