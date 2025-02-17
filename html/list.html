@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homepage</title>
+
+    <!-- Library for using select2 combobox -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Styles for using font-awesome icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  </head>
+  <body onload="initScreen()">
+    <div class="main-title">Welcome to Smart Invest</div>
+    <div id="tableListDataArea">
+      <div class="main-title">Table Of Invest Component</div>
+      <div id="searchData">
+        <label for="form-select-type-to-filter">Type: </label>
+        <select id="form-select-type-to-filter" data-placeholder="Choose CCQ To Receive Notify">
+          <optgroup label="Genral Index" class="groupComboboxINDEX">
+              <option value="INDEX-VNindex" title="Chỉ số VNindex">VNindex</option>
+          </optgroup>
+          <optgroup label="Stock" class="groupComboboxSTOCK">
+            <option value="STOCK-FPT">FPT</option>
+          </optgroup>
+          <optgroup label="CCQ" class="groupComboboxCCQ">
+              <option value="CCQ-STOCK" selected="true">Quỹ cổ phiếu</option>
+              <option value="CCQ-BALANCED">Quỹ cân bằng</option>
+              <option value="CCQ-BOND">Quỹ trái phiếu</option>
+          </optgroup>
+          <optgroup label="GOLD" class="groupComboboxGOLD">
+            <option value="GOLD-SCJ">SCJ</option>
+            <option value="GOLD-DOJI">Doji</option> 
+          </optgroup>
+          <optgroup label="COIN" class="groupComboboxCOIN">
+            <option value="COIN-BITCOIN">Bitcoin</option>
+          </optgroup>        
+        </select>
+        <label for="dataFromDate">From Date:</label>
+        <input type="date" id="dataFromDate">
+        <label for="dataToDate">To Date:</label>
+        <input type="date" id="dataToDate">
+        <div class="button-row">
+          <button id="reload-button">Reload</button>
+        </div>
+      </div>
+      
+      <table id="tableAllData">
+        <thead> 
+            <tr id="headerTableAllData">
+                <td class="header-titile" data-field="shortName" data-order="-1">Code <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="ownerShortName" data-order="-1">Organization <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="currentNav" data-order="-1">Current Nav <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="predictImpactValue" data-order="-1">Predict Impact <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="lastedImpact" data-order="-1">Lasted Impact <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="customPeriodValue" data-order="-1">Custom Period Value <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impact1Month" data-order="-1">1 Month <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impact3Month" data-order="-1">3 Month <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impact6Month" data-order="-1">6 Month <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impactYtd" data-order="-1">YTD <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impact1Year" data-order="-1">1 Year <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impact3Year" data-order="-1">3 Year <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impact5Year" data-order="-1">5 Year <i class="header-sort-icon fa-solid "></i></td>
+                <td class="header-titile" data-field="impactFromEstablished" data-order="-1">From Established <i class="header-sort-icon fa-solid "></i></td>
+            </tr>
+        </thead>
+        <tbody>
+            <!--  style="display: none;"  -->
+            <tr data-ignore=true style="display: none;" data-code="IGNORE" data-id="0">
+                <td class ="shortName" data-value="DCDS">DCDS</td>
+                <td class ="ownerShortName" data-value="DCVFM">DCVFM</td>
+                <td class ="currentNav" data-value="80461.81">80,461.81 (24/01/2025)</td> <!-- lasted nav -->
+                <td class ="predictImpactValue" data-value="0">0%</td>  <!-- predict -->
+                <td class ="lastedImpact" data-value="1.01">1.01%</td> <!-- lasted impact -->
+                <td class ="customPeriodValue" data-value="0">Custom Period Value</td> <!-- period impact value -->
+                <td class ="impact1Month" data-value="1">1 Month</td>
+                <td class ="impact3Month" data-value="3">3 Month</td>
+                <td class ="impact6Month" data-value="6">6 Month</td>
+                <td class ="impactYtd" data-value="1">Year To Date</td>
+                <td class ="impact1Year" data-value="1">1 Year</td>
+                <td class ="impact3Year" data-value="3">3 Year</td>
+                <td class ="impact5Year" data-value="5">5 Year</td>
+                <td class ="impactFromEstablished" data-value="1">From Established</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  <script src="../js/common.js"></script>
+  <script src="../js/screen/list.js"></script>
+  </body>
+</html>

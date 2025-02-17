@@ -154,6 +154,16 @@ function addPercentCharIfNotNull(data) {
   }
 }
 
+function convertToNullIfDataUndefine(data) {
+  if (!data && data != 0) {
+    return null;
+  }
+  if (isNaN(data)) {
+    return null;
+  }
+  return data;
+}
+
 function getPreviousWorkingDay(selectedDate) {
   let previousDate = selectedDate;
   previousDate = new Date(
