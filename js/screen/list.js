@@ -80,6 +80,12 @@ function doSortData(fieldSort, currentOrder) {
         firstRow.getElementsByClassName(fieldSort)[0].dataset.value;
       let secondRowValue =
         secondRow.getElementsByClassName(fieldSort)[0].dataset.value;
+      let isNumber = !isNaN(parseFloat(firstRowValue));
+      if (isNumber) {
+        // convert value to number
+        firstRowValue = parseFloat(firstRowValue);
+        secondRowValue = parseFloat(secondRowValue);
+      }
       if (firstRowValue !== "null") {
         if (secondRowValue !== "null") {
           if (firstRowValue > secondRowValue) {
