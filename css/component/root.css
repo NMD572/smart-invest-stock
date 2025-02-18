@@ -4,7 +4,7 @@ body {
     background-color: #f7f8fa;
     margin: 0;
     color: #333;
-    padding: 0px 60px 10px 10px; /* Add padding bottom equal to the height of #buttonRow */
+    padding: 0px 10px 60px 10px; /* Add padding bottom equal to the height of #buttonRow */
 }
 /* End General Body Styling */
 
