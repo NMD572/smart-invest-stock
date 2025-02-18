@@ -52,7 +52,7 @@ async function fillComboboxData() {
   listFundAssetTypeNeedToLoad.push(FUND_TYPE_BALANCED);
   listFundAssetTypeNeedToLoad.push(FUND_TYPE_BOND);
   listCcqData = await getListCcqInfor(listFundAssetTypeNeedToLoad);
-  
+
   // dataset for category
   let datalistCcqForCategory = document.getElementById(
     "categoryComboboxDataStr0"
@@ -685,7 +685,9 @@ function calculateProfitAndIncome(currentRow) {
         Number(purchaseCapitalValue) * (1 + incomePercent / 100) * 100
       ) / 100;
   }
-  profitPercentElement.innerHTML = incomePercent + "%";
+  incomePercent += "%";
+  profitPercentElement.innerHTML = incomePercent;
+  profitPercentElement.dataset.value = incomePercent;
   incomeValueElement.innerHTML = totalIncomeVal;
 }
 
@@ -985,6 +987,8 @@ async function predictImpactOfCcq(ccqShortName, currentRow, initValue) {
   }
   predictImpactPercent += "%";
   currentRow.getElementsByClassName("notify-predict-value")[0].innerText =
+    predictImpactPercent;
+  currentRow.getElementsByClassName("notify-predict-value")[0].dataset.value =
     predictImpactPercent;
 }
 
