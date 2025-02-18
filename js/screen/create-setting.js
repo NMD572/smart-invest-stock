@@ -39,6 +39,9 @@ async function initScreen() {
 }
 
 async function initInfor() {
+  // load top navigation
+  await loadTopNav();
+
   await fillComboboxData();
   bindEvent();
   await loadOldData();
@@ -46,6 +49,22 @@ async function initInfor() {
   document.getElementById("submitAllButton").disabled = false;
   await calculateImpactOfAllCcqAt15PM();
 }
+// load top navigation bar
+async function loadTopNav() {
+  await $.get("../../../html/component/top-navigation.html", function (data) {
+    $("#topNav").html(data);
+  });
+  // remove active class in top navigation bar
+  console.log(document.getElementById(CONSTANT_TOP_NAV_BAR_ID));
+  let listNavigationActive = document
+    .getElementById(CONSTANT_TOP_NAV_BAR_ID)
+    .getElementsByClassName("active");
+  for (let i = 0, end = listNavigationActive.length; i < end; ++i) {
+    listNavigationActive[i].classList.remove("active"); //sort asc
+  }
+  document.getElementById(MENU_SETTING_PAGE_ELEMENT_ID).classList.add("active");
+}
+
 /*** Common */
 async function fillComboboxData() {
   listFundAssetTypeNeedToLoad.push(FUND_TYPE_STOCK);

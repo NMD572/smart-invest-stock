@@ -1,13 +1,4 @@
-@import "root.css";
-/* General Body Styling */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f7f8fa;
-  margin: 0;
-  padding: 20px;
-  padding-bottom: 60px; /* Add padding equal to the height of #buttonRow */
-  color: #333;
-}
+@import "./component/root.css";
 
 /* Main Title Styling */
 .main-title {

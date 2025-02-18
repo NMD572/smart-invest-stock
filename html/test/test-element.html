@@ -1,56 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Detail CCQ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
 
-  <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="~/Scripts/autoNumeric/autoNumeric.min.js" type="text/javascript"></script>
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
-  
-  
+  </style>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" 
+        integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- jQuery Library -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"></script>
 </head>
 <body>
-  <!-- input seperate by comma -->
-  <input class="mask" type="number" value="12345.678"/>
-  <script>
-      $("input.mask").each((i,ele)=>{
-        let clone=$(ele).clone(false)
-        clone.attr("type","text")
-        let ele1=$(ele)
-        clone.val(Number(ele1.val()).toLocaleString("en"))
-        $(ele).after(clone)
-        $(ele).hide()
-        clone.mouseenter(()=>{
-
-            ele1.show()
-            clone.hide()
-        })
-        setInterval(()=>{
-            let newv=Number(ele1.val()).toLocaleString("en")
-            if(clone.val()!=newv){
-                clone.val(newv)
-            }
-        },10)
-
-        $(ele).mouseleave(()=>{
-            $(clone).show()
-            $(ele1).hide()
-        })
-        
-
-    })
-   </script>
+  <div class="top-navbar" id="topNavBar">
+    <!-- Left side: main title -->
+    <div class="navbar-left">
+      <h2>Smart Invest</h2>
+    </div>
+    <!-- Center: navigation links -->
+    <div class="navbar-center">
+      <a class="active" href="./list.html" id="menuListPage">
+        <i class="fa fa-fw fa-home"></i> Home
+      </a>
+      <a href="./create-setting.html" id="menuSettingPage">
+        <i class="fa-solid fa-gears"></i> Setting
+      </a>
+    </div>
+  </div>
 </body>
 </html>

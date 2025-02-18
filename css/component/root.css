@@ -1,0 +1,82 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f8fa;
+    margin: 0;
+    color: #333;
+    padding: 0px 60px 10px 10px; /* Add padding bottom equal to the height of #buttonRow */
+}
+/* End General Body Styling */
+
+/* Style for positive and negative impact values */
+.data-color[data-value^="-"] /* Negative values */
+{
+    color: red !important;
+}
+
+.data-color:not([data-value^="-"]) /* Positive values */
+{
+    color: green !important;
+}
+/* End Style for positive and negative impact values */
+
+/***************TOP NAVIGATION BAR ********************/
+
+/* Container for the entire navigation bar */
+.top-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* centers the links container */
+    background-color: #03A9F4; /* Brighter blue background */
+    position: relative; /* allows absolute positioning for the title */
+    height: 50px; /* adjust height as needed */
+    width: 100vw;
+    /* Offset body padding (assumed to be 20px on each side) */
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: 0px;
+    padding: 5px 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* The main title positioned on the left */
+.navbar-left {
+    position: absolute;
+    left: 20px;
+}
+
+.navbar-left h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 22px; /* Adjusted for a more compact look */
+}
+
+/* Container for the links */
+.navbar-center a {
+    padding: 8px 12px; /* Reduced padding for a contracted look */
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 0 4px;  /* Reduced spacing between links */
+    border-radius: 8px;
+}
+
+/* Updated hover effect: amber highlight */
+.navbar-center a:hover {
+    background-color: #FFC107;
+}
+
+/* Updated active state: deep orange highlight */
+.navbar-center .active {
+    background-color: #FF5722;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 500px) {
+  .navbar-center a {
+        display: block;
+        margin: 5px 0;
+  }
+}
+
+/***************END TOP NAVIGATION BAR ********************/

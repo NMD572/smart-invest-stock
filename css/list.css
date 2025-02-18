@@ -1,14 +1,5 @@
-@import "root.css";
+@import "./component/root.css";
 
-/* General Body Styling */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f8fa;
-    margin: 0;
-    padding: 20px;
-    padding-bottom: 60px; /* Add padding equal to the height of #buttonRow */
-    color: #333;
-}
 
 /* Main Title Styling */
 .main-title {
@@ -17,7 +8,6 @@ body {
     text-align: center;
     margin: 20px 0;
     color: #007bff; /* Highlighted color */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
     border-bottom: 2px solid #007bff;
     display: inline-block;
     padding-bottom: 10px;

@@ -28,6 +28,9 @@ const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
 const CONSTANT_1_DAY_IN_MILISECOND = 86400000;
 const DASH = "-";
 const CCQ_TYPE = "CCQ";
+const CONSTANT_TOP_NAV_BAR_ID = "topNavBar";
+const MENU_LIST_PAGE_ELEMENT_ID = "menuListPage";
+const MENU_SETTING_PAGE_ELEMENT_ID = "menuSettingPage";
 
 // Category type enum
 const CategoryTypeEnum = Object.freeze({

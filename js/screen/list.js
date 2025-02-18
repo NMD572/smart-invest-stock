@@ -6,10 +6,28 @@ const bodyTableAllDataElement = document
   .getElementsByTagName("tbody")[0];
 
 async function initScreen() {
+  // load top navigation
+  await loadTopNav();
   // init list data
   await searchData();
   // bind event
   bindEvent();
+}
+
+// load top navigation bar
+async function loadTopNav() {
+  await $.get("../../../html/component/top-navigation.html", function (data) {
+    $("#topNav").html(data);
+  });
+  // remove active class in top navigation bar
+  console.log(document.getElementById(CONSTANT_TOP_NAV_BAR_ID));
+  let listNavigationActive = document
+    .getElementById(CONSTANT_TOP_NAV_BAR_ID)
+    .getElementsByClassName("active");
+  for (let i = 0, end = listNavigationActive.length; i < end; ++i) {
+    listNavigationActive[i].classList.remove("active"); //sort asc
+  }
+  document.getElementById(MENU_LIST_PAGE_ELEMENT_ID).classList.add("active");
 }
 
 function bindEvent() {
