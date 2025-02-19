@@ -227,7 +227,8 @@ function addRowToTableAllData(rowData) {
   newRow.style.display = "table-row";
   if (rowData !== null) {
     // set data for show
-    newRow.getElementsByClassName("shortName")[0].innerText = rowData.shortName;
+    newRow.getElementsByClassName("view-detail-link")[0].textContent =
+      rowData.shortName;
     newRow.getElementsByClassName("ownerShortName")[0].innerText =
       rowData.ownerShortName;
     newRow.getElementsByClassName("currentNav")[0].innerText =
@@ -256,6 +257,8 @@ function addRowToTableAllData(rowData) {
       addPercentCharIfNotNull(rowData.impactFromEstablished);
 
     // set dataset raw value
+    newRow.getElementsByClassName("view-detail-link")[0].href +=
+      rowData.shortName;
     newRow.getElementsByClassName("shortName")[0].dataset.value =
       rowData.shortName;
     newRow.getElementsByClassName("ownerShortName")[0].dataset.value =
