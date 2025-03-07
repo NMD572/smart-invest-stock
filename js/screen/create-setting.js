@@ -55,7 +55,7 @@ async function loadTopNav() {
     $("#topNav").html(data);
   });
   // remove active class in top navigation bar
-  console.log(document.getElementById(CONSTANT_TOP_NAV_BAR_ID));
+  // console.log(document.getElementById(CONSTANT_TOP_NAV_BAR_ID));
   let listNavigationActive = document
     .getElementById(CONSTANT_TOP_NAV_BAR_ID)
     .getElementsByClassName("active");
@@ -526,10 +526,8 @@ async function addRowForCategory(rowData) {
       purchaseDate;
     newRow.getElementsByClassName("category-purchase-price")[0].value =
       purchasePrice;
-    if (cutoffFlag === true) {
-      newRow.getElementsByClassName("category-data-date")[0].value = dataDate;
-      newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
-    }
+    newRow.getElementsByClassName("category-data-date")[0].value = dataDate;
+    newRow.getElementsByClassName("category-data-price")[0].value = dataPrice;
     newRow.getElementsByClassName("catogory-note")[0].value = note;
     newRow.getElementsByClassName("category-setting-view-checkbox")[0].checked =
       viewableFlag;

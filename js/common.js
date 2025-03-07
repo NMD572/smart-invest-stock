@@ -48,6 +48,12 @@ const CategoryTypeEnum = Object.freeze({
   OTHER: { name: "Other Category", type: "99", defaultPurchasePrice: null },
 });
 
+function getSleepTimeWhenCallIntegrateApi() {
+  // random number from [-50,50]
+  let randomSubTimeForEachCall = Math.floor(Math.random() * 101) - 50;
+  return SLEEP_TIME_AFTER_CALL_INTEGRATE_API + randomSubTimeForEachCall;
+}
+
 function clearIntervalObject(intervalObject) {
   if (intervalObject && intervalObject != null) {
     clearInterval(intervalObject);

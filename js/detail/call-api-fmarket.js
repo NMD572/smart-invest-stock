@@ -19,7 +19,7 @@ async function callApiGetListInvestementCertificateSTOCK(
       "Content-type": "application/json; charset=UTF-8",
     },
   }).then((response) => response.json());
-  await sleep(SLEEP_TIME_AFTER_CALL_INTEGRATE_API); // sleep 0.5s for prevent spam api
+  await sleep(getSleepTimeWhenCallIntegrateApi()); // sleep 0.5s for prevent spam api
   return jsonDatas;
 }
 
@@ -32,7 +32,7 @@ async function getDetailCcq(ccqShortName) {
       "Content-type": "application/json; charset=UTF-8",
     },
   }).then((response) => response.json());
-  await sleep(SLEEP_TIME_AFTER_CALL_INTEGRATE_API); // sleep 0.5s for prevent spam api
+  await sleep(getSleepTimeWhenCallIntegrateApi()); // sleep 0.5s for prevent spam api
   // console.log(jsonDatas);
   return jsonDatas;
 }
@@ -57,6 +57,6 @@ async function callApiGetListNavHistoryOfCcq(
       "Content-type": "application/json; charset=UTF-8",
     },
   }).then((response) => response.json());
-  await sleep(SLEEP_TIME_AFTER_CALL_INTEGRATE_API); // sleep 0.5s for prevent spam api
+  await sleep(getSleepTimeWhenCallIntegrateApi()); // sleep 0.5s for prevent spam api
   return jsonDatas;
 }
