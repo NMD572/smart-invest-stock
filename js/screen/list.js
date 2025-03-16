@@ -16,7 +16,7 @@ async function initScreen() {
 
 // load top navigation bar
 async function loadTopNav() {
-  await $.get("./html/component/top-navigation.html", function (data) {
+  await $.get("./component/top-navigation.html", function (data) {
     $("#topNav").html(data);
   });
   // remove active class in top navigation bar
