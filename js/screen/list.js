@@ -1,5 +1,5 @@
-includeJs("./js/handler/fmarket-handler.js");
-includeJs("./js/handler/predict-handler.js");
+includeJs("../js/handler/fmarket-handler.js");
+includeJs("../js/handler/predict-handler.js");
 
 const bodyTableAllDataElement = document
   .getElementById("tableAllData")
