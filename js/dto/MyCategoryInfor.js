@@ -9,7 +9,7 @@ class MyCategoryInfor {
     note,
     viewable,
     cutoffFlag,
-    ccqFlag
+    dataType
   ) {
     this.categoryId = categoryId;
     this.purchaseCapital = purchaseCapital;
@@ -20,6 +20,6 @@ class MyCategoryInfor {
     this.note = note;
     this.viewable = viewable;
     this.cutoffFlag = cutoffFlag;
-    this.ccqFlag = ccqFlag;
+    this.dataType = dataType;
   }
 }

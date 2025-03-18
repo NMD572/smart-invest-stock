@@ -295,6 +295,7 @@ async function handleMyCategoryDataForChart(
   chartType
 ) {
   let listResult = [];
+  // let listSavingDeposit = [];
   let listCcqId = new Set();
   let mapNavHistoryFullTime = new Map();
   let listCalculateAllCategoryRow = [];
@@ -304,142 +305,174 @@ async function handleMyCategoryDataForChart(
   // assign opposite date to force change data
   let minStartDate = toDate,
     maxEndDate = fromDate;
-  // Step 1: Get all category
-  let listOldCategoryData = retrieveDataFromLocalStorage(
+  // Step 1.1: Get all category
+  let listInputCategoryData = retrieveDataFromLocalStorage(
     CONSTANT_MY_CATEGORIES
   );
-  // Step 2: Group by ccq id and calculate real from date to date for each ccq id
-  if (listOldCategoryData && listOldCategoryData !== null) {
-    for (let oldCategoryData of listOldCategoryData) {
-      if (
-        oldCategoryData.viewable === true &&
-        oldCategoryData.ccqFlag === true
-      ) {
-        // check is viewable
-        // calculateConfigCcq(mapCcqConfigData, oldCategoryData, fromDate, toDate);
-        listCcqId.add(oldCategoryData.categoryId);
-      }
-    }
-  }
-  // Step 3: Calculate and return List<NavCcqHistory> of each category
-  // Step 3.1: get nav history of each ccq
-  if (listCcqId.size > 0) {
-    for (let ccqId of listCcqId) {
-      mapNavHistoryFullTime.set(
-        ccqId,
-        await getListNavHistory(
-          ccqId,
-          fromDate,
-          toDate,
-          isGetAll,
-          getChartTypeCurrencyVND()
-        )
-      );
-    }
-  }
-  // Step 3.2: calculate impact data for each category
-  for (let oldCategoryData of listOldCategoryData) {
-    if (oldCategoryData.viewable === true) {
-      // check is viewable
-      listCalculateAllCategoryRow.push(
-        await calculateImpactPerCategoryRow(
-          oldCategoryData,
-          fromDate,
-          toDate,
-          mapNavHistoryFullTime.get(oldCategoryData.categoryId),
-          listCutoffMoney
-        )
-      );
-    }
-  }
-  console.log(listCalculateAllCategoryRow);
-  // Step 3.3: calculate total init amount of invest
-  for (
-    let startIndex = 0;
-    startIndex < listCalculateAllCategoryRow.length;
-    ++startIndex
+  let listOldCategoryData = [];
+
+  if (
+    listInputCategoryData &&
+    listInputCategoryData !== null &&
+    listInputCategoryData.length > 0
   ) {
-    let listImpactOfSingleCcq = listCalculateAllCategoryRow[startIndex];
-    if (listImpactOfSingleCcq.length === 0) {
-      listCalculateAllCategoryRow.splice(startIndex, 1);
-      --startIndex;
-      continue;
-    }
-    if (listImpactOfSingleCcq[0].navDate < minStartDate) {
-      minStartDate = listImpactOfSingleCcq[0].navDate;
-    }
-    if (
-      listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate >
-      maxEndDate
-    ) {
-      maxEndDate =
-        listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate;
-    }
-    totalInitAmount += listImpactOfSingleCcq[0].navValue;
-  }
-  console.log("Total init amount: " + totalInitAmount);
-  // Step 4: Merge all into 1 List<NavCcqHistory>
-  let listAllWorkingDateInRange = getWorkingDays(
-    new Date(minStartDate),
-    new Date(maxEndDate)
-  );
-  if (chartType === getChartTypeGrowthRatio()) {
-    // if type = growth ratio --> split value = total init amount (to calculate growth percent from init value)
-    splitValue = totalInitAmount;
-  }
-  // calculate by sum all money of that day/ split value
-  let listUsedIndexAllCcq = Array(listCalculateAllCategoryRow.length).fill(0);
-  for (let i = 0; i < listAllWorkingDateInRange.length; ++i) {
-    let currentDay = listAllWorkingDateInRange[i];
-    let totalMoneyOfCurrentDay = 0;
-    let growthFromPreviousDay = 0;
-
-    for (let j = 0; j < listCalculateAllCategoryRow.length; ++j) {
-      let listImpactOfSingleCategoryRow = listCalculateAllCategoryRow[j];
-      let currentCategoryStartIndex = listUsedIndexAllCcq[j];
-      for (
-        ;
-        currentCategoryStartIndex < listImpactOfSingleCategoryRow.length;
-
+    // Step 1.2: Filter to get needed category
+    for (let categoryData of listInputCategoryData) {
+      if (
+        (categoryData.cutoffFlag === true &&
+          categoryData.dataDate < fromDate) ||
+        categoryData.purchaseDate > toDate
       ) {
-        // manual increase listUsedIndexAllCcq[j]
-        while (
-          currentCategoryStartIndex <
-            listImpactOfSingleCategoryRow.length - 1 &&
-          listImpactOfSingleCategoryRow[currentCategoryStartIndex].navDate <
-            currentDay &&
-          listImpactOfSingleCategoryRow[currentCategoryStartIndex + 1]
-            .navDate <= currentDay
-        ) {
-          ++currentCategoryStartIndex;
-        }
-        listUsedIndexAllCcq[j] = currentCategoryStartIndex;
-        totalMoneyOfCurrentDay +=
-          listImpactOfSingleCategoryRow[currentCategoryStartIndex].navValue;
-        break;
+        continue;
+      } else {
+        listOldCategoryData.push(categoryData);
       }
     }
-    totalMoneyOfCurrentDay /= splitValue;
 
-    if (chartType === getChartTypeGrowthRatio()) {
-      totalMoneyOfCurrentDay -= 1;
-      totalMoneyOfCurrentDay = Math.round(totalMoneyOfCurrentDay * 10000) / 100;
-    } else {
-      totalMoneyOfCurrentDay = Math.round(totalMoneyOfCurrentDay * 100) / 100;
+    // Step 2.1: Get list distinct ccq id
+
+    for (let oldCategoryData of listOldCategoryData) {
+      if (oldCategoryData.viewable === true) {
+        // check is viewable
+        switch (oldCategoryData.dataType) {
+          case CategoryTypeEnum.CCQ.type:
+            // get ccq
+            // calculateConfigCcq(mapCcqConfigData, oldCategoryData, fromDate, toDate);
+            listCcqId.add(oldCategoryData.categoryId);
+            break;
+          // NO NEED to store list saving deposit/capital money
+          // case CategoryTypeEnum.SAVING_DEPOSIT.type:
+          //   // get saving deposit
+          //   listSavingDeposit.add(oldCategoryData);
+          //   break;
+          default:
+            break;
+        }
+      }
     }
-    if (i > 0) {
-      growthFromPreviousDay = calculateGrowthRatioFromPreviousDay(
-        listResult[listResult.length - 1].navValue,
-        totalMoneyOfCurrentDay
+
+    // Step 3: Calculate and return List<NavCcqHistory> of each component category (for ccq, ... except saving deposit)
+    // Step 3.1: get nav history of each component (for ccq, ... except saving deposit)
+    if (listCcqId.size > 0) {
+      for (let ccqId of listCcqId) {
+        mapNavHistoryFullTime.set(
+          ccqId,
+          await getListNavHistory(
+            ccqId,
+            fromDate,
+            toDate,
+            isGetAll,
+            getChartTypeCurrencyVND()
+          )
+        );
+      }
+    }
+    // Step 3.2: calculate impact data for each category
+    for (let oldCategoryData of listOldCategoryData) {
+      if (oldCategoryData.viewable === true) {
+        // check is viewable
+        listCalculateAllCategoryRow.push(
+          await calculateImpactPerCategoryRow(
+            oldCategoryData,
+            fromDate,
+            toDate,
+            mapNavHistoryFullTime.get(oldCategoryData.categoryId),
+            listCutoffMoney
+          )
+        );
+      }
+    }
+    console.log(listCalculateAllCategoryRow);
+
+    // Step 3.3: calculate total init amount of invest
+    for (
+      let startIndex = 0;
+      startIndex < listCalculateAllCategoryRow.length;
+      ++startIndex
+    ) {
+      let listImpactOfSingleCcq = listCalculateAllCategoryRow[startIndex];
+      if (listImpactOfSingleCcq.length === 0) {
+        listCalculateAllCategoryRow.splice(startIndex, 1);
+        --startIndex;
+        continue;
+      }
+      if (listImpactOfSingleCcq[0].navDate < minStartDate) {
+        minStartDate = listImpactOfSingleCcq[0].navDate;
+      }
+      if (
+        listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate >
+        maxEndDate
+      ) {
+        maxEndDate =
+          listImpactOfSingleCcq[listImpactOfSingleCcq.length - 1].navDate;
+      }
+      totalInitAmount += listImpactOfSingleCcq[0].navValue;
+    }
+    console.log("Total init amount: " + totalInitAmount);
+    // Step 4: Merge all into 1 List<NavCcqHistory>
+    let listAllWorkingDateInRange = getWorkingDays(
+      new Date(minStartDate),
+      new Date(maxEndDate)
+    );
+    if (chartType === getChartTypeGrowthRatio()) {
+      // if type = growth ratio --> split value = total init amount (to calculate growth percent from init value)
+      splitValue = totalInitAmount;
+    }
+    // calculate by sum all money of that day/ split value
+    let listUsedIndexAllCcq = Array(listCalculateAllCategoryRow.length).fill(0);
+    for (let i = 0; i < listAllWorkingDateInRange.length; ++i) {
+      let currentDay = listAllWorkingDateInRange[i];
+      let totalMoneyOfCurrentDay = 0;
+      let growthFromPreviousDay = 0;
+
+      for (let j = 0; j < listCalculateAllCategoryRow.length; ++j) {
+        let listImpactOfSingleCategoryRow = listCalculateAllCategoryRow[j];
+        let currentCategoryStartIndex = listUsedIndexAllCcq[j];
+        for (
+          ;
+          currentCategoryStartIndex < listImpactOfSingleCategoryRow.length;
+
+        ) {
+          // manual increase listUsedIndexAllCcq[j]
+          while (
+            currentCategoryStartIndex <
+              listImpactOfSingleCategoryRow.length - 1 &&
+            listImpactOfSingleCategoryRow[currentCategoryStartIndex].navDate <
+              currentDay &&
+            listImpactOfSingleCategoryRow[currentCategoryStartIndex + 1]
+              .navDate <= currentDay
+          ) {
+            ++currentCategoryStartIndex;
+          }
+          listUsedIndexAllCcq[j] = currentCategoryStartIndex;
+          totalMoneyOfCurrentDay +=
+            listImpactOfSingleCategoryRow[currentCategoryStartIndex].navValue;
+          break;
+        }
+      }
+      totalMoneyOfCurrentDay /= splitValue;
+
+      if (chartType === getChartTypeGrowthRatio()) {
+        totalMoneyOfCurrentDay -= 1;
+        totalMoneyOfCurrentDay =
+          Math.round(totalMoneyOfCurrentDay * 10000) / 100;
+      } else {
+        totalMoneyOfCurrentDay = Math.round(totalMoneyOfCurrentDay * 100) / 100;
+      }
+      if (i > 0) {
+        growthFromPreviousDay = calculateGrowthRatioFromPreviousDay(
+          listResult[listResult.length - 1].navValue,
+          totalMoneyOfCurrentDay
+        );
+      }
+      listResult.push(
+        new NavCcqHistory(
+          totalMoneyOfCurrentDay,
+          currentDay,
+          growthFromPreviousDay
+        )
       );
     }
-    listResult.push(
-      new NavCcqHistory(
-        totalMoneyOfCurrentDay,
-        currentDay,
-        growthFromPreviousDay
-      )
-    );
   }
   console.log(listResult);
   return listResult;
@@ -481,6 +514,12 @@ async function calculateImpactPerCategoryRow(
   let purchasePrice = oldCategoryData.purchasePrice;
   let purchaseCapital = Number(oldCategoryData.purchaseCapital);
   let ccqAmount = purchaseCapital / purchasePrice;
+  if (
+    oldCategoryData.cutoffFlag === true &&
+    fromDate > oldCategoryData.purchaseDate
+  ) {
+    fromDate = oldCategoryData.purchaseDate;
+  }
   if (fromDate < oldCategoryData.purchaseDate) {
     fromDate = oldCategoryData.purchaseDate;
   }
@@ -492,96 +531,111 @@ async function calculateImpactPerCategoryRow(
   }
 
   // calculate impact
-  if (oldCategoryData.ccqFlag === true) {
-    let startIndex = 0;
-    let firstPrice = 0;
-    for (; startIndex < impactCurrencyVndArray.length; ++startIndex) {
-      if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
-        continue;
-      } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
-        // get first price --> decrease startIndex by 1 to next "for" loop can get first index
-        firstPrice = ccqAmount * impactCurrencyVndArray[startIndex].navValue;
-        break;
+  switch (oldCategoryData.dataType) {
+    case CategoryTypeEnum.CCQ.type:
+      let startIndex = 0;
+      let firstPrice = 0;
+      for (; startIndex < impactCurrencyVndArray.length; ++startIndex) {
+        if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
+          continue;
+        } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
+          // get first price --> decrease startIndex by 1 to next "for" loop can get first index
+          firstPrice = ccqAmount * impactCurrencyVndArray[startIndex].navValue;
+          break;
+        }
       }
-    }
-    // calculate init price (minus cutoff money)
-    firstPrice = calculateCutoffMoney(listCutoffMoney, firstPrice, fromDate);
-    listResult.push(
-      new NavCcqHistory(
-        firstPrice,
-        formatDate(
-          getPreviousWorkingDay(
-            new Date(impactCurrencyVndArray[startIndex].navDate)
-          )
-        ),
-        null
-      )
-    );
-    // Start from first value to end value
-    for (; startIndex < impactCurrencyVndArray.length; ++startIndex) {
-      if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
-        continue;
-      } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
-        listResult.push(
-          new NavCcqHistory(
-            ccqAmount * impactCurrencyVndArray[startIndex].navValue,
-            impactCurrencyVndArray[startIndex].navDate,
-            null
-          )
-        );
-      }
-    }
-  } else {
-    // TODO: handle not ccq data (capital money, bank): DONE
-    let listAllWorkingDateInRange = getWorkingDays(
-      new Date(fromDate),
-      new Date(toDate)
-    );
-
-    if (listAllWorkingDateInRange.length > 0) {
-      let purchaseDate = oldCategoryData.purchaseDate;
-      let dataDate = oldCategoryData.dataDate;
-      let fixedIncomePercentPerDay =
-        (oldCategoryData.dataPrice / oldCategoryData.purchasePrice - 1) /
-        calculateGapDay(dataDate, purchaseDate);
-      let firstPrice = calculateFixedIncomePercentProfit(
-        purchaseCapital,
-        fixedIncomePercentPerDay,
-        purchaseDate,
-        listAllWorkingDateInRange[0]
-      );
       // calculate init price (minus cutoff money)
+      if (firstPrice === 0) {
+        // --> not have data match --> all data is already cutoffed
+        startIndex = impactCurrencyVndArray.length - 1;
+      }
       firstPrice = calculateCutoffMoney(listCutoffMoney, firstPrice, fromDate);
+
       listResult.push(
         new NavCcqHistory(
           firstPrice,
           formatDate(
-            getPreviousWorkingDay(new Date(listAllWorkingDateInRange[0]))
+            getPreviousWorkingDay(
+              new Date(impactCurrencyVndArray[startIndex].navDate)
+            )
           ),
           null
         )
       );
-      // Start from second working date
-      for (
-        let workingDateStartIndex = 0;
-        workingDateStartIndex < listAllWorkingDateInRange.length;
-        ++workingDateStartIndex
-      ) {
-        let workingDate = listAllWorkingDateInRange[workingDateStartIndex];
+      // Start from first value to end value
+      for (; startIndex < impactCurrencyVndArray.length; ++startIndex) {
+        if (impactCurrencyVndArray[startIndex].navDate < fromDate) {
+          continue;
+        } else if (impactCurrencyVndArray[startIndex].navDate <= toDate) {
+          listResult.push(
+            new NavCcqHistory(
+              ccqAmount * impactCurrencyVndArray[startIndex].navValue,
+              impactCurrencyVndArray[startIndex].navDate,
+              null
+            )
+          );
+        }
+      }
+      break;
+    case CategoryTypeEnum.CAPITAL_MONEY.type:
+    case CategoryTypeEnum.SAVING_DEPOSIT.type:
+      // TODO: handle not ccq data (capital money, bank): DONE
+      let listAllWorkingDateInRange = getWorkingDays(
+        new Date(fromDate),
+        new Date(toDate)
+      );
+
+      if (listAllWorkingDateInRange.length > 0) {
+        let purchaseDate = oldCategoryData.purchaseDate;
+        let dataDate = oldCategoryData.dataDate;
+        let fixedIncomePercentPerDay =
+          (oldCategoryData.dataPrice / oldCategoryData.purchasePrice - 1) /
+          calculateGapDay(dataDate, purchaseDate);
+        let firstPrice = calculateFixedIncomePercentProfit(
+          purchaseCapital,
+          fixedIncomePercentPerDay,
+          purchaseDate,
+          listAllWorkingDateInRange[0]
+        );
+        // calculate init price (minus cutoff money)
+        firstPrice = calculateCutoffMoney(
+          listCutoffMoney,
+          firstPrice,
+          fromDate
+        );
         listResult.push(
           new NavCcqHistory(
-            calculateFixedIncomePercentProfit(
-              purchaseCapital,
-              fixedIncomePercentPerDay,
-              purchaseDate,
-              workingDate
+            firstPrice,
+            formatDate(
+              getPreviousWorkingDay(new Date(listAllWorkingDateInRange[0]))
             ),
-            workingDate,
             null
           )
         );
+        // Start from second working date
+        for (
+          let workingDateStartIndex = 0;
+          workingDateStartIndex < listAllWorkingDateInRange.length;
+          ++workingDateStartIndex
+        ) {
+          let workingDate = listAllWorkingDateInRange[workingDateStartIndex];
+          listResult.push(
+            new NavCcqHistory(
+              calculateFixedIncomePercentProfit(
+                purchaseCapital,
+                fixedIncomePercentPerDay,
+                purchaseDate,
+                workingDate
+              ),
+              workingDate,
+              null
+            )
+          );
+        }
       }
-    }
+      break;
+    default:
+      break;
   }
   // add category cutoff data to list cutoff money
   // only when this category impact to current my category chart
@@ -916,8 +970,3 @@ function addCCQToCombox(groupCcq, ccqInfor) {
   newOpt.title = ccqInfor.getExternalInfor;
   groupCcq.appendChild(newOpt);
 }
-
-// async function updateChartWhenChangeCheckBox(checkboxChartTypeElement) {
-//     console.log('Checkbox is now ' + (checkboxChartTypeElement.checked ? 'checked' : 'unchecked'));
-
-// };

@@ -1045,7 +1045,7 @@ async function submitAllData() {
 
   // handle category
   let listCategory = [];
-  let isCcq = false;
+  let dataType = CategoryTypeEnum.OTHER.type;
   let numberOfRowCategoryUserAdded =
     bodyTableMyCategoryElement.getElementsByTagName("tr").length;
 
@@ -1059,8 +1059,7 @@ async function submitAllData() {
     // let categoryNameInputValue =
     //   bodyTableMyCategoryElement.getElementsByClassName("category-name")[i]
     //     .value;
-    isCcq =
-      categoryValueHiddenElement.dataset.type === CategoryTypeEnum.CCQ.type;
+    dataType = categoryValueHiddenElement.dataset.type;
     let purchaseCapital = bodyTableMyCategoryElement.getElementsByClassName(
       "category-purchase-capital"
     )[i].value;
@@ -1097,7 +1096,7 @@ async function submitAllData() {
         note,
         viewableFlag,
         cutoffFlag,
-        isCcq
+        dataType
       )
     );
   }
