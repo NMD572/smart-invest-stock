@@ -3,7 +3,6 @@ includeJs("../js/detail/load-chart.js");
 includeJs("../js/handler/fmarket-handler.js");
 includeJs("../js/handler/predict-handler.js");
 // DTO
-includeJs("../js/dto/CCQInfor.js");
 includeJs("../js/dto/BasicCCQInfor.js");
 includeJs("../js/dto/ListNavHistory.js");
 includeJs("../js/dto/DataToWriteChart.js");
