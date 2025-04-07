@@ -100,7 +100,7 @@ async function reloadCalculateImpactEvent() {
   }
   predictImpactPercent += "%";
   document.getElementById("ccqPredictPrice").innerText =
-    predictImpactPercent + " (Cập nhật ngày " + formatDate(new Date()) + ")";
+    predictImpactPercent + " (last updated on " + formatDate(new Date()) + ")";
 }
 
 function showTabData(evt, divId) {
@@ -124,7 +124,7 @@ function fillDataToPageCcqDetail(ccqDetailData) {
   document.getElementById("ccqStrategy").innerHTML = ccqDetailData.strategy;
   document.getElementById("ccqNearestPrice").innerHTML =
     ccqDetailData.curNav +
-    " VND (Cập nhật ngày " +
+    " VND (last updated on " +
     ccqDetailData.curNavDate +
     ")";
 
@@ -137,7 +137,7 @@ function fillDataToPageCcqDetail(ccqDetailData) {
     ccqDetailData.listTransactionDateInWeek.join(", ");
   // Note: sharpe ratio caculate when receive data for write chart
   document.getElementById("generalTransactionNote").innerHTML =
-    "Trước " + ccqDetailData.closedBankInvestTimeString;
+    "Before " + ccqDetailData.closedBankInvestTimeString;
   document.getElementById("generalNextTransactionDate").innerHTML =
     ccqDetailData.tradingTimeString;
   // invest component detail

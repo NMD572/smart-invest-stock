@@ -29,13 +29,13 @@
         <div id="loader" class="loader"></div>
         <header class="ccq-details-header">
             <h1 class="ccq-name">
-                <span>Tên: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span>
+                <span>Name: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span>
             </h1>
         </header>
         
         <section class="ccq-summary">
             
-            <h2 class="sub-title">Chiến lược</h2>
+            <h2 class="sub-title">Strategy</h2>
             <p id="ccqStrategy">Quỹ cổ phiếu VLGF có chiến lược đầu tư chủ động, tập trung nhiều hơn vào các cổ phiếu large-cap đầu ngành, có thanh khoản cao. Quỹ sẽ lựa chọn những cổ phiếu được đánh giá tốt nhất thị trường, đồng thời linh hoạt phân bổ tài sản nhằm đạt mục tiêu tăng trưởng tài sản ròng dài hạn và gia tăng giá trị bền vững cho nhà đầu tư.</p>
             
             <!-- <div>
@@ -44,19 +44,19 @@
             </div> -->
             <div class="ccq-key-data">
                 <div class="key-data-item">
-                    <span>Giá gần nhất:</span>
-                    <span id="ccqNearestPrice">12,180.63 VND (Cập nhật ngày 2024-10-28)</span>
+                    <span>Nearest Price</span>
+                    <span id="ccqNearestPrice">12,180.63 VND (last updated on 2024-10-28)</span>
                 </div>
                 <div class="key-data-item">
-                    <span>Dự đoán biến động:</span>
-                    <span id="ccqPredictPrice">1% (Cập nhật ngày 2024-10-29)</span>
+                    <span>Predict fluctuation</span>
+                    <span id="ccqPredictPrice">1% (last updated on 2024-10-29)</span>
                 </div>
             </div>
         </section>
 
         <div class="divider"></div>
 
-        <h2 class="sub-title">BIỂU ĐỒ TĂNG TRƯỞNG NAV</h2>
+        <h2 class="sub-title">Chart of Growth NAV</h2>
 
         <!-- Search Form Group -->
         <div class="form-group">
@@ -101,40 +101,40 @@
         <div class="chart-area" id="chart-data"></div>
         
         <div class="divider"></div>
-        <h2 class="sub-title">Thông tin chi tiết</h2>
+        <h2 class="sub-title">Detail Information</h2>
         <div class="tab-buttons">
-            <button onclick="showTabData(event, 'generalInfor')">Tổng quan</button>
-            <button onclick="showTabData(event, 'listInvestComponentDetailInfor')">Danh mục đầu tư lớn</button>
-            <button onclick="showTabData(event, 'listInvestGroupInfor')">Phân bổ theo ngành</button>
-            <button onclick="showTabData(event, 'listAssetPercentInfor')">Phân bổ tài sản</button>
+            <button onclick="showTabData(event, 'generalInfor')">General Information</button>
+            <button onclick="showTabData(event, 'listInvestComponentDetailInfor')">Main Category</button>
+            <button onclick="showTabData(event, 'listInvestGroupInfor')">Industry Allocation</button>
+            <button onclick="showTabData(event, 'listAssetPercentInfor')">Asset Allocation</button>
         </div>
 
         <div id="generalInfor" class="tabcontent">
             <div>
                 <span>
-                    <span>Tổ chức phát hành: </span>
+                    <span>Issuer Organization: </span>
                     <span id="generalIssueCompany">SSIAM</span>
                 </span>  
             </div>
             <div>
                 <span>
-                    <span>Tổng tài sản ròng: </span>
+                    <span>Total Capital Money Of Fund: </span>
                     <span id="generalTotalMoneyOfFund">-</span>
                 </span>
             </div>
             <div>
                 <span>
-                    <span>Ngày giao dịch trong tuần: </span>
+                    <span>Transaction Date (In Week): </span>
                     <span id="generalTranasctionDateInWeek">Thứ hai, Thứ 3, Thứ 4, Thứ 5, Thứ 6</span>
                 </span>
             </div>
             <div>
                 <span>
-                    <span>Đặt lệnh và chuyển tiền mua: </span>
+                    <span>The Next Transaction Time: </span>
                     <span id="generalTransactionNote">Trước 14:40 ngày 29/10/2024</span>
                 </span>
                 <span>
-                    <span>Phiên khớp lệnh tiếp theo: </span>
+                    <span>The Next Transaction Date: </span>
                     <span id="generalNextTransactionDate">30/10/2024</span>
                 </span>
             </div>
@@ -143,11 +143,11 @@
             <table id="tableInvestComponentDetail">
                 <thead>
                     <tr id="headerInvestComponentDetail">
-                        <td>Cổ phiếu</td>
-                        <td>Trái phiếu</td>
-                        <td>Ngành</td>
-                        <td>% Giá trị tài sản (GAV)</td>
-                        <td>Giá (ngàn đồng)</td>
+                        <td>Stock</td>
+                        <td>Bond</td>
+                        <td>Industry</td>
+                        <td>% GAV</td>
+                        <td>Price (Unit: thousand VND)</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -158,7 +158,7 @@
             <table id="tableInvestGroup">
                 <thead> 
                     <tr id="headerInvestGroup">
-                        <td>Tên</td>
+                        <td>Name</td>
                         <td>% GAV</td>
                     </tr>
                 </thead>
@@ -170,7 +170,7 @@
             <table id="tableAssetPercent">
                 <thead>
                     <tr id="headerAssetPercent">
-                        <td>Tên</td>
+                        <td>Name</td>
                         <td>% GAV</td>
                     </tr>
                 </thead>

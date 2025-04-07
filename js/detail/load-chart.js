@@ -174,7 +174,7 @@ function drawLineChart(dataToWriteChart, columnName){
       .useHtml(true)
       .text(
         '<span style="color: #006331; font-size: 20px;">Compare CCQ</span>' +
-          '<br/><span style="font-size: 16px;">(So sánh bởi đoạn t/g cố định, các quỹ sẽ lấy giá trị theo đó. Nếu ko có dữ liệu tại chính thời gian đó thì sẽ lấy dữ liệu tại thời gian gần nhất trước đó)</span>'
+          '<br/><span style="font-size: 16px;">(Compare using a fixed time period; the funds will take values based on that period. If no data is available at the specific time, it will use the nearest preceding data.)</span>'
       );
     
     // name the axes
