@@ -25,7 +25,8 @@
         <link rel="stylesheet" href="../css/view-ccq-style.css" />
 
     </head>
-    <body onload="initScreen()">
+    <body class="loading"  onload="initScreen()">
+        <div id="loader" class="loader"></div>
         <header class="ccq-details-header">
             <h1 class="ccq-name">
                 <span>Tên: </span><span id="ccqName">Quỹ Đầu Tư Tăng Trưởng Dài Hạn Việt Nam (VLGF)</span>
@@ -81,9 +82,9 @@
             <label>Choose CCQ to compare: </label>
             <select class="form-select" id="ccqForCompareSelectBox" data-placeholder="Choose CCQ To Compare" multiple>
                 <option value="MYCATEGORY" title="My Custom Category">My Category</option>
-                <optgroup label="General Index" id="groupComboboxGeneralIndex">
+                <!-- <optgroup label="General Index" id="groupComboboxGeneralIndex">
                     <option value="Index-VNindex" title="Chỉ số VNindex">VNindex</option>
-                </optgroup>
+                </optgroup> -->
                 <optgroup label="Stock CCQ" id="groupComboboxStockCcq"></optgroup>
                 <optgroup label="Balanced CCQ" id="groupComboboxBalancedCcq"></optgroup>
                 <optgroup label="Bond CCQ" id="groupComboboxBondCcq"></optgroup>

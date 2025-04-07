@@ -15,32 +15,32 @@
     <!-- Custom CSS-->
     <link rel="stylesheet" href="../css/list.css" />
   </head>
-  <body onload="initScreen()">
-    <div id="topNav">
-    </div>
+  <body class="loading"  onload="initScreen()">
+    <div id="loader" class="loader"></div>
+    <div id="topNav"></div>
     <div id="tableListDataArea">
       <div class="main-title">Table Of Invest Component</div>
       <div id="searchData">
         <label for="form-select-type-to-filter">Type: </label>
         <select id="form-select-type-to-filter" data-placeholder="Choose CCQ To Receive Notify">
-          <optgroup label="Genral Index" class="groupComboboxINDEX">
+          <!-- <optgroup label="Genral Index" class="groupComboboxINDEX">
               <option value="INDEX-VNindex" title="Chỉ số VNindex">VNindex</option>
           </optgroup>
           <optgroup label="Stock" class="groupComboboxSTOCK">
             <option value="STOCK-FPT">FPT</option>
-          </optgroup>
+          </optgroup> -->
           <optgroup label="CCQ" class="groupComboboxCCQ">
               <option value="CCQ-STOCK" selected="true">Quỹ cổ phiếu</option>
               <option value="CCQ-BALANCED">Quỹ cân bằng</option>
               <option value="CCQ-BOND">Quỹ trái phiếu</option>
           </optgroup>
-          <optgroup label="GOLD" class="groupComboboxGOLD">
+          <!-- <optgroup label="GOLD" class="groupComboboxGOLD">
             <option value="GOLD-SCJ">SCJ</option>
             <option value="GOLD-DOJI">Doji</option> 
           </optgroup>
           <optgroup label="COIN" class="groupComboboxCOIN">
             <option value="COIN-BITCOIN">Bitcoin</option>
-          </optgroup>        
+          </optgroup>         -->
         </select>
         <label for="dataFromDate">From Date:</label>
         <input type="date" id="dataFromDate">

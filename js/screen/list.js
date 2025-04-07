@@ -12,6 +12,8 @@ async function initScreen() {
   await searchData();
   // bind event
   bindEvent();
+  // remove loader div
+  removeLoader();
 }
 
 // load top navigation bar

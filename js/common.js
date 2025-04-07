@@ -24,7 +24,7 @@ const ASSET_TYPE_CASH = "CASH";
 const CONSTANT_LASTED_VALUE = "CONSTANT_LASTED_VALUE";
 const CONSTANT_SMART_INVEST_ICON_URL =
   "https://res.cloudinary.com/dyqglv0wd/image/upload/v1733011601/smart-invest/smart-invest-icon.png";
-const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 500; // 0.5s
+const SLEEP_TIME_AFTER_CALL_INTEGRATE_API = 0; // 0.5s
 const CONSTANT_1_DAY_IN_MILISECOND = 86400000;
 const DASH = "-";
 const CCQ_TYPE = "CCQ";
@@ -47,6 +47,11 @@ const CategoryTypeEnum = Object.freeze({
   CCQ: { name: "CCQ", type: "2", defaultPurchasePrice: null },
   OTHER: { name: "Other Category", type: "99", defaultPurchasePrice: null },
 });
+
+function removeLoader(){
+  document.body.classList.remove("loading");
+  document.getElementById("loader").style.display = "none";
+}
 
 function getSleepTimeWhenCallIntegrateApi() {
   // random number from [-50,50]

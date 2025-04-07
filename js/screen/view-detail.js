@@ -24,6 +24,8 @@ async function initScreen() {
   } else {
     alert("Please input CCQ's CODE");
   }
+  // remove loader div
+  removeLoader();
 }
 // checkboxChartTypeElement.addEventListener("change", async function(){
 //     await updateChartWhenChangeCheckBox(this);

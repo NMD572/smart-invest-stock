@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #007bff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  z-index: 1000;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+body.loading {
+  overflow: hidden;
+}
+</style>
+<body onload="initScreen()">
+    <div id="loader" class="loader"></div>
+    <div id="topNav"></div>
+    <!-- Rest of your content -->
+    <script>
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     document.body.classList.add("loading");
+        // });
+
+        window.onload = async function () {
+            await sleep(5000);
+            document.body.classList.remove("loading");
+
+            document.getElementById("loader").style.display = "none";
+            console.log("123");
+        };
+        async function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

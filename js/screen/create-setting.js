@@ -36,6 +36,8 @@ var intervalAutoNotify;
 var listFundAssetTypeNeedToLoad = [];
 async function initScreen() {
   await initInfor();
+  // remove loader div
+  removeLoader();
 }
 
 async function initInfor() {
