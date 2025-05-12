@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,19 @@
 
     <!-- Styles for using font-awesome icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
+    <style>
+        .highlight-diff {
+            background-color: #ffe066 !important;
+            font-weight: bold;
+        }
+    </style>
+
 </head>
+
 <body>
     <table id="tableComparePredictResult">
-        <thead> 
+        <thead>
             <tr id="headerTableComparePredictResult">
                 <td>Code</td>
                 <td>Data Date</td>
@@ -26,14 +35,14 @@
         </thead>
         <tbody>
             <!--  style="display: none;"  -->
-            <tr data-ignore=true data-row-id=0 >
+            <tr data-ignore=true data-row-id=0>
                 <td class="object-code"></td>
                 <td class="object-data-date"></td>
                 <td class="object-previous-month-component"></td>
                 <td class="object-predict-component"></td>
-                <td class="object-predit-impact-by-previous-component"></td>
-                <t class="object-predit-impact-by-predict-component"></td>
-                <td class="object-real-impact-value" ></td>
+                <td class="object-predit-impact-by-previous-component compare-value"></td>
+                <td class="object-predit-impact-by-predict-component compare-value"></td>
+                <td class="object-real-impact-value compare-value"></td>
                 <td class="object-data-note"></td>
                 <td>
                     <button class="button-delete-category">
@@ -43,5 +52,85 @@
             </tr>
         </tbody>
     </table>
+
+    <script>
+        // Giả sử bạn có dữ liệu dạng này:
+        const data = [
+            {
+                code: "ABC",
+                dataDate: "2024-06-01",
+                previousMonthComponent: "X",
+                predictComponent: "Y",
+                predictImpactByPrevious: 10,
+                predictImpactByPredict: 12,
+                realImpact: 10,
+                note: "Sample"
+            },
+            {
+                code: "DEF",
+                dataDate: "2024-06-01",
+                previousMonthComponent: "A",
+                predictComponent: "B",
+                predictImpactByPrevious: 8,
+                predictImpactByPredict: 9,
+                realImpact: 7,
+                note: "Sample 2"
+            }
+        ];
+
+        function renderTable(data) {
+            const tbody = document.querySelector("#tableComparePredictResult tbody");
+            tbody.innerHTML = ""; // Xóa dòng mẫu
+
+            data.forEach((row, idx) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row.code}</td>
+                    <td>${row.dataDate}</td>
+                    <td>${row.previousMonthComponent}</td>
+                    <td>${row.predictComponent}</td>
+                    <td class="compare-value">${row.predictImpactByPrevious}</td>
+                    <td class="compare-value">${row.predictImpactByPredict}</td>
+                    <td class="compare-value">${row.realImpact}</td>
+                    <td>${row.note}</td>
+                    <td>
+                        <button class="button-delete-category">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            highlightDiffs();
+        }
+
+        function highlightDiffs() {
+            const rows = document.querySelectorAll("#tableComparePredictResult tbody tr");
+            rows.forEach(row => {
+                const tds = row.querySelectorAll(".compare-value");
+                if (tds.length === 3) {
+                    const values = Array.from(tds).map(td => td.textContent.trim());
+                    // Nếu có ít nhất 2 giá trị khác nhau thì highlight các ô khác biệt
+                    if (new Set(values).size > 1) {
+                        // Tìm giá trị xuất hiện nhiều nhất (nếu có)
+                        const counts = {};
+                        values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+                        const maxCount = Math.max(...Object.values(counts));
+                        // Highlight các ô có giá trị khác với giá trị xuất hiện nhiều nhất
+                        tds.forEach(td => {
+                            if (counts[td.textContent.trim()] !== maxCount) {
+                                td.classList.add("highlight-diff");
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        // Gọi hàm renderTable với dữ liệu mẫu
+        renderTable(data);
+    </script>
 </body>
+
 </html>

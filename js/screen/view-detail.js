@@ -145,6 +145,14 @@ function fillDataToPageCcqDetail(ccqDetailData) {
     let tableBody = document
       .getElementById("tableInvestComponentDetail")
       .getElementsByTagName("tbody")[0];
+    // get updated time of invest component detail
+    let updatedTime = ccqDetailData.listInvestComponentDetail[0].updateAt;
+    let updatedDate = new Date(updatedTime);
+    document.getElementById("tableInvestComponentReportTime").innerHTML =
+      "Updated on " +
+      formatDate(updatedDate) +
+      " by report " +
+      formatToMonth(getPreviousMonthOfInputDate(updatedDate));
     for (
       let i = 0, end = ccqDetailData.listInvestComponentDetail.length;
       i < end;

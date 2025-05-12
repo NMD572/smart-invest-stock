@@ -48,7 +48,7 @@ const CategoryTypeEnum = Object.freeze({
   OTHER: { name: "Other Category", type: "99", defaultPurchasePrice: null },
 });
 
-function removeLoader(){
+function removeLoader() {
   document.body.classList.remove("loading");
   document.getElementById("loader").style.display = "none";
 }
@@ -243,4 +243,22 @@ function calculateGapDay(initDate, minusDate) {
   let d1 = new Date(initDate);
   let d2 = new Date(minusDate);
   return (d1 - d2) / CONSTANT_1_DAY_IN_MILISECOND; // difference in day
+}
+
+function getPreviousMonthOfInputDate(inputDate) {
+  let previousMonth = inputDate;
+  previousMonth = new Date(
+    previousMonth.getFullYear(),
+    previousMonth.getMonth() - 1,
+    previousMonth.getDate()
+  );
+
+  return previousMonth;
+}
+
+function formatToMonth(date) {
+  // format date as 'yyyy-MM'
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Add leading zero
+  return `${year}-${month}`;
 }
