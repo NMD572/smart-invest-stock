@@ -18,11 +18,15 @@ var ccqDetailData;
 var reloadChartButton = document.getElementById("reloadChartButton");
 
 async function initScreen() {
-  await initInfor();
-  if (currentCcqShortName) {
-    await getDataAndDrawChart();
-  } else {
-    alert("Please input CCQ's CODE");
+  try {
+    await initInfor();
+    if (currentCcqShortName) {
+      await getDataAndDrawChart();
+    } else {
+      alert("Please input CCQ's CODE");
+    }
+  } catch (err) {
+    console.log("initScreen error:" + err.message);
   }
   // remove loader div
   removeLoader();
