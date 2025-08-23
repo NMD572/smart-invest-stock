@@ -1,57 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cambridge Pronunciation Fetcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f4f6f8;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .audio-block {
+      margin-top: 20px;
+    }
+
+    audio {
+      margin-right: 15px;
+    }
+
+    #status {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
 </head>
-<style>
-    .loader {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #007bff;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  z-index: 1000;
-}
+<body>
+  <h2>Get US/UK Voice from Cambridge Dictionary</h2>
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+  <input type="text" id="wordInput" placeholder="Enter English word" />
+  <button onclick="fetchPronunciations()">Get Pronunciations</button>
 
-body.loading {
-  overflow: hidden;
-}
-</style>
-<body onload="initScreen()">
-    <div id="loader" class="loader"></div>
-    <div id="topNav"></div>
-    <!-- Rest of your content -->
-    <script>
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     document.body.classList.add("loading");
-        // });
+  <div class="audio-block" id="audioContainer"></div>
+  <div id="status"></div>
 
-        window.onload = async function () {
-            await sleep(5000);
-            document.body.classList.remove("loading");
+  <script>
+    async function fetchPronunciations() {
+      const word = document.getElementById("wordInput").value.trim().toLowerCase();
+      const container = document.getElementById("audioContainer");
+      const status = document.getElementById("status");
+      container.innerHTML = "";
+      status.textContent = "";
 
-            document.getElementById("loader").style.display = "none";
-            console.log("123");
-        };
-        async function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+      if (!word) {
+        status.textContent = "Please enter a word.";
+        return;
+      }
+
+      try {
+       
+        status.textContent = "Fetching pronunciations...";
+        console.log("Fetching pronunciations for:", word);  
+         // change to call api with post method to get data
+        const response = await fetch("http://localhost:9999/cambridge/detail", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Basic ZHNhbmRzOlNCRCNAQWFzZDEyMw=="
+          },
+          body: JSON.stringify({ wordInput: word })
+          
+        });
+        console.log("Response status:", response);
+        const data = await response.json();
+        
+        if (data!== null && data.usPhonetic !== null ) {
+          container.innerHTML += `<p>US Pronunciation:</p>${data.usPhonetic}<audio controls src="https://dictionary.cambridge.org/${data.usPronunciationLink}"></audio>`;
         }
-    </script>
+        if (ukMatch) {
+          container.innerHTML += `<p>UK Pronunciation:</p>${data.ukPhonetic}<audio controls src="https://dictionary.cambridge.org/${data.ukPronunciationLink}"></audio>`;
+        }
+        
+
+        
+      } catch (error) {
+        console.error(error);
+        status.textContent = "Error fetching pronunciation.";
+      }
+    }
+  </script>
 </body>
 </html>
